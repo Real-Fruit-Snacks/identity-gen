@@ -494,6 +494,7 @@
   try { used = { ...used, ...JSON.parse(localStorage.getItem("usedValues") || "{}") }; } catch (_) {}
   function unique(kind, make, key = x => x) {
     let v = make();
+    if (rand !== cryptoRand) return v; // restoring from a seed: reproduce exactly, don't touch memory
     for (let i = 0; i < 25 && used[kind].includes(key(v)); i++) v = make();
     used[kind].push(key(v)); if (used[kind].length > 3000) used[kind].shift();
     try { localStorage.setItem("usedValues", JSON.stringify(used)); } catch (_) {}
@@ -587,7 +588,8 @@
     $("imghint").style.display = real ? "block" : "none";
   }
   function svgNode() {
-    const initials = current ? current.firstName[0] + current.lastName[0] : "AB";
+    const raw = current ? (current.firstName[0] || "") + (current.lastName[0] || "") : "AB";
+    const initials = raw.toUpperCase().replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const t = document.createElement("template");
     t.innerHTML = avatarSVG(styles[astyle.value] ? astyle.value : "marble", seed, initials).trim();
     return t.content.firstChild;
@@ -652,6 +654,10 @@
   });
 
   // ---------- rows ----------
+  function editable(el) {
+    try { el.contentEditable = "plaintext-only"; } catch (_) { el.contentEditable = "true"; }
+    el.spellcheck = false; el.setAttribute("role", "textbox");
+  }
   function row(dl, label, value, opts = {}) {
     const rb = document.createElement("button");
     rb.className = "reroll"; rb.type = "button"; rb.innerHTML = ICON;
@@ -664,12 +670,12 @@
     const dt = document.createElement("dt"); dt.textContent = label;
     const listRow = opts.sec !== undefined ? current.security[opts.sec] : opts.cus !== undefined ? current.custom[opts.cus] : null;
     if (listRow) {
-      dt.contentEditable = "plaintext-only"; dt.spellcheck = false; dt.title = "Click to edit";
+      editable(dt); dt.title = "Click to edit";
       dt.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); dt.blur(); } });
       dt.addEventListener("blur", () => { listRow[opts.sec !== undefined ? "question" : "label"] = dt.textContent.trim(); autosave(); });
     }
     const dd = document.createElement("dd"); dd.textContent = value;
-    dd.contentEditable = "plaintext-only"; dd.spellcheck = false; dd.title = "Click to edit";
+    editable(dd); dd.title = "Click to edit";
     if (opts.suffix) dd.insertAdjacentHTML("beforeend", `<small contenteditable="false">${opts.suffix}</small>`);
     dd.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); dd.blur(); } if (ev.key === "Escape") { dd.textContent = value; if (opts.suffix) dd.insertAdjacentHTML("beforeend", `<small contenteditable="false">${opts.suffix}</small>`); dd.blur(); } });
     dd.addEventListener("blur", () => {
@@ -734,7 +740,8 @@
     $("undo").disabled = false;
   }
   function restore(snap) {
-    current = snap.current; seed = snap.seed;
+    current = snap.current; seed = snap.seed || hex(8);
+    current.security = current.security || []; current.custom = current.custom || [];
     $("site").value = snap.site || ""; $("notes").value = snap.notes || "";
     renderFields(); renderPhoto(false); showSeed();
   }
