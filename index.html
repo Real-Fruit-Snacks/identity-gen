@@ -69,7 +69,7 @@
   .card { background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-l); overflow: hidden; }
   .top { display: grid; grid-template-columns: 260px 1fr; }
   .photo { display: flex; flex-direction: column; background: var(--twb-bg-2); border-right: 1px solid var(--twb-border); }
-  .photo img, .photo svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+  .photo img, .photo svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; image-rendering: pixelated; }
   .photo .tools { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.6rem; border-top: 1px solid var(--twb-border); background: var(--twb-bg-1); }
   .seg { display: inline-flex; background: var(--twb-bg-2); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-pill); padding: 2px; }
   .seg button { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border: 0; background: transparent; color: var(--twb-text-muted); border-radius: var(--twb-radius-pill); padding: 0.3rem 0.65rem; cursor: pointer; }
@@ -143,7 +143,7 @@
   @media (max-width: 600px) {
     .top { grid-template-columns: 1fr; }
     .photo { border-right: 0; border-bottom: 1px solid var(--twb-border); }
-    .photo img, .photo svg { aspect-ratio: 4 / 3; }
+    .photo img, .photo svg { aspect-ratio: 1 / 1; width: min(100%, 320px); margin: 0 auto; }
     dl { grid-template-columns: auto 1fr auto; }
     dl.sec { grid-template-columns: auto 1fr auto auto; }
     dt { grid-column: 2 / -1; margin-top: 0.3rem; }
@@ -172,8 +172,11 @@
           <button class="copy" id="newphoto" type="button">New photo (P)</button>
           <span class="imgtools" id="imgtools">
             <select id="astyle" class="copy" aria-label="Illustration style">
-              <optgroup label="Abstract (offline)">
+              <optgroup label="People">
                 <option value="initials">Initials</option>
+                <option value="pixel">Pixel</option>
+              </optgroup>
+              <optgroup label="Abstract">
                 <option value="marble">Marble</option>
                 <option value="bauhaus">Bauhaus</option>
                 <option value="sunset">Sunset</option>
@@ -263,7 +266,7 @@
         <input id="url" type="url" placeholder="https://example.com/random-face.jpg" spellcheck="false">
       </label>
       <button class="copy" id="reset" type="button">Reset everything stored on this device</button>
-      <p class="note">A random timestamp is added on every click so the browser never reuses a cached face. If the image fails to load (or you're viewing in a sandboxed preview), the illustrated avatar is shown instead. To save a photo, right-click it and choose Save image. Faces from thispersondoesnotexist carry a small watermark in the bottom-right corner; crop it before uploading. Abstract avatars are generated entirely in this page and work offline. The illustrated styles are drawn in your browser by <a href="https://www.dicebear.com" style="color:inherit">DiceBear</a>, loaded from a CDN; only its CC0 (public-domain) styles are offered, so no credit is ever required.</p>
+      <p class="note">A random timestamp is added on every click so the browser never reuses a cached face. If the image fails to load (or you're viewing in a sandboxed preview), the illustrated avatar is shown instead. To save a photo, right-click it and choose Save image. Faces from thispersondoesnotexist carry a small watermark in the bottom-right corner; crop it before uploading. The People and Abstract styles are generated entirely in this page and work offline. The Illustrated styles are drawn in your browser by <a href="https://www.dicebear.com" style="color:inherit">DiceBear</a>, loaded from a CDN only when you pick one; only its CC0 (public-domain) styles are offered, so no credit is ever required.</p>
     </div>
   </details>
 </main>
@@ -402,11 +405,287 @@
     },
   };
 
+  // ---------- pixel people (offline, 48x48) ----------
+  function pixelAvatar(r, forceTheme) {
+    const W = 48, H = 48;
+    const pick = a => a[Math.floor(r() * a.length)];
+    const chance = p => r() < p;
+    const ri = (a, b) => a + Math.floor(r() * (b - a + 1));
+    const hex2 = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+    const toHex = v => "#" + v.map(n => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0")).join("");
+    const mix = (a, b, t) => { const A = hex2(a), B = hex2(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
+    const INK = "#2b1f33";
+    // tone set: outline, dark, base, light
+    const tones = (c, k = 1) => ({ o: mix(c, INK, 0.62), d: mix(c, INK, 0.28 * k), b: c, l: mix(c, "#ffffff", 0.28 * k) });
+
+    const grid = Array.from({ length: H }, () => Array(W).fill(null));
+    const inb = (x, y) => x >= 0 && x < W && y >= 0 && y < H;
+    const get = (x, y) => inb(x, y) ? grid[y][x] : null;
+    const put = (x, y, c) => { if (inb(x, y) && c) grid[y][x] = c; };
+
+    // ----- masks -----
+    const mask = () => Array.from({ length: H }, () => Array(W).fill(false));
+    const has = (m, x, y) => inb(x, y) && m[y][x];
+    const ell = (m, cx, cy, rx, ry, v = true) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry; if (dx * dx + dy * dy <= 1) m[y][x] = v; } };
+    const rect = (m, x0, y0, x1, y1, v = true) => { for (let y = Math.max(0, y0); y <= Math.min(H - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(W - 1, x1); x++) m[y][x] = v; };
+    const tri = (m, x0, y0, x1, y1, x2, y2, v = true) => {
+      const A = (ax, ay, bx, by, cx, cy) => (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const px = x + 0.5, py = y + 0.5;
+        const a = A(x0, y0, x1, y1, px, py), b = A(x1, y1, x2, y2, px, py), c = A(x2, y2, x0, y0, px, py);
+        if ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0)) m[y][x] = v; }
+    };
+    const sub = (m, s) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (s[y][x]) m[y][x] = false; };
+    const add = (m, s) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (s[y][x]) m[y][x] = true; };
+    const copy = m => m.map(rw => rw.slice());
+    const shift = (m, dx, dy) => { const o = mask(); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m[y][x] && inb(x + dx, y + dy)) o[y + dy][x + dx] = true; return o; };
+    const edge8 = (m, x, y) => has(m, x, y) && [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]].some(([dx, dy]) => !has(m, x + dx, y + dy));
+
+    // ----- renderer: base, curved light crescent (top-left), curved shadow crescent (bottom-right), outline -----
+    function render(m, t, o = {}) {
+      const { light = 2, shadow = 3, outline = true, lightOnly = null } = o;
+      const L = light ? (() => { const c = copy(m); sub(c, shift(m, light, light)); return c; })() : null;
+      const D = shadow ? (() => { const c = copy(m); sub(c, shift(m, -shadow, -shadow)); return c; })() : null;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        if (!m[y][x]) continue;
+        let c = t.b;
+        if (D && D[y][x]) c = t.d;
+        if (L && L[y][x] && !(D && D[y][x])) c = t.l;
+        if (outline && edge8(m, x, y)) c = t.o;
+        grid[y][x] = c;
+      }
+    }
+    const paint = (m, c) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m[y][x]) grid[y][x] = c; };
+    const line = (y, x0, x1, c) => { for (let x = x0; x <= x1; x++) put(x, y, c); };
+
+    // ----- palette & theme -----
+    const theme = forceTheme || (chance(0.45) ? pick(["knight","wizard","robot","astronaut","elf","vampire","royal","detective","punk"]) : "civilian");
+    let skinBase = pick(["#ffe1c9","#f9d1b3","#f0bf98","#e0a67e","#c98c66","#a96f4c","#875538","#5f3b28"]);
+    if (theme === "robot") skinBase = pick(["#c7ccd6","#b3bcc9","#d9c9a6","#9fb3c8"]);
+    if (theme === "vampire") skinBase = pick(["#eee6ea","#e6dde6","#f2ece9"]);
+    if (theme === "elf") skinBase = pick(["#ffe1c9","#f0bf98","#c98c66","#d8e6c8"]);
+    const skin = tones(skinBase, 0.8);
+    let hairBase = pick(["#211c26","#3a2a25","#5a3a29","#8a5535","#b8793f","#d4a45c","#eed7a1","#f5efe0","#8f8f95","#dedee2","#c33f34","#e6843c","#8b57d1","#3f88d4","#43a877","#e25aa0","#2f5fb8"]);
+    if (theme === "wizard") hairBase = pick(["#f5efe0","#dedee2","#c9c9d0"]);
+    if (theme === "vampire") hairBase = "#1b161f";
+    if (theme === "punk") hairBase = pick(["#e6399b","#3bd47a","#f2c94c","#3f88d4","#ff5c3a","#8b57d1"]);
+    const hair = tones(hairBase);
+    const dist = (a, b) => { const A = hex2(a), B = hex2(b); return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]); };
+    let clothBase = "#3f70d8";
+    for (let k = 0; k < 8; k++) { clothBase = pick(["#3f70d8","#d84a4a","#3cae6d","#e3a53c","#8c5fd8","#2f95ad","#dc5a7e","#5f5f6c","#ece7db","#2d2d35","#c76a3d","#86a86f","#f0d24e","#6bb5d9"]); if (dist(clothBase, hairBase) > 90) break; }
+    const cloth = tones(clothBase, 0.9);
+    const bgBase = pick(["#f6f2ec","#eef3f7","#f3eef7","#eef6ef","#f8efe6","#f0f0f2"]);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) grid[y][x] = bgBase;
+
+    // ----- geometry -----
+    const cx = 24, headCy = 19, headRx = 11, headRy = 12;
+    const headM = mask(); ell(headM, cx, headCy - 1, headRx, headRx); ell(headM, cx, headCy + 3, headRx - 1.6, headRy - 3); // egg
+    const bodyM = mask(); ell(bodyM, cx, 47, 16.5, 13.5);
+    const neckM = mask(); rect(neckM, 21, 28, 27, 36);
+
+    // ----- headwear decision (before hair, so hair can be clipped under it) -----
+    const civHat = theme === "civilian" && chance(0.18) ? ri(0, 1) : -1;                   // 0 beanie, 1 cap
+    const brimY = theme === "wizard" ? 15 : theme === "detective" ? 15 : theme === "royal" ? 9 : civHat === 0 ? 15 : civHat === 1 ? 14 : 0;
+    const clipUnderHat = (m) => {
+      if (!brimY) return;
+      const above = mask(); rect(above, 0, 0, W - 1, brimY - 1); sub(m, above);              // nothing shows above the brim
+      const wide = mask(); rect(wide, 0, brimY, cx - headRx - 4, brimY + 5); rect(wide, cx + headRx + 4, brimY, W - 1, brimY + 5); sub(m, wide); // and nothing bulges out beside it
+    };
+
+    // ----- back hair -----
+    let hs = theme === "vampire" ? 0 : theme === "punk" ? 5 : theme === "wizard" ? 3 : ["knight","robot","astronaut"].includes(theme) ? 10 : ri(0, 13);
+    if (brimY) hs = ({ 0: 0, 1: 0, 2: 0, 3: 3, 4: 3, 5: 0, 6: 0, 7: 0, 8: 3, 9: 3, 10: 10, 11: 0, 12: 12, 13: 12 })[hs]; // under a hat: short, long both sides, braids, or none
+    const backM = mask();
+    if (hs === 3) { ell(backM, cx, 22, headRx + 3.5, 15); rect(backM, cx - headRx - 3, 22, cx + headRx + 3, 36); ell(backM, cx, 36, headRx + 3.5, 6); } // long, rounded ends
+    if (hs === 4) { ell(backM, cx, 18, headRx + 4.5, 15); }                                                                  // big curly
+    if (hs === 8) { ell(backM, cx, 22, headRx + 3, 14); rect(backM, cx - headRx - 3, 22, cx + headRx + 3, 31); }             // bob
+    if (hs === 9) { ell(backM, cx + headRx + 0.5, 22, 4, 8); ell(backM, cx + headRx + 2.5, 30, 3, 7); }                      // ponytail, attached at the crown
+    if (hs === 12) { for (const sx of [cx - headRx - 2.5, cx + headRx + 2.5]) { for (let k = 0; k < 5; k++) ell(backM, sx, 20 + k * 4.4, 3.2 - k * 0.2, 3.2); ell(backM, sx, 41, 2, 2.4); } } // braids, segmented and tapered
+    if (hs === 13) { ell(backM, cx - headRx - 2, 30, 4, 8); ell(backM, cx + headRx + 2, 30, 4, 8); }                         // pigtails
+    sub(backM, headM); clipUnderHat(backM);
+    render(backM, hair, { light: 0, shadow: 3 });
+
+    // ----- body / costume -----
+    render(bodyM, cloth, { light: 1, shadow: 3 });
+    const collar = ri(0, 3);
+    if (theme === "civilian") {
+      if (collar === 1) { const v = mask(); tri(v, 18, 34, 30, 34, 24, 40); paint(v, skin.d); const e = mask(); tri(e, 17, 34, 31, 34, 24, 41); sub(e, v); paint(e, cloth.o); }   // v-neck
+      if (collar === 2) { const c = mask(); ell(c, 24, 35, 9, 3.5); const i = mask(); ell(i, 24, 34.5, 6.5, 2.2); sub(c, i); sub(c, neckM); render(c, tones(mix(clothBase, "#ffffff", 0.45)), { light: 0, shadow: 0 }); } // collar
+      if (collar === 3) { for (let y = 38; y < H; y += 3) for (let x = 0; x < W; x++) if (get(x, y) === cloth.b || get(x, y) === cloth.d) put(x, y, cloth.o); }                  // stripes
+    }
+    if (theme === "knight") {
+      const steel = tones("#b9c0cc");
+      render(bodyM, steel, { light: 2, shadow: 4 });
+      const pl = mask(); ell(pl, 10, 39, 7, 5.5); ell(pl, 38, 39, 7, 5.5); sub(pl, neckM); render(pl, steel, { light: 2, shadow: 3 });
+      const chest = mask(); rect(chest, 19, 37, 29, 47); render(chest, tones("#9aa3b1"), { light: 1, shadow: 3 }); put(24, 40, "#d84a4a"); put(24, 41, "#d84a4a"); put(23, 41, "#d84a4a"); put(25, 41, "#d84a4a"); put(24, 42, "#d84a4a");
+    }
+    if (theme === "wizard") { const robe = tones(pick(["#3f4fd8","#5a3fb8","#2c6fb0"])); render(bodyM, robe, { light: 1, shadow: 4 }); const tr = mask(); rect(tr, 22, 36, 26, 47); paint(tr, robe.d); put(13, 42, "#f2d34b"); put(35, 40, "#f2d34b"); }
+    if (theme === "robot") { const metal = tones("#c7ccd6"); render(bodyM, metal, { light: 2, shadow: 4 }); const panel = mask(); rect(panel, 19, 38, 29, 46); render(panel, tones("#8e97a6"), { light: 0, shadow: 2 }); put(22, 41, "#3bd47a"); put(26, 41, "#d84a4a"); line(43, 21, 27, "#5a6270"); }
+    if (theme === "astronaut") { const suit = tones("#f1f1f4"); render(bodyM, suit, { light: 1, shadow: 4 }); const ring = mask(); ell(ring, 24, 36, 11, 4); const ri2 = mask(); ell(ri2, 24, 36, 9, 2.5); sub(ring, ri2); render(ring, tones("#8e97a6"), { light: 0, shadow: 0 }); put(13, 42, "#d84a4a"); put(14, 42, "#3f70d8"); put(13, 43, "#f2d34b"); put(14, 43, "#3cae6d"); }
+    if (theme === "elf") { const tun = tones(pick(["#3cae6d","#5a8a3a","#7a9a4a"])); render(bodyM, tun, { light: 1, shadow: 3 }); const v = mask(); tri(v, 19, 34, 29, 34, 24, 40); paint(v, skin.d); line(41, 16, 32, tones("#8a5535").o); }
+    if (theme === "vampire") { const suit = tones("#1e1a24"); render(bodyM, suit, { light: 1, shadow: 0 }); const cape = mask(); tri(cape, 6, 47, 22, 30, 4, 30); tri(cape, 42, 47, 26, 30, 44, 30); sub(cape, headM); render(cape, tones("#7a1c2e"), { light: 0, shadow: 3 }); const sh = mask(); tri(sh, 21, 36, 27, 36, 24, 44); paint(sh, "#f4f0f6"); put(24, 38, "#c8102e"); put(24, 39, "#c8102e"); }
+    if (theme === "royal") { const gown = tones(pick(["#e2b8e8","#f2c6d4","#c6d8f2","#f5e1a4"])); render(bodyM, gown, { light: 1, shadow: 3 }); const neck2 = mask(); ell(neck2, 24, 34, 9.5, 4); sub(neck2, neckM); paint(neck2, skin.b); for (let x = 15; x <= 33; x++) if (get(x, 37) === gown.b || get(x, 37) === gown.l) put(x, 37, gown.o); put(24, 39, "#d84a4a"); }
+    if (theme === "detective") { let cb = "#4c4c56"; for (let k = 0; k < 6; k++) { cb = pick(["#8a6f4e","#6b5a48","#4c4c56","#3a4a5a","#5a3a3a"]); if (dist(cb, hairBase) > 90) break; } const coat = tones(cb); render(bodyM, coat, { light: 1, shadow: 4 }); const lap = mask(); tri(lap, 17, 34, 24, 34, 21, 44); tri(lap, 31, 34, 24, 34, 27, 44); render(lap, tones(mix(coat.b, INK, 0.2)), { light: 0, shadow: 0 }); const sh = mask(); tri(sh, 21, 34, 27, 34, 24, 42); paint(sh, "#f1f1f4"); put(24, 37, "#7a1c2e"); put(24, 38, "#7a1c2e"); }
+    if (theme === "punk") { const lea = tones("#25222b"); render(bodyM, lea, { light: 2, shadow: 0 }); for (const x of [9, 12, 36, 39]) put(x, 38, "#d9dbe0"); for (const x of [10, 13, 35, 38]) put(x, 41, "#d9dbe0"); const sh = mask(); tri(sh, 20, 35, 28, 35, 24, 45); paint(sh, pick(["#d84a4a","#f2c94c","#f1f1f4"])); }
+
+    // ----- neck (in shadow of the chin) -----
+    paint(neckM, skin.d); line(36, 21, 27, skin.o); put(21, 28, skin.o); put(27, 28, skin.o);
+    for (let y = 28; y <= 36; y++) { put(21, y, skin.o); put(27, y, skin.o); }
+
+    // ----- head -----
+    render(headM, skin, { light: 2, shadow: 3 });
+    // ears (pointy for elves)
+    const earM = mask();
+    if (theme === "elf") { tri(earM, 14, 19, 14, 24, 9, 16); tri(earM, 34, 19, 34, 24, 39, 16); }
+    else if (theme !== "robot") { ell(earM, 13.5, 21, 2, 2.6); ell(earM, 34.5, 21, 2, 2.6); }
+    render(earM, skin, { light: 0, shadow: 1 });
+    if (theme !== "robot") { put(14, 21, skin.d); put(33, 21, skin.d); }
+
+    // ----- eyes -----
+    const eyeY = 21, eLx = 17, eRx = 27; // 4-wide sclera boxes
+    const irisBase = pick(["#3a6fc4","#3f8a5a","#6b4a2a","#2b2b33","#8a5a3a","#5a7fa8","#7a5ab0","#c98c2a"]);
+    const irisD = mix(irisBase, INK, 0.45), irisL = mix(irisBase, "#ffffff", 0.35);
+    const eyeStyle = theme === "robot" ? 9 : theme === "astronaut" ? 0 : ri(0, 4);
+    const drawEye = (x, flip) => {
+      const inner = flip ? x : x + 3, outer = flip ? x + 3 : x; // inner = toward nose
+      const ix = flip ? x + 1 : x + 1; // iris start (3 wide) sits center-ish
+      if (eyeStyle === 3) { // happy closed
+        put(x, eyeY + 1, skin.o); put(x + 1, eyeY, skin.o); put(x + 2, eyeY, skin.o); put(x + 3, eyeY + 1, skin.o); put(x + 1, eyeY + 1, skin.d); put(x + 2, eyeY + 1, skin.d); return;
+      }
+      const tall = eyeStyle === 4 ? 2 : 4; // narrow eyes
+      const top = eyeStyle === 4 ? eyeY + 1 : eyeY;
+      for (let yy = top; yy < top + tall; yy++) line(yy, x, x + 3, "#ffffff");
+      put(x, top, skin.o); put(x + 3, top, skin.o); // rounded top corners
+      put(x, top + tall - 1, skin.d); put(x + 3, top + tall - 1, skin.d);
+      line(top - 1, x, x + 3, skin.o); put(outer, top - 1, skin.o); put(outer + (flip ? 1 : -1), top, skin.o); // lash line
+      line(top + tall, x + 1, x + 2, skin.d); // lower lid
+      // iris 2 wide, 3 tall (or 2 tall for narrow), biased to inner side
+      const ixs = flip ? x + 1 : x + 1;
+      const ih = eyeStyle === 4 ? 1 : 3, iy = eyeStyle === 4 ? top : top + 1;
+      for (let yy = iy; yy < iy + ih; yy++) { put(ixs, yy, irisBase); put(ixs + 1, yy, irisBase); }
+      if (ih === 3) { put(ixs, iy + 2, irisD); put(ixs + 1, iy + 2, irisD); put(ixs + (flip ? 1 : 0), iy + 1, INK); put(ixs + (flip ? 0 : 1), iy, "#ffffff"); }
+      else { put(ixs + (flip ? 1 : 0), iy, INK); }
+      if (eyeStyle === 2) { line(top, x, x + 3, skin.o); }   // half-lidded
+    };
+    if (eyeStyle === 9) { // robot: two glowing eye slots
+      const glow = pick(["#d8262e","#3bd47a","#3f88d4","#f2c94c"]);
+      for (const x of [eLx, eRx]) { const slot = mask(); rect(slot, x - 1, eyeY, x + 4, eyeY + 3); render(slot, tones("#3a3f4a"), { light: 0, shadow: 0 }); line(eyeY + 1, x, x + 3, glow); line(eyeY + 2, x, x + 3, mix(glow, INK, 0.3)); put(x, eyeY + 1, mix(glow, "#ffffff", 0.5)); }
+    } else { drawEye(eLx, false); drawEye(eRx, true); }
+    // brows
+    if (eyeStyle !== 9) {
+      const bs = ri(0, 3), bc = theme === "wizard" ? tones("#c9c9d0").d : hair.o, by = eyeY - 3;
+      if (bs === 0) { line(by, eLx, eLx + 3, bc); line(by, eRx, eRx + 3, bc); }
+      else if (bs === 1) { put(eLx, by + 1, bc); line(by, eLx + 1, eLx + 3, bc); put(eLx + 4, by + 1, bc); put(eRx - 1, by + 1, bc); line(by, eRx, eRx + 2, bc); put(eRx + 3, by + 1, bc); }
+      else if (bs === 2) { line(by, eLx, eLx + 3, bc); put(eLx + 4, by + 1, bc); line(by, eRx, eRx + 3, bc); put(eRx - 1, by + 1, bc); }
+      else { line(by - 1, eLx + 1, eLx + 3, bc); put(eLx, by, bc); line(by - 1, eRx, eRx + 2, bc); put(eRx + 3, by, bc); }
+    }
+    // nose
+    if (theme !== "robot") { put(24, 26, skin.d); put(24, 27, skin.d); put(23, 27, skin.d); if (chance(0.5)) put(25, 27, skin.o); }
+    // cheeks
+    if (theme !== "robot" && chance(0.4)) { const bl = mix(skinBase, "#ff6b8a", theme === "vampire" ? 0.25 : 0.4); line(27, 16, 18, bl); line(27, 30, 32, bl); put(17, 28, bl); put(31, 28, bl); }
+    else if (chance(0.3)) { for (const [x, y] of [[16,27],[18,28],[17,29],[30,27],[32,28],[31,29]]) put(x, y, skin.d); }
+    // mouth
+    const ms = theme === "vampire" ? 6 : theme === "robot" ? -1 : ri(0, 5), my = 30;
+    if (ms === 0) { put(21, my, skin.o); put(22, my + 1, skin.o); line(my + 1, 23, 25, skin.o); put(26, my + 1, skin.o); put(27, my, skin.o); }
+    else if (ms === 1) { line(my + 1, 22, 26, skin.o); }
+    else if (ms === 2) { line(my + 1, 23, 25, skin.o); put(22, my + 1, mix(skinBase, "#8a2f3a", 0.5)); put(26, my + 1, mix(skinBase, "#8a2f3a", 0.5)); }
+    else if (ms === 3) { line(my, 22, 26, skin.o); line(my + 1, 22, 26, "#c9484e"); line(my + 1, 23, 25, "#ffffff"); line(my + 2, 22, 26, skin.o); }
+    else if (ms === 4) { put(21, my, skin.o); line(my + 1, 22, 26, skin.o); put(27, my, skin.o); line(my + 1, 22, 26, "#ffffff"); line(my + 2, 22, 26, skin.o); put(22, my + 1, skin.o); put(26, my + 1, skin.o); }
+    else if (ms === 5) { put(22, my + 1, skin.o); line(my, 23, 25, skin.o); put(26, my + 1, skin.o); }
+    else { put(21, my, skin.o); line(my + 1, 22, 26, skin.o); put(27, my, skin.o); put(22, my + 1, "#ffffff"); put(26, my + 1, "#ffffff"); put(22, my + 2, "#ffffff"); put(26, my + 2, "#ffffff"); }
+    // facial hair
+    const fh = theme === "wizard" ? 3 : (theme === "civilian" || theme === "detective" || theme === "knight") && chance(0.3) ? ri(1, 3) : 0;
+    if (fh === 1) { line(29, 20, 22, hair.b); line(29, 26, 28, hair.b); put(19, 30, hair.d); put(29, 30, hair.d); }
+    else if (fh === 2) { const g = mask(); ell(g, 24, 34, 3.5, 3); sub(g, neckM); render(g, hair, { light: 0, shadow: 1 }); }
+    else if (fh === 3) {
+      const bd = mask();
+      if (theme === "wizard") { ell(bd, 24, 34, 8, 6); rect(bd, 18, 34, 30, 40); ell(bd, 24, 41, 5, 5); } else { ell(bd, cx, 26, headRx, 9); }
+      const cut = mask(); ell(cut, cx, 22, headRx - 1.5, 7.5); rect(cut, 20, 28, 28, 32); sub(bd, cut);
+      const t = theme === "wizard" ? tones("#f5efe0") : hair;
+      render(bd, t, { light: 1, shadow: 3 });
+      if (ms === 0) { put(21, my, skin.o); put(22, my + 1, skin.o); line(my + 1, 23, 25, skin.o); put(26, my + 1, skin.o); put(27, my, skin.o); } else line(my + 1, 22, 26, skin.o);
+    }
+
+    // ----- front hair -----
+    const frontM = mask();
+    const foreheadCut = () => { const c = mask(); ell(c, cx, 27, headRx - 1.2, 11.5); return c; };
+    const capShape = (ry = 11, rx = headRx + 1.2) => { ell(frontM, cx, 12, rx, ry); sub(frontM, foreheadCut()); };
+    if (hs === 0) capShape();
+    else if (hs === 1) { ell(frontM, cx, 12, headRx + 0.3, 10); const c = mask(); ell(c, cx, 25, headRx - 0.8, 11); sub(frontM, c); } // buzz
+    else if (hs === 2) { capShape(); const sw = mask(); tri(sw, cx - headRx - 1, 13, cx + 4, 11, cx + headRx + 1, 19); add(frontM, sw); sub(frontM, shift(foreheadCut(), 0, 3)); } // swept
+    else if (hs === 3) { capShape(11.5); const ty = brimY ? brimY : 12; tri(frontM, cx - headRx - 3, ty, cx - headRx + 1, ty, cx - headRx - 1, 27); tri(frontM, cx + headRx + 3, ty, cx + headRx - 1, ty, cx + headRx + 1, 27); } // long, tapered side pieces
+    else if (hs === 4) { ell(frontM, cx, 11, headRx + 4.5, 12); sub(frontM, foreheadCut()); }                                                   // curly
+    else if (hs === 5) { rect(frontM, 22, 0, 26, 12); tri(frontM, 21, 12, 27, 12, 24, -4); ell(frontM, cx, 12, headRx + 0.3, 10); const c = mask(); ell(c, cx, 25, headRx - 0.8, 11); sub(frontM, c); } // mohawk
+    else if (hs === 6) { capShape(); ell(frontM, cx, 5, 4.5, 4); }                                                                                // bun
+    else if (hs === 7) { capShape(); for (let i = -2; i <= 2; i++) tri(frontM, cx + i * 4 - 2.2, 10, cx + i * 4 + 2.2, 10, cx + i * 4 + i, 3 + Math.abs(i) * 0.6); } // spiky
+    else if (hs === 8) { capShape(11.5); rect(frontM, cx - headRx + 1, 12, cx + headRx - 1, 17); }                                               // bob with fringe
+    else if (hs === 9) capShape();
+    else if (hs === 10) { }                                                                                                                      // bald
+    else if (hs === 11) { ell(frontM, cx, 10.5, headRx - 2, 9); sub(frontM, foreheadCut()); }                                                    // undercut
+    else if (hs === 12) capShape();
+    else if (hs === 13) { capShape(); rect(frontM, cx - 1, 12, cx + 1, 16); }
+    // strand notches along the fringe for a hand-drawn edge
+    if (hs !== 10 && hs !== 1 && hs !== 11) { for (let i = 0; i < 4; i++) { const nx = cx - 8 + i * 5 + ri(-1, 1); const n = mask(); tri(n, nx - 1.5, 18, nx + 1.5, 18, nx, 14 + ri(0, 1)); const keep = shift(frontM, 0, -4); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (n[y][x] && keep[y][x]) frontM[y][x] = false; } }
+    { const eyes = mask(); rect(eyes, 15, 18, 33, 27); sub(frontM, eyes); }
+    clipUnderHat(frontM);
+    render(frontM, hair, { light: 2, shadow: 3 });
+    // hair strand lines
+    if (hs !== 10) for (let i = 0; i < 3; i++) { const sx = cx - 7 + i * 6 + ri(-1, 1); for (let y = Math.max(9, brimY); y <= 14; y++) if (get(sx, y) === hair.b) put(sx, y, hair.d); }
+
+    // ----- glasses -----
+    const gl = theme === "punk" ? 2 : theme === "detective" ? 0 : chance(0.22) ? ri(1, 2) : 0;
+    const frameC = pick(["#2b1f33","#5a3a1e","#c8463a","#2e5c9a","#d9a520"]);
+    if (gl === 1) { for (const x of [eLx, eRx]) { line(eyeY - 1, x - 1, x + 4, frameC); line(eyeY + 4, x - 1, x + 4, frameC); for (let y = eyeY; y <= eyeY + 3; y++) { put(x - 1, y, frameC); put(x + 4, y, frameC); } } line(eyeY + 1, eLx + 5, eRx - 2, frameC); }
+    if (gl === 2) { for (const x of [eLx, eRx]) for (let y = eyeY; y <= eyeY + 3; y++) line(y, x - 1, x + 4, y === eyeY ? "#3a3a48" : "#1c1826"); line(eyeY + 1, eLx + 5, eRx - 2, "#1c1826"); }
+
+    // ----- headwear -----
+    if (theme === "knight") {
+      const helm = mask(); ell(helm, cx, 16, headRx + 2, 13); const open = mask(); rect(open, 15, 18, 33, 27); sub(helm, open); const below = mask(); rect(below, 0, 28, 47, 47); sub(helm, below);
+      render(helm, tones("#c2c8d3"), { light: 2, shadow: 4 }); const crest = mask(); rect(crest, 23, 1, 25, 8); tri(crest, 21, 8, 27, 8, 24, 1); render(crest, tones("#d84a4a"), { light: 1, shadow: 2 });
+    }
+    if (theme === "wizard") {
+      const hatC = tones(pick(["#3f4fd8","#5a3fb8","#2c6fb0"]));
+      const hat = mask(); tri(hat, 11, 15, 37, 15, 27, -6); const brim = mask(); ell(brim, cx, 15, headRx + 6, 3);
+      render(brim, hatC, { light: 1, shadow: 2 }); render(hat, hatC, { light: 2, shadow: 4 }); put(29, 4, "#f2d34b"); put(21, 9, "#f2d34b"); put(26, 11, "#f2d34b");
+    }
+    if (theme === "robot") {
+      // seam across the face plate, antenna, bolt ears, speaker grille instead of a mouth
+      line(17, cx - headRx + 2, cx + headRx - 2, skin.o); for (let y = 8; y <= 16; y++) put(cx, y, skin.d);
+      put(24, 5, skin.o); put(24, 4, skin.o); put(24, 3, "#d84a4a"); put(23, 3, "#d84a4a"); put(25, 3, "#d84a4a"); put(24, 2, "#d84a4a");
+      for (const x of [13, 34]) { put(x, 20, skin.o); put(x + 1, 20, skin.o); put(x, 22, skin.o); put(x + 1, 22, skin.o); }
+      const mouth = mask(); rect(mouth, 20, 28, 28, 31); render(mouth, tones("#3a3f4a"), { light: 0, shadow: 0 }); for (let x = 21; x <= 27; x += 2) { put(x, 29, "#5a6270"); put(x, 30, "#5a6270"); }
+      put(24, 26, skin.b); put(24, 27, skin.b); put(23, 27, skin.b); put(25, 27, skin.b); // no nose
+    }
+    if (theme === "astronaut") {
+      const helm = mask(); ell(helm, cx, 18, headRx + 4, headRy + 3.5); const inner = mask(); ell(inner, cx, 18, headRx + 2, headRy + 1.5); sub(helm, inner);
+      render(helm, tones("#f1f1f4"), { light: 2, shadow: 3 });
+      const vis = mask(); ell(vis, cx, 19, headRx + 0.5, headRy - 0.5); render(vis, tones("#2b2a5a"), { light: 0, shadow: 4 }); const refl = mask(); ell(refl, cx - 4, 14, 4, 3); paint(refl, mix("#2b2a5a", "#ffffff", 0.5)); put(cx + 3, 24, "#ffffff"); put(cx + 5, 26, "#8fb3ff");
+    }
+
+    if (theme === "royal") { const cr = mask(); rect(cr, 15, 5, 33, 10); const cut = mask(); for (let i = 0; i < 5; i++) tri(cut, 15 + i * 4.5, 5, 19.5 + i * 4.5, 5, 17.2 + i * 4.5, 8); sub(cr, cut); render(cr, tones("#f0c040"), { light: 1, shadow: 2 }); put(20, 9, "#d84a4a"); put(24, 9, "#3f70d8"); put(28, 9, "#3cae6d"); }
+    if (theme === "detective") { const hatC = tones(pick(["#5a4636","#3a3a44","#6b5a48"])); const brim = mask(); ell(brim, cx, 15, headRx + 6, 3); const crown = mask(); ell(crown, cx, 10, headRx, 7.5); const below = mask(); rect(below, 0, 15, 47, 47); sub(crown, below); render(brim, hatC, { light: 1, shadow: 2 }); render(crown, hatC, { light: 2, shadow: 3 }); line(13, cx - headRx + 1, cx + headRx - 1, mix(hatC.b, INK, 0.5)); }
+    if (civHat >= 0) { const hatC = tones(pick(["#2f4f8a","#8a2f3a","#2f6b4a","#3a3a44","#e2b13c","#d85a2a"])); const k = civHat;
+      if (k === 0) { const m = mask(); ell(m, cx, 12, headRx + 2, 9); const below = mask(); rect(below, 0, 15, 47, 47); sub(m, below); render(m, hatC, { light: 2, shadow: 3 }); line(15, cx - headRx - 1, cx + headRx + 1, hatC.d); line(16, cx - headRx - 1, cx + headRx + 1, hatC.o); }
+      else { const m = mask(); ell(m, cx, 12, headRx + 1, 8.5); const below = mask(); rect(below, 0, 15, 47, 47); sub(m, below); render(m, hatC, { light: 2, shadow: 3 }); const brim = mask(); rect(brim, cx - headRx, 14, cx + headRx + 6, 15); render(brim, hatC, { light: 0, shadow: 0 }); } }
+
+    // ----- sticker halo -----
+    const isBg = c => c === bgBase;
+    const out = grid.map(rw => rw.slice());
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      if (!isBg(grid[y][x])) continue;
+      if ([[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]].some(([dx, dy]) => inb(x + dx, y + dy) && !isBg(grid[y + dy][x + dx]))) out[y][x] = "#ffffff";
+    }
+    let svg = "";
+    for (let y = 0; y < H; y++) { let x = 0; while (x < W) { const c = out[y][x]; let x2 = x; while (x2 + 1 < W && out[y][x2 + 1] === c) x2++; svg += `<rect x="${x}" y="${y}" width="${x2 - x + 1}" height="1" fill="${c}"/>`; x = x2 + 1; } }
+    return `<g shape-rendering="crispEdges">${svg}</g>`;
+  }
+  styles.pixel = r => pixelAvatar(r);
+
   function avatarSVG(styleName, seedStr, text) {
     const r = prng(seedStr + styleName);
     const p = shuffle(palettes[Math.floor(r() * palettes.length)], r);
-    const fn = styles[styleName] || styles.marble;
-    return `<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Abstract avatar">${fn(r, p, text)}</svg>`;
+    const fn = styles[styleName] || styles.initials;
+    const box = styleName === "pixel" ? 48 : 256;
+    return `<svg viewBox="0 0 ${box} ${box}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avatar">${fn(r, p, text)}</svg>`;
   }
 
   // ---------- password settings ----------
@@ -526,6 +805,7 @@
   const TPDNE = "https://thispersondoesnotexist.com/random-person.jpeg";
   let current = null, style = "local", seed = "";
   let dice = null, diceFailed = false;
+  const DICE = { lorelei: 1, notionists: 1, openPeeps: 1 };
   async function loadDice() {
     if (dice || diceFailed) return dice;
     try {
@@ -586,33 +866,38 @@
     const real = style === "real" && !!photo.querySelector("img");
     $("imgtools").style.display = real ? "none" : "flex";
     $("imghint").style.display = real ? "block" : "none";
+    if (real) $("imghint").textContent = "Right-click the photo to save or copy it.";
   }
   function svgNode() {
     const raw = current ? (current.firstName[0] || "") + (current.lastName[0] || "") : "AB";
     const initials = raw.toUpperCase().replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
     const t = document.createElement("template");
-    t.innerHTML = avatarSVG(styles[astyle.value] ? astyle.value : "marble", seed, initials).trim();
+    t.innerHTML = avatarSVG(styles[astyle.value] ? astyle.value : "initials", seed, initials).trim();
     return t.content.firstChild;
   }
   async function renderIllustrated() {
-    const token = seed;
-    if (styles[astyle.value]) {
-      photo.querySelectorAll("img, svg").forEach(n => n.remove());
-      photo.prepend(svgNode()); syncImgTools(); return;
+    if (DICE[astyle.value]) {
+      const token = seed, want = astyle.value;
+      const d = await loadDice();
+      if (token !== seed || astyle.value !== want) return;
+      if (d && d.coll[want]) {
+        const svgText = d.core.createAvatar(d.coll[want], { seed, size: 512, backgroundColor: ["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","d8f3dc"] }).toString();
+        photo.querySelectorAll("img, svg").forEach(n => n.remove());
+        const t = document.createElement("template"); t.innerHTML = svgText.trim();
+        const node = t.content.firstChild; node.removeAttribute("width"); node.removeAttribute("height");
+        node.setAttribute("role", "img"); node.setAttribute("aria-label", "Illustrated avatar");
+        photo.prepend(node); syncImgTools(); return;
+      }
+      $("imghint").textContent = "Illustrated styles need an internet connection; showing Initials instead.";
+      $("imghint").style.display = "block";
     }
-    const d = await loadDice();
-    if (token !== seed) return;
-    if (d && d.coll[astyle.value]) {
-      const svgText = d.core.createAvatar(d.coll[astyle.value], { seed, size: 512, backgroundColor: ["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","d8f3dc"] }).toString();
-      photo.querySelectorAll("img, svg").forEach(n => n.remove());
-      const t = document.createElement("template"); t.innerHTML = svgText.trim();
-      const node = t.content.firstChild; node.removeAttribute("width"); node.removeAttribute("height");
-      node.setAttribute("role", "img"); node.setAttribute("aria-label", "Illustrated avatar");
-      photo.prepend(node); syncImgTools(); return;
-    }
-    astyle.value = "marble";
+    const name = styles[astyle.value] ? astyle.value : "initials";
     photo.querySelectorAll("img, svg").forEach(n => n.remove());
-    photo.prepend(svgNode()); syncImgTools();
+    const t = document.createElement("template");
+    const raw = current ? (current.firstName[0] || "") + (current.lastName[0] || "") : "AB";
+    const initials = raw.toUpperCase().replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    t.innerHTML = avatarSVG(name, seed, initials).trim();
+    photo.prepend(t.content.firstChild); syncImgTools();
   }
   function renderPhoto(reseed = true) {
     if (reseed) { seed = hex(8); showSeed(); autosave(); }

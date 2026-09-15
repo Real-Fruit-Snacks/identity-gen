@@ -13,17 +13,28 @@ occupation and an avatar, so no two of your accounts share the same details.
 
 ## Features
 
-- Everything is generated in the browser. No server, no analytics, no fonts
-  or scripts fetched unless you opt into an online photo source.
+- Everything is generated in the browser. No server, no analytics, no
+  network requests unless you opt into an online avatar style or photo mode.
 - Reroll any single field, a whole section, or the entire identity.
 - Click any value to edit it. Add custom fields and security questions only
-  when a site asks for them.
+  when a site asks for them; the question text is editable and the answer is
+  generated for you.
 - Username and email-handle rules (max length, separators, digits) and
   password rules (length, character classes, look-alike avoidance).
-- Seven offline abstract avatar styles, plus optional illustrated styles
-  from DiceBear (CC0 only) and an optional photo source.
+- Avatar styles:
+  - **People (offline):** Initials on a gradient, and Pixel, a 48x48
+    pixel-art portrait generator with shaded forms, sixteen hair styles,
+    hats, glasses, facial hair and nine character kits (knight, wizard,
+    robot, astronaut, elf, vampire, royal, detective, punk).
+  - **Abstract (offline):** Marble, Bauhaus, Sunset, Terrain, Rings, Bloom.
+  - **Illustrated (needs internet):** DiceBear's Lorelei, Notionists and
+    Open Peeps, loaded from a CDN only when selected.
+  - **Photo:** a face from an external image source, if you choose one.
+- Save any generated avatar as a 512px PNG or copy it to the clipboard.
 - Export as plain text, Markdown or JSON, or download `.txt` / `.md`,
-  ready to paste into a password manager.
+  ready to paste into a password manager. Exports include the site, notes
+  and seed.
+- Seeds: every identity shows a seed that reproduces it and its avatar.
 - Names, usernames and handles already generated on your device are
   remembered so new identities never repeat them.
 - The current identity survives a refresh; Undo restores the last ten.
@@ -42,15 +53,18 @@ alias service or domain.
 
 ## Privacy
 
-The page makes no network requests by default. Two optional features do:
+The page makes no network requests by default. Three optional features do:
 
-- **Illustrated avatars** load the DiceBear library from jsDelivr.
+- **Illustrated avatars** load the DiceBear library from jsDelivr when you
+  select one of those styles. If the library cannot be loaded, the page
+  shows the Initials avatar instead.
 - **Photo mode** fetches a face from the configured image source.
+- Nothing else. The People and Abstract avatar styles are drawn entirely in
+  the page.
 
-Both are off until you pick them, and the abstract avatars are used when
-they are unavailable. All state (settings, current identity, undo history,
-used-name memory) lives in your browser's local storage and can be cleared
-with the reset button under Photo settings.
+All state (settings, current identity, undo history, used-name memory)
+lives in your browser's local storage and can be cleared with the reset
+button under Photo settings.
 
 ## Intended use
 
@@ -61,7 +75,7 @@ information, such as financial, government, medical or employment services.
 ## Credits
 
 - Design tokens: [Terminal Workbench Suite](https://github.com/Real-Fruit-Snacks/terminal-workbench-suite) (MIT)
-- Illustrated avatars: [DiceBear](https://www.dicebear.com) Lorelei, Notionists and Open Peeps styles (CC0)
+- Illustrated avatars: [DiceBear](https://www.dicebear.com) Lorelei, Notionists and Open Peeps styles (CC0, no attribution required)
 
 ## License
 
