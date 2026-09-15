@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>identity-gen</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2712%27 fill=%27%230e1214%27/%3E%3Ctext x=%2732%27 y=%2744%27 font-family=%27monospace%27 font-size=%2734%27 font-weight=%27700%27 text-anchor=%27middle%27 fill=%27%2363f2ab%27%3E%24_%3C/text%3E%3C/svg%3E">
+<style>
+  /* Terminal Workbench tokens — https://github.com/Real-Fruit-Snacks/terminal-workbench-suite (MIT). Inlined so the page stays offline. */
+  :root, :root[data-theme="dark"] {
+    color-scheme: dark;
+    --twb-accent: #63f2ab; --twb-accent-alt: #6bdcff; --twb-warm: #f0c674;
+    --twb-red: #ff6e7a; --twb-orange: #f7a35c; --twb-violet: #b78cff;
+    --twb-bg-0: #090c0d; --twb-bg-1: #0e1214; --twb-bg-2: #13191c; --twb-bg-3: #182024; --twb-bg-4: #202a2f;
+    --twb-border: #2a363d; --twb-border-strong: #39484f;
+    --twb-text-normal: #dce4df; --twb-text-soft: #b4c3bd; --twb-text-muted: #879994; --twb-text-faint: #63736f; --twb-text-on-accent: #07100d;
+    --twb-selection: #63f2ab33; --twb-active-line: #6bdcff13; --twb-nav-active: #63f2ab1b; --twb-tag-bg: #63f2ab21; --twb-tag-border: #63f2ab47; --twb-highlight: #f0c67438; --twb-focus-ring: #63f2ab2e;
+  }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --twb-accent: #007a4d; --twb-accent-alt: #006f9e; --twb-warm: #a46600;
+    --twb-red: #c8324c; --twb-orange: #b65800; --twb-violet: #7357b8;
+    --twb-bg-0: #f5f7f4; --twb-bg-1: #edf2ee; --twb-bg-2: #e2eae5; --twb-bg-3: #d6e1db; --twb-bg-4: #c8d5cf;
+    --twb-border: #bfcbc5; --twb-border-strong: #9daea7;
+    --twb-text-normal: #17201d; --twb-text-soft: #34443f; --twb-text-muted: #60706a; --twb-text-faint: #81918a; --twb-text-on-accent: #f9fbf8;
+    --twb-selection: #007a4d2b; --twb-active-line: #006f9e13; --twb-nav-active: #007a4d1b; --twb-tag-bg: #007a4d21; --twb-tag-border: #007a4d47; --twb-highlight: #a4660038; --twb-focus-ring: #007a4d2e;
+  } }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --twb-accent: #007a4d; --twb-accent-alt: #006f9e; --twb-warm: #a46600;
+    --twb-red: #c8324c; --twb-orange: #b65800; --twb-violet: #7357b8;
+    --twb-bg-0: #f5f7f4; --twb-bg-1: #edf2ee; --twb-bg-2: #e2eae5; --twb-bg-3: #d6e1db; --twb-bg-4: #c8d5cf;
+    --twb-border: #bfcbc5; --twb-border-strong: #9daea7;
+    --twb-text-normal: #17201d; --twb-text-soft: #34443f; --twb-text-muted: #60706a; --twb-text-faint: #81918a; --twb-text-on-accent: #f9fbf8;
+    --twb-selection: #007a4d2b; --twb-active-line: #006f9e13; --twb-nav-active: #007a4d1b; --twb-tag-bg: #007a4d21; --twb-tag-border: #007a4d47; --twb-highlight: #a4660038; --twb-focus-ring: #007a4d2e;
+  }
+  :root {
+    --twb-font-mono: "Terminal Workbench Mono", "Berkeley Mono", "JetBrains Mono", "Cascadia Code", "IBM Plex Mono", SFMono-Regular, Consolas, monospace;
+    --twb-font-ui: Inter, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    --twb-radius-s: 4px; --twb-radius-m: 6px; --twb-radius-l: 8px; --twb-radius-pill: 999px;
+    --twb-transition: 120ms ease;
+    /* aliases used by this page */
+    --paper: var(--twb-bg-0); --card: var(--twb-bg-1); --ink: var(--twb-text-normal); --muted: var(--twb-text-muted);
+    --line: var(--twb-border); --accent: var(--twb-accent); --accent-ink: var(--twb-text-on-accent); --ok: var(--twb-accent); --edit: var(--twb-highlight);
+  }
+  * { box-sizing: border-box; }
+  ::selection { background: var(--twb-selection); }
+  html, body { margin: 0; background: var(--twb-bg-0); color: var(--twb-text-normal); font-family: var(--twb-font-ui); font-size: 15px; line-height: 1.45; }
+  body { min-height: 100vh; display: grid; place-items: start center; padding: 2rem 1rem 4rem; }
+  main { width: 100%; max-width: 860px; }
+
+  /* manifest label idiom */
+  .manifest, h2, dt, .site label, .seedrow > span, .pw .len label, summary {
+    font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--twb-text-muted);
+  }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  h1 { font-family: var(--twb-font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin: 0; color: var(--twb-text-muted); }
+  h1::before { content: "$ "; color: var(--twb-accent); }
+  .primary { font: inherit; font-family: var(--twb-font-mono); font-weight: 650; font-size: 13px; letter-spacing: 0.04em; background: var(--twb-accent); color: var(--twb-text-on-accent); border: 1px solid var(--twb-accent); border-radius: var(--twb-radius-m); padding: 0.6rem 1.1rem; cursor: pointer; }
+  .primary:hover { filter: brightness(1.08); }
+  .hdr { display: flex; gap: 0.5rem; align-items: center; }
+  .ghost { font-family: var(--twb-font-mono); font-weight: 650; font-size: 13px; letter-spacing: 0.04em; background: transparent; color: var(--twb-text-soft); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); padding: 0.6rem 1rem; cursor: pointer; }
+  .ghost:hover:not(:disabled) { background: var(--twb-bg-3); border-color: var(--twb-border-strong); color: var(--twb-text-normal); }
+  .ghost:disabled { opacity: 0.45; cursor: default; }
+  .ghost kbd, .primary kbd, footer kbd { font: inherit; font-size: 0.85em; opacity: 0.65; margin-left: 0.45rem; }
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [contenteditable]:focus-visible { outline: none; border-color: var(--twb-accent) !important; box-shadow: 0 0 0 2px var(--twb-focus-ring); }
+
+  .card { background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-l); overflow: hidden; }
+  .top { display: grid; grid-template-columns: 260px 1fr; }
+  .photo { display: flex; flex-direction: column; background: var(--twb-bg-2); border-right: 1px solid var(--twb-border); }
+  .photo img, .photo svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; }
+  .photo .tools { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.6rem; border-top: 1px solid var(--twb-border); background: var(--twb-bg-1); }
+  .seg { display: inline-flex; background: var(--twb-bg-2); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-pill); padding: 2px; }
+  .seg button { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border: 0; background: transparent; color: var(--twb-text-muted); border-radius: var(--twb-radius-pill); padding: 0.3rem 0.65rem; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--twb-bg-3); color: var(--twb-accent); }
+  .imgtools { display: flex; gap: 0.4rem; width: 100%; flex-wrap: wrap; }
+  .hint { width: 100%; font-size: 12px; color: var(--twb-text-faint); }
+  select.copy { appearance: auto; background: var(--twb-bg-2); color: var(--twb-text-normal); }
+  .intro { padding: 1.4rem 1.6rem; }
+  .name { font-family: var(--twb-font-mono); font-size: clamp(1.5rem, 4.4vw, 2.1rem); font-weight: 760; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 0.3rem; color: var(--twb-text-normal); }
+  .name::after { content: ""; display: block; height: 1px; margin-top: 0.6rem; background: linear-gradient(90deg, var(--twb-border-strong), transparent); }
+  .tagline { margin: 0 0 1.1rem; color: var(--twb-accent-alt); font-size: 14px; }
+
+  h2 { margin: 0; }
+  .group { padding: 1.1rem 1.6rem; border-top: 1px solid var(--twb-border); }
+  .sechead { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
+  .sechead .hint { width: auto; flex: 1 1 100%; }
+  dl.sec { grid-template-columns: auto minmax(8rem, max-content) 1fr auto auto; }
+  dl.sec dt { font-family: var(--twb-font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--twb-text-soft); border: 1px solid transparent; border-radius: var(--twb-radius-s); padding: 0.05rem 0.4rem; margin-left: -0.4rem; cursor: text; min-width: 8rem; }
+  dl.sec dt:hover { background: var(--twb-bg-2); border-color: var(--twb-border); }
+  dl.sec dt:focus { background: var(--twb-bg-2); color: var(--twb-text-normal); border-color: var(--twb-accent); box-shadow: 0 0 0 2px var(--twb-focus-ring); }
+  dl.sec dt:empty::before { content: "Question the site asked"; color: var(--twb-text-faint); }
+  dl#custom { margin-top: 0.4rem; }
+  dl#custom dt:empty::before { content: "Field name"; }
+  dl#custom dd:empty::before { content: "Value"; color: var(--twb-text-faint); }
+  .remove { width: 1.6rem; height: 1.6rem; border-radius: var(--twb-radius-s); border: 1px solid var(--twb-border); background: transparent; color: var(--twb-text-faint); cursor: pointer; font-family: var(--twb-font-mono); font-size: 13px; line-height: 1; padding: 0; }
+  .remove:hover { color: var(--twb-red); border-color: var(--twb-red); }
+  .sechead h2 { color: var(--twb-accent); }
+  dl { margin: 0; display: grid; grid-template-columns: auto max-content 1fr auto; column-gap: 0.8rem; row-gap: 0.4rem; align-items: center; }
+  dd { margin: 0; font-family: var(--twb-font-mono); font-size: 14px; line-height: 1.62; color: var(--twb-text-soft); word-break: break-word; border: 1px solid transparent; border-radius: var(--twb-radius-s); padding: 0.05rem 0.4rem; margin-left: -0.4rem; cursor: text; }
+  dd:hover { background: var(--twb-bg-2); border-color: var(--twb-border); }
+  dd:focus { background: var(--twb-bg-2); color: var(--twb-text-normal); border-color: var(--twb-accent); box-shadow: 0 0 0 2px var(--twb-focus-ring); }
+  dd small { color: var(--twb-text-faint); }
+  .reroll { width: 1.6rem; height: 1.6rem; border-radius: var(--twb-radius-s); border: 1px solid var(--twb-border); background: transparent; color: var(--twb-text-faint); cursor: pointer; display: grid; place-items: center; padding: 0; }
+  .reroll svg { width: 0.85rem; height: 0.85rem; }
+  .reroll:hover { border-color: var(--twb-border-strong); color: var(--twb-accent); background: var(--twb-bg-2); }
+  @media (prefers-reduced-motion: no-preference) { .reroll.spin svg { animation: spin .4s ease; } .copy, footer button, .reroll, .primary { transition: background var(--twb-transition), color var(--twb-transition), border-color var(--twb-transition); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .copy { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--twb-accent); background: var(--twb-tag-bg); border: 1px solid var(--twb-tag-border); border-radius: var(--twb-radius-s); padding: 0.25rem 0.55rem; cursor: pointer; white-space: nowrap; }
+  .copy:hover { background: var(--twb-accent); color: var(--twb-text-on-accent); border-color: var(--twb-accent); }
+  .copy.done, footer button.done { background: var(--twb-accent); color: var(--twb-text-on-accent); border-color: var(--twb-accent); }
+
+  .site { display: grid; grid-template-columns: max-content 1fr; gap: 0.8rem; align-items: center; margin-bottom: 0.9rem; }
+  input.field, textarea.field { font-family: var(--twb-font-mono); font-size: 13.5px; width: 100%; padding: 0.45rem 0.65rem; border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); background: var(--twb-bg-2); color: var(--twb-text-normal); }
+  input.field::placeholder, textarea.field::placeholder { color: var(--twb-text-faint); }
+  textarea.field { min-height: 6rem; resize: vertical; line-height: 1.62; }
+  .seedrow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 0.8rem; }
+  .seedrow code { font-family: var(--twb-font-mono); font-size: 12.5px; color: var(--twb-accent-alt); background: var(--twb-bg-2); border: 1px solid var(--twb-border); padding: 0.15rem 0.45rem; border-radius: var(--twb-radius-s); }
+  .seedrow input { width: 15rem; max-width: 100%; }
+
+  footer { display: flex; flex-wrap: wrap; gap: 0.5rem 0.6rem; align-items: center; margin-top: 0.9rem; color: var(--twb-text-muted); font-size: 12.5px; }
+  footer button { font-family: var(--twb-font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--twb-text-soft); background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); padding: 0.45rem 0.8rem; cursor: pointer; }
+  footer button:hover { background: var(--twb-bg-3); border-color: var(--twb-border-strong); color: var(--twb-text-normal); }
+  footer > span { width: 100%; }
+  .panel { margin-top: 0.9rem; background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-l); padding: 1rem 1.25rem; }
+  .panel h2 { margin-bottom: 0.7rem; color: var(--twb-accent-alt); }
+  .pw { display: grid; gap: 0.6rem 1.25rem; align-items: center; }
+  .pw .len { display: grid; grid-template-columns: max-content 1fr max-content; gap: 0.6rem; align-items: center; }
+  .pw .len output { font-family: var(--twb-font-mono); font-size: 13px; color: var(--twb-orange); }
+  .pw input[type=range] { width: 100%; accent-color: var(--twb-accent); }
+  .pw .toggles { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .pw label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 13.5px; color: var(--twb-text-soft); }
+  .pw input[type=checkbox] { accent-color: var(--twb-accent); width: 15px; height: 15px; }
+  details { margin-top: 1rem; color: var(--twb-text-muted); font-size: 12.5px; }
+  summary { cursor: pointer; }
+  .settings { display: grid; gap: 0.6rem; margin-top: 0.75rem; max-width: 560px; }
+  .settings label { display: grid; gap: 0.25rem; font-size: 12.5px; }
+  .settings input, .settings select { font: inherit; font-family: var(--twb-font-mono); font-size: 13px; padding: 0.45rem 0.65rem; border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); background: var(--twb-bg-2); color: var(--twb-text-normal); }
+  .note { line-height: 1.7; }
+  .note a { color: var(--twb-accent-alt); }
+
+  @media (max-width: 600px) {
+    .top { grid-template-columns: 1fr; }
+    .photo { border-right: 0; border-bottom: 1px solid var(--twb-border); }
+    .photo img, .photo svg { aspect-ratio: 4 / 3; }
+    dl { grid-template-columns: auto 1fr auto; }
+    dl.sec { grid-template-columns: auto 1fr auto auto; }
+    dt { grid-column: 2 / -1; margin-top: 0.3rem; }
+    .reroll { grid-row: span 2; align-self: start; margin-top: 0.3rem; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>identity-gen</h1>
+    <span class="hdr">
+      <button class="ghost" id="undo" type="button" title="Bring back the previous identity" disabled>Undo <kbd>U</kbd></button>
+      <button class="primary" id="new">New identity <kbd>N</kbd></button>
+    </span>
+  </header>
+
+  <section class="card" aria-live="polite">
+    <div class="top">
+      <div class="photo" id="photo">
+        <div class="tools">
+          <div class="seg" role="group" aria-label="Photo style">
+            <button type="button" data-style="local" aria-pressed="true">Illustrated</button>
+            <button type="button" data-style="real" aria-pressed="false">Photo</button>
+          </div>
+          <button class="copy" id="newphoto" type="button">New photo (P)</button>
+          <span class="imgtools" id="imgtools">
+            <select id="astyle" class="copy" aria-label="Illustration style">
+              <optgroup label="Abstract (offline)">
+                <option value="marble">Marble</option>
+                <option value="bauhaus">Bauhaus</option>
+                <option value="sunset">Sunset</option>
+                <option value="terrain">Terrain</option>
+                <option value="rings">Rings</option>
+                <option value="bloom">Bloom</option>
+                <option value="initials">Initials</option>
+              </optgroup>
+              <optgroup label="Illustrated (needs internet)">
+                <option value="lorelei">Lorelei</option>
+                <option value="notionists">Notionists</option>
+                <option value="openPeeps">Open Peeps</option>
+              </optgroup>
+            </select>
+            <button class="copy" id="saveimg" type="button">Save PNG</button>
+            <button class="copy" id="copyimg" type="button">Copy image</button>
+          </span>
+          <span class="hint" id="imghint">Right-click the photo to save or copy it.</span>
+        </div>
+      </div>
+      <div class="intro">
+        <p class="name" id="name"></p>
+        <p class="tagline" id="tagline"></p>
+        <div class="site">
+          <label for="site">Site</label>
+          <input class="field" id="site" type="text" placeholder="https://example.com (optional, goes at the top of the export)" spellcheck="false" autocomplete="off">
+        </div>
+        <dl id="core"></dl>
+        <div class="seedrow">
+          <span>Seed</span><code id="seedview"></code>
+          <button class="copy" id="copyseed" type="button">Copy</button>
+          <input class="field" id="seedin" type="text" placeholder="Paste a seed to restore" spellcheck="false">
+          <button class="copy" id="loadseed" type="button">Load</button>
+        </div>
+      </div>
+    </div>
+    <div class="group"><div class="sechead"><button class="reroll" type="button" data-section="account" aria-label="Shuffle account"></button><h2>Account</h2></div><dl id="account"></dl></div>
+    <div class="group"><div class="sechead"><button class="reroll" type="button" data-section="profile" aria-label="Shuffle profile"></button><h2>Profile details sites often ask for</h2><button class="copy" id="addcustom" type="button" aria-label="Add a custom field">+ Add field</button></div><dl id="profile"></dl><dl id="custom" class="sec"></dl></div>
+    <div class="group"><div class="sechead"><button class="reroll" type="button" data-section="security" aria-label="New answers for all security questions"></button><h2>Security questions</h2><button class="copy" id="addsec" type="button" aria-label="Add a security question">+ Add</button><span class="hint" id="sechint">Add one when a site asks. Type the site's question; the answer is generated for you.</span></div><dl id="security" class="sec"></dl></div>
+    <div class="group"><div class="sechead"><h2>Notes</h2></div>
+      <textarea class="field" id="notes" placeholder="Anything else about this account: what it's for, quirks of the signup, recovery codes… Cleared when you make a new identity, included in every export."></textarea>
+    </div>
+  </section>
+
+  <footer>
+    <button id="copytext" type="button">Copy as plain text</button>
+    <button id="copymd" type="button">Copy as Markdown</button>
+    <button id="copyjson" type="button">Copy as JSON</button>
+    <button id="dltext" type="button">Download .txt</button>
+    <button id="dlmd" type="button">Download .md</button>
+    <span>Click any value to edit it. Generated in your browser; nothing is sent. The page keeps your settings, the current identity (so a refresh doesn't lose it), the last 10 identities for Undo, and a list of names already used, all in this browser only.</span>
+  </footer>
+
+  <section class="panel">
+    <h2>Username and email handle settings</h2>
+    <div class="pw">
+      <div class="len"><label for="unlen">Max length</label><input id="unlen" type="range" min="6" max="30" value="20"><output id="unlenv">20</output></div>
+      <div class="toggles">
+        <label><input type="checkbox" id="unSep" checked> Allow . and _ separators</label>
+        <label><input type="checkbox" id="unDigits" checked> Allow digits</label>
+      </div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>Password settings</h2>
+    <div class="pw">
+      <div class="len"><label for="pwlen">Length</label><input id="pwlen" type="range" min="8" max="64" value="20"><output id="pwlenv">20</output></div>
+      <div class="toggles">
+        <label><input type="checkbox" id="pwUpper" checked> Uppercase</label>
+        <label><input type="checkbox" id="pwLower" checked> Lowercase</label>
+        <label><input type="checkbox" id="pwDigits" checked> Digits</label>
+        <label><input type="checkbox" id="pwSymbols" checked> Symbols</label>
+        <label><input type="checkbox" id="pwAmbig" checked> Avoid look-alikes (0 O l 1 I)</label>
+      </div>
+    </div>
+  </section>
+
+  <details>
+    <summary>Photo settings</summary>
+    <div class="settings">
+      <label>Source for the Photo style
+        <select id="src">
+          <option value="tpdne">thispersondoesnotexist.com</option>
+          <option value="url">Other image URL that returns a random face</option>
+        </select>
+      </label>
+      <label>Image URL
+        <input id="url" type="url" placeholder="https://example.com/random-face.jpg" spellcheck="false">
+      </label>
+      <button class="copy" id="reset" type="button">Reset everything stored on this device</button>
+      <p class="note">A random timestamp is added on every click so the browser never reuses a cached face. If the image fails to load (or you're viewing in a sandboxed preview), the illustrated avatar is shown instead. To save a photo, right-click it and choose Save image. Faces from thispersondoesnotexist carry a small watermark in the bottom-right corner; crop it before uploading. Abstract avatars are generated entirely in this page and work offline. The illustrated styles are drawn in your browser by <a href="https://www.dicebear.com" style="color:inherit">DiceBear</a>, loaded from a CDN; only its CC0 (public-domain) styles are offered, so no credit is ever required.</p>
+    </div>
+  </details>
+</main>
+
+<script>
+(() => {
+  // ---------- data ----------
+  const first = ["Aaron", "Abigail", "Adam", "Adrian", "Aiden", "Aisha", "Alan", "Alejandro", "Alex", "Alice", "Alicia", "Alina", "Alma", "Amara", "Amelia", "Amir", "Amy", "Ana", "Anders", "Andrea", "Andrew", "Angela", "Anika", "Anna", "Anthony", "Anya", "April", "Arjun", "Arlo", "Asha", "Ashley", "Astrid", "Aubrey", "Audrey", "August", "Aurora", "Ava", "Axel", "Beatriz", "Ben", "Benjamin", "Bianca", "Blake", "Brenda", "Brian", "Bridget", "Brooke", "Caleb", "Callum", "Camila", "Cara", "Carla", "Carlos", "Carmen", "Caroline", "Casey", "Cassandra", "Cecilia", "Celeste", "Charlotte", "Chloe", "Chris", "Christina", "Claire", "Clara", "Cole", "Colin", "Connor", "Cora", "Corey", "Dana", "Daniel", "Daniela", "Dario", "Darius", "David", "Dean", "Deborah", "Declan", "Delia", "Derek", "Desmond", "Dev", "Diana", "Diego", "Dominic", "Dylan", "Edgar", "Edith", "Eleanor", "Elena", "Eli", "Elias", "Elin", "Elise", "Ella", "Ellie", "Elliot", "Emil", "Emily", "Emma", "Eric", "Erin", "Esme", "Esther", "Ethan", "Eva", "Evan", "Evelyn", "Ezra", "Fabian", "Farah", "Felix", "Fiona", "Flora", "Frances", "Frank", "Freya", "Gabe", "Gabriel", "Gemma", "George", "Gia", "Gideon", "Grace", "Greta", "Gwen", "Hana", "Hannah", "Harper", "Harriet", "Harvey", "Hazel", "Heidi", "Helen", "Henry", "Hugo", "Ian", "Ida", "Idris", "Imani", "Ingrid", "Irene", "Iris", "Isaac", "Isabel", "Isla", "Ivan", "Ivy", "Jack", "Jacob", "Jade", "James", "Jamie", "Jane", "Jasmine", "Jason", "Jasper", "Jenna", "Jesse", "Joanna", "Joel", "Jonah", "Jordan", "Joseph", "Josie", "Juan", "Judith", "Julia", "Julian", "Jun", "June", "Kai", "Karen", "Karl", "Kate", "Katya", "Keith", "Kelly", "Kenji", "Kevin", "Kira", "Kyle", "Laila", "Lara", "Laura", "Lauren", "Leah", "Leo", "Leon", "Lena", "Lewis", "Liam", "Lila", "Lily", "Lior", "Lisa", "Logan", "Lorenzo", "Louis", "Luca", "Lucas", "Lucy", "Luis", "Luna", "Lydia", "Maeve", "Maggie", "Malik", "Marcus", "Margaret", "Maria", "Marina", "Mario", "Mark", "Martin", "Mason", "Mateo", "Matthew", "Maya", "Megan", "Melissa", "Mia", "Micah", "Michael", "Miguel", "Mika", "Miles", "Milo", "Mira", "Miriam", "Mohammed", "Molly", "Monica", "Morgan", "Nadia", "Naomi", "Natalie", "Nathan", "Nell", "Nico", "Nicole", "Nina", "Noah", "Noor", "Nora", "Oliver", "Olivia", "Omar", "Oscar", "Otis", "Owen", "Paige", "Patrick", "Paul", "Paz", "Pedro", "Penelope", "Peter", "Philip", "Phoebe", "Piper", "Priya", "Quinn", "Rachel", "Rafael", "Ralph", "Ray", "Rebecca", "Remy", "Renee", "Rhea", "Riley", "Robert", "Robin", "Rosa", "Rose", "Rowan", "Ruby", "Rufus", "Ruth", "Ryan", "Sadie", "Sam", "Samira", "Samuel", "Sana", "Sara", "Sasha", "Scott", "Sean", "Selin", "Seth", "Sienna", "Silas", "Simon", "Sofia", "Sophie", "Stella", "Stephen", "Susan", "Tara", "Tessa", "Theo", "Thomas", "Tobias", "Tomas", "Tony", "Tyler", "Uma", "Valentina", "Vera", "Victor", "Vincent", "Violet", "Vivian", "Wade", "Walter", "Wendy", "Wesley", "Will", "William", "Willow", "Wren", "Xavier", "Yara", "Yasmin", "Yusuf", "Zach", "Zara", "Zoe", "Zoey"];
+  const last = ["Abbott", "Adler", "Ahmed", "Alvarez", "Amari", "Anand", "Andersen", "Archer", "Armstrong", "Arnold", "Ashford", "Atkins", "Bailey", "Bakker", "Baldwin", "Banks", "Barker", "Barnes", "Barrett", "Bauer", "Baxter", "Beck", "Bell", "Bennett", "Berg", "Bishop", "Blackwood", "Blake", "Boone", "Bowen", "Boyd", "Bradley", "Brandt", "Brennan", "Briggs", "Brooks", "Bryant", "Burke", "Burns", "Byrne", "Calder", "Cameron", "Campbell", "Carlson", "Carr", "Carter", "Castro", "Chambers", "Chan", "Chandler", "Chapman", "Chen", "Clarke", "Cohen", "Cole", "Coleman", "Collins", "Conway", "Cooper", "Costa", "Cox", "Craig", "Cross", "Cruz", "Cunningham", "Dahl", "Dalton", "Daniels", "Davies", "Dawson", "Dean", "Delgado", "Diaz", "Dixon", "Doyle", "Duffy", "Duncan", "Duran", "Eaton", "Elliott", "Ellis", "Emerson", "Espinoza", "Evans", "Farrell", "Farrow", "Ferguson", "Fernandez", "Ferreira", "Fischer", "Fisher", "Fitzgerald", "Fleming", "Fletcher", "Flores", "Foley", "Ford", "Foster", "Fox", "Francis", "Franklin", "Frost", "Gale", "Gallagher", "Garcia", "Gardner", "Garrett", "Gibson", "Gilbert", "Gomez", "Gonzalez", "Gordon", "Graham", "Grant", "Gray", "Greene", "Griffin", "Gupta", "Haas", "Hale", "Hall", "Hamilton", "Hansen", "Hardy", "Harper", "Harris", "Hart", "Hawkins", "Hayes", "Henderson", "Hernandez", "Higgins", "Hill", "Hoffman", "Holland", "Holloway", "Holmes", "Hopkins", "Howard", "Hudson", "Hughes", "Hunt", "Hunter", "Ibarra", "Ingram", "Ito", "Jackson", "Jansen", "Jenkins", "Jennings", "Jensen", "Johansson", "Jordan", "Joyce", "Kade", "Kane", "Kaur", "Keller", "Kelly", "Kennedy", "Khan", "Kim", "Klein", "Knight", "Kowalski", "Kramer", "Lambert", "Lane", "Lang", "Larsen", "Lawson", "Lee", "Leonard", "Lima", "Lindqvist", "Little", "Lloyd", "Long", "Lopez", "Lowe", "Lund", "Lynch", "Mack", "Maddox", "Malone", "Marsh", "Marshall", "Martin", "Mason", "Matthews", "Maxwell", "May", "McCarthy", "McDonald", "Mehta", "Mendoza", "Meyer", "Miller", "Mills", "Mitchell", "Molina", "Monroe", "Moore", "Mora", "Moreau", "Morgan", "Morris", "Moss", "Murphy", "Murray", "Nair", "Nakamura", "Nash", "Nelson", "Newman", "Nguyen", "Nichols", "Nolan", "Novak", "O'Brien", "O'Connor", "Okafor", "Oliver", "Olsen", "Ortiz", "Osborne", "Owens", "Page", "Palmer", "Park", "Parker", "Patel", "Patterson", "Payne", "Pearson", "Perez", "Perry", "Petrov", "Phillips", "Pierce", "Porter", "Powell", "Price", "Quinn", "Quist", "Ramirez", "Ramos", "Ray", "Reed", "Reyes", "Reynolds", "Rhodes", "Richards", "Riley", "Rivera", "Roberts", "Robinson", "Rogers", "Romero", "Rose", "Ross", "Roth", "Rowe", "Russell", "Ryan", "Sanders", "Santos", "Sato", "Schmidt", "Schneider", "Scott", "Sharma", "Shaw", "Shepherd", "Silva", "Simmons", "Simpson", "Singh", "Sloan", "Smith", "Snyder", "Solis", "Spencer", "Stanley", "Steele", "Stevens", "Stewart", "Stone", "Sullivan", "Sutton", "Tan", "Tanaka", "Taylor", "Thompson", "Thornton", "Torres", "Tucker", "Turner", "Vance", "Varga", "Vargas", "Vaughn", "Vega", "Vogel", "Wagner", "Walker", "Wallace", "Walsh", "Ward", "Warner", "Watson", "Weaver", "Webb", "Weber", "Wells", "West", "Wheeler", "Whitaker", "White", "Wilkins", "Williams", "Wilson", "Wolfe", "Wong", "Wood", "Wright", "Yamada", "Yang", "Yates", "Young", "Zhou", "Zimmerman"];
+  const adjectives = ["quiet", "brisk", "amber", "cobalt", "dusty", "early", "fable", "gentle", "hollow", "iron", "jade", "lunar", "mossy", "north", "olive", "paper", "rapid", "silver", "tidal", "umber", "velvet", "wild", "yellow", "zephyr", "copper", "clover", "ember", "fern", "grove", "harbor", "misty", "pale", "rusty", "sage", "slate", "arctic", "bold", "bright", "calm", "cedar", "chalk", "cinder", "clear", "cloud", "coral", "crisp", "dawn", "deep", "dim", "drift", "dune", "dusk", "faint", "far", "fleet", "foggy", "frosty", "gold", "golden", "green", "grey", "hazel", "humble", "idle", "indigo", "ivory", "keen", "kind", "late", "light", "lilac", "lone", "loud", "low", "lucky", "mellow", "merry", "mild", "minor", "moon", "neat", "noble", "odd", "opal", "pine", "plain", "plum", "polar", "proud", "pure", "quick", "rare", "raw", "red", "rosy", "rough", "round", "ruby", "rural", "salt", "sandy", "scarlet", "sharp", "shy", "silent", "simple", "sleek", "slow", "small", "smoky", "snow", "soft", "solar", "sour", "spare", "spry", "stark", "steady", "still", "stone", "stormy", "sunny", "swift", "tall", "tame", "tan", "teal", "thin", "tiny", "topaz", "true", "twin", "vast", "vivid", "warm", "wavy", "weary", "wide", "windy", "winter", "wiry", "wise", "zesty"];
+  const nouns = ["heron", "otter", "lantern", "meadow", "pebble", "comet", "willow", "harbor", "falcon", "thistle", "kestrel", "marble", "orchard", "ridge", "sparrow", "tundra", "violet", "walnut", "yarrow", "canyon", "beacon", "cinder", "delta", "finch", "glacier", "juniper", "maple", "nettle", "osprey", "quartz", "anchor", "bramble", "lark", "acorn", "alder", "aspen", "badger", "basin", "bay", "bear", "beech", "birch", "bison", "blossom", "bluff", "brook", "cabin", "cactus", "cedar", "cliff", "clover", "cove", "crane", "creek", "crow", "cypress", "dahlia", "dune", "eagle", "elk", "ember", "fjord", "fox", "garnet", "geyser", "goose", "gull", "hawk", "hazel", "hedge", "hill", "holly", "ibis", "iris", "island", "jay", "kelp", "lagoon", "lake", "leaf", "lichen", "lily", "linden", "lotus", "lynx", "magpie", "mesa", "moss", "moth", "oak", "ocean", "opal", "oriole", "owl", "panther", "peak", "pine", "plover", "poppy", "prairie", "puffin", "raven", "reed", "river", "robin", "rook", "sable", "sedge", "shale", "shore", "slope", "spruce", "stag", "stone", "storm", "summit", "swan", "tern", "thorn", "tide", "topaz", "trail", "trout", "tulip", "valley", "vine", "wren", "wolf", "yew", "zinnia"];
+  const cities = [["Portland", "OR", "972"], ["Austin", "TX", "787"], ["Denver", "CO", "802"], ["Raleigh", "NC", "276"], ["Madison", "WI", "537"], ["Tucson", "AZ", "857"], ["Boise", "ID", "837"], ["Burlington", "VT", "054"], ["Asheville", "NC", "288"], ["Spokane", "WA", "992"], ["Ann Arbor", "MI", "481"], ["Santa Fe", "NM", "875"], ["Providence", "RI", "029"], ["Omaha", "NE", "681"], ["Savannah", "GA", "314"], ["Eugene", "OR", "974"], ["Duluth", "MN", "558"], ["Bend", "OR", "977"], ["Chattanooga", "TN", "374"], ["Ithaca", "NY", "148"], ["Columbus", "OH", "432"], ["Sacramento", "CA", "958"], ["Pittsburgh", "PA", "152"], ["Richmond", "VA", "232"], ["Albuquerque", "NM", "871"], ["Anchorage", "AK", "995"], ["Atlanta", "GA", "303"], ["Baltimore", "MD", "212"], ["Baton Rouge", "LA", "708"], ["Billings", "MT", "591"], ["Birmingham", "AL", "352"], ["Boston", "MA", "021"], ["Boulder", "CO", "803"], ["Buffalo", "NY", "142"], ["Charleston", "SC", "294"], ["Charlotte", "NC", "282"], ["Cheyenne", "WY", "820"], ["Chicago", "IL", "606"], ["Cincinnati", "OH", "452"], ["Cleveland", "OH", "441"], ["Colorado Springs", "CO", "809"], ["Columbia", "SC", "292"], ["Dallas", "TX", "752"], ["Des Moines", "IA", "503"], ["Detroit", "MI", "482"], ["El Paso", "TX", "799"], ["Fargo", "ND", "581"], ["Fort Collins", "CO", "805"], ["Fort Worth", "TX", "761"], ["Fresno", "CA", "937"], ["Grand Rapids", "MI", "495"], ["Greensboro", "NC", "274"], ["Greenville", "SC", "296"], ["Hartford", "CT", "061"], ["Honolulu", "HI", "968"], ["Houston", "TX", "770"], ["Huntsville", "AL", "358"], ["Indianapolis", "IN", "462"], ["Jacksonville", "FL", "322"], ["Kansas City", "MO", "641"], ["Knoxville", "TN", "379"], ["Lancaster", "PA", "176"], ["Las Vegas", "NV", "891"], ["Lexington", "KY", "405"], ["Lincoln", "NE", "685"], ["Little Rock", "AR", "722"], ["Louisville", "KY", "402"], ["Lubbock", "TX", "794"], ["Memphis", "TN", "381"], ["Miami", "FL", "331"], ["Milwaukee", "WI", "532"], ["Minneapolis", "MN", "554"], ["Missoula", "MT", "598"], ["Mobile", "AL", "366"], ["Nashville", "TN", "372"], ["New Haven", "CT", "065"], ["New Orleans", "LA", "701"], ["Oakland", "CA", "946"], ["Oklahoma City", "OK", "731"], ["Orlando", "FL", "328"], ["Philadelphia", "PA", "191"], ["Phoenix", "AZ", "850"], ["Portland", "ME", "041"], ["Reno", "NV", "895"], ["Rochester", "NY", "146"], ["Salt Lake City", "UT", "841"], ["San Antonio", "TX", "782"], ["San Diego", "CA", "921"], ["San Jose", "CA", "951"], ["Santa Cruz", "CA", "950"], ["Savannah", "GA", "314"], ["Seattle", "WA", "981"], ["Sioux Falls", "SD", "571"], ["St. Louis", "MO", "631"], ["St. Paul", "MN", "551"], ["Syracuse", "NY", "132"], ["Tacoma", "WA", "984"], ["Tallahassee", "FL", "323"], ["Tampa", "FL", "336"], ["Toledo", "OH", "436"], ["Tulsa", "OK", "741"], ["Wichita", "KS", "672"], ["Wilmington", "NC", "284"], ["Worcester", "MA", "016"]];
+  const streets = ["Maple", "Oak", "Cedar", "Birch", "Elm", "Willow", "Pine", "Ridge", "Lake", "Hill", "Park", "Meadow", "Harbor", "Orchard", "Sunset", "River", "Valley", "Spring", "Forest", "Chestnut", "Walnut", "Hickory", "Poplar", "Sycamore", "Magnolia", "Laurel", "Juniper", "Aspen", "Cypress", "Hawthorn", "Linden", "Locust", "Mulberry", "Spruce", "Alder", "Ash", "Beech", "Dogwood", "Holly", "Ivy", "Rose", "Lilac", "Jasmine", "Clover", "Fern", "Heather", "Thistle", "Bluebell", "Primrose", "Wisteria", "Highland", "Lowland", "Prairie", "Summit", "Canyon", "Mesa", "Bluff", "Cliff", "Glen", "Grove", "Hollow", "Brook", "Creek", "Bay", "Cove", "Shore", "Beach", "Marsh", "Pond", "Mill", "Bridge", "Church", "Market", "Main", "Front", "Center", "Union", "Liberty", "Franklin", "Washington", "Jefferson", "Lincoln", "Madison", "Monroe", "Jackson", "Adams", "Wilson", "Grant", "Harrison", "Garfield", "Sherman", "Sheridan", "Stanton", "Fairview", "Hillcrest", "Ridgeway", "Sunrise", "Meadowbrook", "Woodland", "Riverside", "Lakeside", "Parkside", "Northgate", "Southgate", "Eastwood", "Westfield"];
+  const streetTypes = ["St", "Ave", "Rd", "Ln", "Dr", "Ct", "Way", "Pl", "Blvd", "Ter", "Cir", "Trl"];
+  const jobs = ["Graphic designer", "Logistics coordinator", "Dental hygienist", "Data analyst", "Warehouse supervisor", "Paralegal", "Physical therapist", "Electrician", "Copywriter", "Project manager", "Lab technician", "Bookkeeper", "Landscape architect", "Pharmacy technician", "Software developer", "Retail manager", "Veterinary nurse", "Translator", "Machinist", "Event planner", "Barista", "Photographer", "Nurse", "Teacher", "Sales associate", "Accountant", "Architect", "Art director", "Auto mechanic", "Baker", "Bank teller", "Bartender", "Biologist", "Bus driver", "Carpenter", "Chef", "Civil engineer", "Claims adjuster", "Clinical researcher", "Coach", "Content strategist", "Customer support lead", "Dispatcher", "Editor", "Electrical engineer", "Estimator", "Financial analyst", "Firefighter", "Flight attendant", "Florist", "Forester", "Freelance illustrator", "Game designer", "Geologist", "HR generalist", "HVAC technician", "Insurance agent", "Interior designer", "IT administrator", "Journalist", "Librarian", "Line cook", "Loan officer", "Marketing coordinator", "Massage therapist", "Mechanical engineer", "Medical assistant", "Music teacher", "Occupational therapist", "Office manager", "Operations analyst", "Optician", "Painter", "Paramedic", "Payroll specialist", "Personal trainer", "Pharmacist", "Plumber", "Podcast producer", "Postal worker", "Product designer", "Property manager", "Quality inspector", "Radiology technician", "Real estate agent", "Receptionist", "Recruiter", "Research assistant", "Respiratory therapist", "Restaurant manager", "Roofer", "School counselor", "Security analyst", "Ship broker", "Social worker", "Sound engineer", "Speech therapist", "Statistician", "Stock clerk", "Surveyor", "Systems engineer", "Tailor", "Tax preparer", "Technical writer", "Tour guide", "Train conductor", "Travel agent", "Truck driver", "Tutor", "UX researcher", "Urban planner", "Video editor", "Welder", "Wildlife technician", "Yoga instructor", "Zookeeper"];
+  const coWords1 = ["Northwind", "Bluebird", "Larkspur", "Granite", "Halcyon", "Redwood", "Cobalt", "Meadowlane", "Fernhill", "Brightwater", "Sable", "Quill", "Anchor", "Beacon", "Cedar", "Copper", "Crescent", "Driftwood", "Ember", "Evergreen", "Falcon", "Harbor", "Highland", "Ironwood", "Juniper", "Keystone", "Lantern", "Maple", "Meridian", "Oakridge", "Orchard", "Pinecrest", "Ridgeline", "Riverbend", "Saltmarsh", "Silverline", "Skyline", "Stonebridge", "Summit", "Tidewater", "Trailhead", "Vantage", "Westbrook", "Willow", "Wren", "Amber", "Atlas", "Aurora", "Basin", "Birch", "Bramble", "Canyon", "Clearwater", "Compass", "Delta", "Fairfield", "Glacier", "Harvest", "Hollow", "Ivy", "Kestrel", "Lighthouse", "Marlin", "Nimbus", "Oriole", "Pebble", "Quarry", "Rowan", "Sequoia", "Tamarack", "Umber", "Verdant", "Windward"];
+  const coWords2 = ["Supply", "Studio", "Health", "Logistics", "Media", "Analytics", "Works", "Foods", "Labs", "Consulting", "Partners", "Group", "Systems", "Design", "Outfitters", "Provisions", "Interactive", "Solutions", "Ventures", "Builders", "Creative", "Dental", "Hardware", "Software", "Print", "Coffee", "Bakery", "Roasters", "Cycles", "Optics", "Textiles", "Furnishings", "Gardens", "Kitchen", "Records", "Press", "Robotics", "Capital", "Insurance", "Realty", "Freight", "Marine", "Timber", "Energy", "Water", "Farms", "Brewing", "Distilling", "Pharmacy", "Clinic", "Veterinary", "Academy", "Institute", "Collective", "Cooperative", "Exchange", "Market", "Trading", "Holdings", "Industries"];
+  const colors = ["Blue", "Green", "Red", "Purple", "Teal", "Orange", "Yellow", "Black", "Grey", "Pink", "Navy", "Maroon", "Olive", "Turquoise", "Lavender", "Coral", "Gold", "Silver", "Burgundy", "Emerald", "Indigo", "Magenta", "Mint", "Peach", "Crimson", "Amber", "Charcoal", "Beige", "Violet", "Sky blue", "Forest green", "Rust", "Plum", "Sand", "Slate"];
+  const hobbies = ["hiking", "board games", "gardening", "cycling", "photography", "cooking", "chess", "pottery", "birdwatching", "running", "climbing", "baking", "kayaking", "woodworking", "drawing", "knitting", "swimming", "fishing", "camping", "surfing", "skiing", "snowboarding", "yoga", "pilates", "painting", "calligraphy", "origami", "sewing", "quilting", "home brewing", "coffee roasting", "bread baking", "fermenting", "beekeeping", "astronomy", "stargazing", "geocaching", "trail running", "rowing", "sailing", "scuba diving", "archery", "fencing", "bouldering", "skateboarding", "roller skating", "dancing", "karaoke", "guitar", "piano", "drumming", "singing", "podcasting", "blogging", "journaling", "poetry", "creative writing", "film", "vintage records", "thrifting", "antiques", "model trains", "puzzles", "crosswords", "sudoku", "trivia", "tabletop RPGs", "video games", "retro games", "3D printing", "electronics", "ham radio", "volunteering", "language learning", "travel", "road trips", "backpacking", "foraging", "mushroom hunting", "wildlife photography", "urban sketching", "tea", "wine", "bonsai", "houseplants", "aquariums", "dog training", "horseback riding"];
+  const genders = ["Female", "Male", "Non-binary", "Prefer not to say"];
+  const languages = ["English", "Spanish", "French", "German", "Portuguese", "Italian", "Dutch", "Swedish", "Norwegian", "Danish", "Polish", "Greek", "Turkish", "Japanese", "Korean", "Mandarin", "Hindi", "Arabic", "Tagalog", "Vietnamese"];
+  const securityQs = ["What was the name of your first pet?", "What is your mother's maiden name?", "In what city were you born?", "What was the make of your first car?", "What elementary school did you attend?", "What was your childhood nickname?", "What street did you grow up on?", "Who was your childhood best friend?", "What was the name of your favorite teacher?", "What is your favorite food?", "What was your first job?", "What is the name of the hospital where you were born?", "What was the first concert you attended?", "What is your father's middle name?", "What was your high school mascot?", "What is your favorite movie?", "What is your favorite book?", "What was your first phone number?", "What is the name of your oldest cousin?", "What city did your parents meet in?", "What was the name of your first stuffed animal?", "What is your favorite sports team?", "What was the model of your first phone?", "What is your favorite vacation spot?", "What was your favorite childhood cartoon?", "What is your paternal grandmother's first name?", "What was the name of your first boss?", "What is the middle name of your oldest sibling?", "What is the name of the street you lived on in third grade?", "What was your favorite subject in school?", "What was the name of your first roommate?", "What is your favorite restaurant?", "What was your dream job as a child?", "What is the name of your favorite band?", "What was the last name of your third-grade teacher?"];
+  const bioTemplates = ["{Hobby} enthusiast. {job} by day.", "{job} who spends weekends on {hobby}.", "Into {hobby}, coffee, and long walks. {job}.", "{job} based in {city}. Mostly here for {hobby}.", "Part-time {hobby} person, full-time {jobl}.", "{Hobby}, good food, and early mornings. {job}.", "{job}. Ask me about {hobby}.", "Learning {hobby} one weekend at a time. {job} otherwise.", "{city} local. {job}. {Hobby} on the side.", "Currently obsessed with {hobby}. {job} to pay for it."];
+  const displayFormats = ["{f} {L}.", "{F}. {l}", "{f}{l}", "{f}_{l}", "{f}.{l}", "{f}", "{f}{n}", "{f} {l}"];
+
+  // ---------- random source (crypto by default, seeded when restoring) ----------
+  const cryptoRand = () => crypto.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+  let rand = cryptoRand;
+  const rnd = n => Math.floor(rand() * n);
+  const pick = a => a[rnd(a.length)];
+  const pad = n => String(n).padStart(2, "0");
+  const cap = s => s[0].toUpperCase() + s.slice(1);
+  const sample = (a, k) => { const c = [...a], o = []; while (o.length < k && c.length) o.push(c.splice(rnd(c.length), 1)[0]); return o; };
+  const $ = id => document.getElementById(id);
+  const hex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, "0")).join("");
+
+  // ---------- abstract avatars (offline) ----------
+  function prng(str) {                       // seeded generator so a seed always gives the same picture
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = (h << 13) | (h >>> 19); }
+    return () => { h = Math.imul(h ^ (h >>> 16), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; };
+  }
+  const palettes = [
+    ["#0b3954","#087e8b","#bfd7ea","#ff5a5f","#c81d25"],
+    ["#f4f1de","#e07a5f","#3d405b","#81b29a","#f2cc8f"],
+    ["#264653","#2a9d8f","#e9c46a","#f4a261","#e76f51"],
+    ["#22223b","#4a4e69","#9a8c98","#c9ada7","#f2e9e4"],
+    ["#003049","#d62828","#f77f00","#fcbf49","#eae2b7"],
+    ["#606c38","#283618","#fefae0","#dda15e","#bc6c25"],
+    ["#1a1a2e","#16213e","#0f3460","#e94560","#f5f5f5"],
+    ["#ffcdb2","#ffb4a2","#e5989b","#b5838d","#6d6875"],
+    ["#05668d","#028090","#00a896","#02c39a","#f0f3bd"],
+    ["#390099","#9e0059","#ff0054","#ff5400","#ffbd00"],
+    ["#2b2d42","#8d99ae","#edf2f4","#ef233c","#d90429"],
+    ["#0d1b2a","#1b263b","#415a77","#778da9","#e0e1dd"],
+    ["#cdb4db","#ffc8dd","#ffafcc","#bde0fe","#a2d2ff"],
+    ["#ff9f1c","#ffbf69","#ffffff","#cbf3f0","#2ec4b6"],
+    ["#000814","#001d3d","#003566","#ffc300","#ffd60a"],
+    ["#5f0f40","#9a031e","#fb8b24","#e36414","#0f4c5c"],
+  ];
+  const shuffle = (a, r) => { const c = [...a]; for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [c[i], c[j]] = [c[j], c[i]]; } return c; };
+
+  const styles = {
+    marble(r, p) {
+      const [a, b, c, d] = p, freq = (0.004 + r() * 0.006).toFixed(4), sd = Math.floor(r() * 1000);
+      return `<defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".5" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient>
+        <filter id="m" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b"/><feTurbulence type="fractalNoise" baseFrequency="${freq}" numOctaves="2" seed="${sd}" result="n"/><feDisplacementMap in="b" in2="n" scale="${90 + r() * 70 | 0}" xChannelSelector="R" yChannelSelector="G"/><feGaussianBlur stdDeviation="3"/></filter>
+        <filter id="s"><feGaussianBlur stdDeviation="14"/></filter></defs>
+        <rect width="256" height="256" fill="url(#g)"/>
+        <g filter="url(#m)">
+          <ellipse cx="${60 + r() * 136 | 0}" cy="${60 + r() * 136 | 0}" rx="${70 + r() * 60 | 0}" ry="${40 + r() * 50 | 0}" fill="${d}" opacity=".85" transform="rotate(${r() * 180 | 0} 128 128)"/>
+          <ellipse cx="${60 + r() * 136 | 0}" cy="${60 + r() * 136 | 0}" rx="${60 + r() * 60 | 0}" ry="${30 + r() * 40 | 0}" fill="${c}" opacity=".7" transform="rotate(${r() * 180 | 0} 128 128)"/>
+          <ellipse cx="${60 + r() * 136 | 0}" cy="${60 + r() * 136 | 0}" rx="${50 + r() * 50 | 0}" ry="${20 + r() * 40 | 0}" fill="${a}" opacity=".6" transform="rotate(${r() * 180 | 0} 128 128)"/>
+        </g>
+        <circle cx="${r() * 256 | 0}" cy="${r() * 256 | 0}" r="70" fill="#fff" opacity=".22" filter="url(#s)"/>
+        <rect width="256" height="256" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"/>`;
+    },
+    bauhaus(r, p) {
+      const [bg, a, b, c, d] = p, rot = r() * 360 | 0;
+      const shapes = [
+        `<circle cx="${64 + r() * 128 | 0}" cy="${64 + r() * 128 | 0}" r="${50 + r() * 50 | 0}" fill="${a}"/>`,
+        `<rect x="${r() * 120 | 0}" y="${r() * 120 | 0}" width="${90 + r() * 110 | 0}" height="${60 + r() * 80 | 0}" fill="${b}" transform="rotate(${r() * 90 | 0} 128 128)"/>`,
+        `<path d="M${r() * 128 | 0} ${140 + r() * 100 | 0} a80 80 0 0 1 160 0z" fill="${c}" transform="rotate(${rot} 128 128)"/>`,
+        `<rect x="${r() * 200 | 0}" y="0" width="${8 + r() * 14 | 0}" height="256" fill="${d}" transform="rotate(${r() * 60 - 30 | 0} 128 128)"/>`,
+        `<circle cx="${r() * 256 | 0}" cy="${r() * 256 | 0}" r="${14 + r() * 24 | 0}" fill="${d}"/>`,
+      ];
+      return `<rect width="256" height="256" fill="${bg}"/>` + shuffle(shapes, r).join("");
+    },
+    sunset(r, p) {
+      const [a, b, c, d, e] = p, sunY = 110 + r() * 60 | 0, sunR = 44 + r() * 30 | 0, horizon = sunY + sunR * (0.2 + r() * 0.6) | 0;
+      let bands = "";
+      for (let i = 0; i < 5; i++) bands += `<rect x="0" y="${sunY - sunR + i * (sunR * 2 / 5)}" width="256" height="${sunR * 2 / 5 * 0.55}" fill="${a}" opacity="${0.12 + i * 0.05}"/>`;
+      return `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient>
+        <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${d}"/><stop offset="1" stop-color="${e}"/></linearGradient>
+        <clipPath id="above"><rect width="256" height="${horizon}"/></clipPath></defs>
+        <rect width="256" height="256" fill="url(#sky)"/>
+        <g clip-path="url(#above)"><circle cx="${80 + r() * 96 | 0}" cy="${sunY}" r="${sunR}" fill="${e}"/>${bands}</g>
+        <rect y="${horizon}" width="256" height="${256 - horizon}" fill="url(#sea)"/>
+        ${Array.from({ length: 6 }, (_, i) => `<rect x="${r() * 200 | 0}" y="${horizon + 10 + i * 22 + r() * 8 | 0}" width="${20 + r() * 90 | 0}" height="3" rx="1.5" fill="${b}" opacity=".5"/>`).join("")}`;
+    },
+    terrain(r, p) {
+      const [sky, ...hills] = p, layers = shuffle(hills, r);
+      let out = `<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky}"/><stop offset="1" stop-color="${layers[0]}" stop-opacity=".6"/></linearGradient></defs><rect width="256" height="256" fill="url(#sk)"/>`;
+      const moonX = 40 + r() * 176 | 0, moonY = 40 + r() * 60 | 0;
+      out += `<circle cx="${moonX}" cy="${moonY}" r="${16 + r() * 14 | 0}" fill="${layers[3]}" opacity=".9"/>`;
+      for (let i = 0; i < 4; i++) {
+        const base = 110 + i * 38, amp = 30 + r() * 30, pts = [];
+        for (let x = 0; x <= 256; x += 32) pts.push(`${x} ${base - Math.abs(Math.sin((x / 256) * Math.PI * (1.2 + r() * 1.5) + r() * 3)) * amp}`);
+        out += `<path d="M${pts.join(" L")} L256 256 L0 256Z" fill="${layers[i]}"/>`;
+      }
+      return out;
+    },
+    rings(r, p) {
+      const [bg, ...cols] = p, cx = 100 + r() * 56 | 0, cy = 100 + r() * 56 | 0, n = 6;
+      let out = `<rect width="256" height="256" fill="${bg}"/>`;
+      for (let i = n; i > 0; i--) {
+        const rad = 22 * i + r() * 8, dx = (r() - 0.5) * 18 * (n - i), dy = (r() - 0.5) * 18 * (n - i);
+        out += `<circle cx="${cx + dx}" cy="${cy + dy}" r="${rad}" fill="${cols[i % cols.length]}" ${i % 2 ? "" : `stroke="${bg}" stroke-width="3"`}/>`;
+      }
+      return out;
+    },
+    bloom(r, p) {
+      const [bg, ...cols] = p;
+      let out = `<defs><filter id="bl"><feGaussianBlur stdDeviation="${r() * 3}"/></filter></defs><rect width="256" height="256" fill="${bg}"/><g style="mix-blend-mode:multiply" filter="url(#bl)">`;
+      for (let i = 0; i < 7; i++) out += `<circle cx="${r() * 256 | 0}" cy="${r() * 256 | 0}" r="${40 + r() * 70 | 0}" fill="${cols[i % cols.length]}" opacity=".72"/>`;
+      return out + "</g>";
+    },
+    initials(r, p, text) {
+      const [a, b, , , e] = shuffle(p, r);
+      const ang = r() * 360 | 0;
+      return `<defs><linearGradient id="ig" gradientTransform="rotate(${ang} .5 .5)"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs>
+        <rect width="256" height="256" fill="url(#ig)"/>
+        <circle cx="${r() * 256 | 0}" cy="${r() * 256 | 0}" r="${80 + r() * 60 | 0}" fill="${e}" opacity=".18"/>
+        <text x="128" y="128" text-anchor="middle" dominant-baseline="central" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-weight="700" font-size="104" letter-spacing="-6" fill="#fff" style="paint-order:stroke" stroke="rgba(0,0,0,.12)" stroke-width="4">${text}</text>`;
+    },
+  };
+
+  function avatarSVG(styleName, seedStr, text) {
+    const r = prng(seedStr + styleName);
+    const p = shuffle(palettes[Math.floor(r() * palettes.length)], r);
+    const fn = styles[styleName] || styles.marble;
+    return `<svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Abstract avatar">${fn(r, p, text)}</svg>`;
+  }
+
+  // ---------- password settings ----------
+  const unEls = { len: $("unlen"), sep: $("unSep"), digits: $("unDigits") };
+  const unSettings = () => ({ len: +unEls.len.value, sep: unEls.sep.checked, digits: unEls.digits.checked });
+  const pwEls = { len: $("pwlen"), upper: $("pwUpper"), lower: $("pwLower"), digits: $("pwDigits"), symbols: $("pwSymbols"), ambig: $("pwAmbig") };
+  function pwSettings() {
+    return { len: +pwEls.len.value, upper: pwEls.upper.checked, lower: pwEls.lower.checked, digits: pwEls.digits.checked, symbols: pwEls.symbols.checked, ambig: pwEls.ambig.checked };
+  }
+  function password() {
+    const o = pwSettings();
+    let sets = [];
+    if (o.upper) sets.push("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    if (o.lower) sets.push("abcdefghijklmnopqrstuvwxyz");
+    if (o.digits) sets.push("0123456789");
+    if (o.symbols) sets.push("!?#$%&*-_+=@");
+    if (!sets.length) sets.push("abcdefghijklmnopqrstuvwxyz");
+    if (o.ambig) sets = sets.map(s => s.replace(/[0OoIl1|]/g, ""));
+    const all = sets.join("");
+    // guarantee at least one from each chosen set, fill the rest, then shuffle
+    const out = sets.map(s => s[rnd(s.length)]);
+    while (out.length < o.len) out.push(all[rnd(all.length)]);
+    for (let i = out.length - 1; i > 0; i--) { const j = rnd(i + 1); [out[i], out[j]] = [out[j], out[i]]; }
+    return out.join("");
+  }
+  const answer = () => cap(pick(adjectives)) + " " + cap(pick(nouns)) + " " + (10 + rnd(90));
+
+  // ---------- identity ----------
+  const ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9"/><path d="M13.5 2.5v3h-3"/></svg>';
+  const gen = {
+    firstName: id => { id.firstName = pick(first); derive(id); },
+    lastName:  id => { id.lastName = pick(last); derive(id); },
+    fullName:  id => { const [f, l] = unique("name", () => [pick(first), pick(last)], x => x.join(" ")); id.firstName = f; id.lastName = l; derive(id); },
+    displayName: id => { id.displayName = displayName(id, pick(displayFormats)); },
+    gender:    id => { id.gender = pick(genders); },
+    birthdate: id => {
+      const now = new Date();
+      const y = now.getFullYear() - (22 + rnd(30)), m = 1 + rnd(12), d = 1 + rnd(28);
+      id.birthdate = `${pad(m)}/${pad(d)}/${y}`;
+      id.age = Math.floor((now - new Date(y, m - 1, d)) / (365.25 * 24 * 3600 * 1000));
+    },
+    username:  id => { id.username = unique("username", () => handle(pick(["an","an_n","a_n","na","an.n","ann"]))); },
+    emailLocalPart: id => { id.emailLocalPart = unique("email", () => handle(pick(["a.n","a.nn","an","an_n","a_n","na","ann"]))); },
+    password:  id => { id.password = password(); },
+    pin:       id => { id.pin = String(1000 + rnd(9000)); },
+    phone:     id => { id.phone = `(555) 01${rnd(10)}-${pad(rnd(100))}${pad(rnd(100))}`; },
+    street:    id => { id.street = `${100 + rnd(9800)} ${pick(streets)} ${pick(streetTypes)}`; },
+    city:      id => { const c = pick(cities); id.city = c[0]; id.state = c[1]; id.zip = c[2] + pad(rnd(100)); },
+    zip:       id => { const c = cities.find(x => x[0] === id.city) || pick(cities); id.zip = c[2] + pad(rnd(100)); },
+    country:   id => { id.country = "United States"; },
+    occupation: id => { id.occupation = pick(jobs); derive(id); },
+    company:   id => { id.company = pick(coWords1) + " " + pick(coWords2) + pick(["", "", "", " Co.", " Inc.", " LLC", " & Sons", " Ltd."]); },
+    language:  id => { id.language = pick(languages); },
+    favoriteColor: id => { id.favoriteColor = pick(colors); },
+    hobby:     id => { id.hobby = pick(hobbies); derive(id); },
+    bio:       id => { id.bio = bio(id, pick(bioTemplates)); },
+    securityAll: id => { id.security = (id.security || []).map(q => ({ question: q.question, answer: answer() })); },
+  };
+  function handle(fmt) {
+    // fmt is a pattern: a = adjective, n = noun, . and _ are literal separators
+    const o = unSettings();
+    if (!o.sep) fmt = fmt.replace(/[._]/g, "");
+    for (let tries = 0; tries < 12; tries++) {
+      let out = "";
+      for (const ch of fmt) out += ch === "a" ? pick(adjectives) : ch === "n" ? pick(nouns) : ch;
+      if (o.digits && rnd(3)) out += String(rnd(2) ? 10 + rnd(90) : rnd(1000));
+      if (out.length <= o.len) return out;
+    }
+    return (pick(adjectives) + pick(nouns)).slice(0, o.len);
+  }
+  function displayName(id, fmt) {
+    return fmt.replace("{f}", id.firstName).replace("{l}", id.lastName.toLowerCase()).replace("{L}", id.lastName[0]).replace("{F}", id.firstName[0]).replace("{n}", String(10 + rnd(90)));
+  }
+  function bio(id, t) {
+    const hobby = id.hobby || pick(hobbies), job = id.occupation || pick(jobs);
+    return t.replace("{Hobby}", cap(hobby)).replace("{hobby}", hobby).replace("{job}", job).replace("{jobl}", job.toLowerCase()).replace("{city}", id.city || pick(cities)[0]);
+  }
+  function derive(id) {
+    id.fullName = `${id.firstName} ${id.lastName}`;
+    id.displayName = displayName(id, id._displayFmt || (id._displayFmt = pick(displayFormats)));
+    id.bio = bio(id, id._bioFmt || (id._bioFmt = pick(bioTemplates)));
+  }
+  // Remember names, usernames and email handles already handed out on this device so new identities don't repeat them.
+  let used = { name: [], username: [], email: [] };
+  try { used = { ...used, ...JSON.parse(localStorage.getItem("usedValues") || "{}") }; } catch (_) {}
+  function unique(kind, make, key = x => x) {
+    let v = make();
+    for (let i = 0; i < 25 && used[kind].includes(key(v)); i++) v = make();
+    used[kind].push(key(v)); if (used[kind].length > 3000) used[kind].shift();
+    try { localStorage.setItem("usedValues", JSON.stringify(used)); } catch (_) {}
+    return v;
+  }
+  function securityOne(id, i) { id.security[i].answer = answer(); }
+  function addCustom() { current.custom.push({ label: "", value: answer() }); renderFields(); const dt = $("custom").querySelectorAll("dt"); dt[dt.length - 1].focus(); }
+  function addSecurity() { current.security.push({ question: "", answer: answer() }); renderFields(); focusQuestion(current.security.length - 1); }
+  function focusQuestion(i) { const dt = $("security").querySelectorAll("dt")[i]; if (dt) dt.focus(); }
+  const sectionKeys = {
+    account: ["username","displayName","emailLocalPart","password","pin","phone"],
+    profile: ["street","city","occupation","company","language","favoriteColor","hobby"],
+    security: ["securityAll"],
+  };
+  const ORDER = ["fullName","gender","birthdate","username","emailLocalPart","password","pin","phone","city","street","occupation","company","language","favoriteColor","hobby","securityAll"];
+
+  // A seed is "identity-photo". The identity half reproduces the fields as first generated;
+  // the photo half reproduces the avatar. Rerolls and edits after that are captured by the exports, not the seed.
+  function identity(idSeed) {
+    const id = { country: "United States", seed: idSeed, security: [], custom: [] };
+    rand = prng(idSeed);
+    for (const k of ORDER) gen[k](id);
+    rand = cryptoRand;
+    return id;
+  }
+
+  // ---------- state ----------
+  const photo = $("photo"), srcSel = $("src"), urlIn = $("url"), astyle = $("astyle");
+  const TPDNE = "https://thispersondoesnotexist.com/random-person.jpeg";
+  let current = null, style = "local", seed = "";
+  let dice = null, diceFailed = false;
+  async function loadDice() {
+    if (dice || diceFailed) return dice;
+    try {
+      const [core, coll] = await Promise.all([
+        import("https://cdn.jsdelivr.net/npm/@dicebear/core@9/+esm"),
+        import("https://cdn.jsdelivr.net/npm/@dicebear/collection@9/+esm"),
+      ]);
+      dice = { core, coll };
+    } catch (_) { diceFailed = true; }
+    return dice;
+  }
+
+  try {
+    style = localStorage.getItem("photoStyle") || "local";
+    astyle.value = localStorage.getItem("avatarStyle") || "marble";
+    if (!astyle.value) astyle.value = "marble";
+    srcSel.value = localStorage.getItem("photoSource") || "tpdne";
+    urlIn.value = localStorage.getItem("photoUrl") || "";
+    const un = JSON.parse(localStorage.getItem("unSettings") || "null");
+    if (un) { unEls.len.value = un.len; unEls.sep.checked = un.sep; unEls.digits.checked = un.digits; }
+    const pw = JSON.parse(localStorage.getItem("pwSettings") || "null");
+    if (pw) { pwEls.len.value = pw.len; pwEls.upper.checked = pw.upper; pwEls.lower.checked = pw.lower; pwEls.digits.checked = pw.digits; pwEls.symbols.checked = pw.symbols; pwEls.ambig.checked = pw.ambig; }
+  } catch (_) {}
+  $("pwlenv").textContent = pwEls.len.value; $("unlenv").textContent = unEls.len.value;
+  function saveSettings() {
+    try {
+      localStorage.setItem("photoStyle", style);
+      localStorage.setItem("avatarStyle", astyle.value);
+      localStorage.setItem("photoSource", srcSel.value);
+      localStorage.setItem("photoUrl", urlIn.value.trim());
+      localStorage.setItem("pwSettings", JSON.stringify(pwSettings()));
+      localStorage.setItem("unSettings", JSON.stringify(unSettings()));
+    } catch (_) {}
+  }
+  srcSel.addEventListener("change", () => { saveSettings(); renderPhoto(); });
+  urlIn.addEventListener("change", () => { saveSettings(); renderPhoto(); });
+  astyle.addEventListener("change", () => { saveSettings(); renderPhoto(false); });
+  Object.values(unEls).forEach(el => el.addEventListener("input", () => {
+    $("unlenv").textContent = unEls.len.value; saveSettings();
+    if (current) { gen.username(current); gen.emailLocalPart(current); renderFields(); }
+  }));
+  $("reset").addEventListener("click", e => {
+    if (!confirm("Clear saved settings, the current identity, undo history and the used-names memory from this browser?")) return;
+    try { localStorage.clear(); } catch (_) {}
+    location.reload();
+  });
+  Object.values(pwEls).forEach(el => el.addEventListener("input", () => {
+    $("pwlenv").textContent = pwEls.len.value; $("unlenv").textContent = unEls.len.value; saveSettings();
+    if (current) { gen.password(current); renderFields(); }
+  }));
+  document.querySelectorAll(".seg button").forEach(b => b.addEventListener("click", () => {
+    style = b.dataset.style; saveSettings(); syncSeg(); renderPhoto(false);
+  }));
+  function syncSeg() { document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.style === style))); }
+
+  // ---------- photo ----------
+  function syncImgTools() {
+    const real = style === "real" && !!photo.querySelector("img");
+    $("imgtools").style.display = real ? "none" : "flex";
+    $("imghint").style.display = real ? "block" : "none";
+  }
+  function svgNode() {
+    const initials = current ? current.firstName[0] + current.lastName[0] : "AB";
+    const t = document.createElement("template");
+    t.innerHTML = avatarSVG(styles[astyle.value] ? astyle.value : "marble", seed, initials).trim();
+    return t.content.firstChild;
+  }
+  async function renderIllustrated() {
+    const token = seed;
+    if (styles[astyle.value]) {
+      photo.querySelectorAll("img, svg").forEach(n => n.remove());
+      photo.prepend(svgNode()); syncImgTools(); return;
+    }
+    const d = await loadDice();
+    if (token !== seed) return;
+    if (d && d.coll[astyle.value]) {
+      const svgText = d.core.createAvatar(d.coll[astyle.value], { seed, size: 512, backgroundColor: ["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","d8f3dc"] }).toString();
+      photo.querySelectorAll("img, svg").forEach(n => n.remove());
+      const t = document.createElement("template"); t.innerHTML = svgText.trim();
+      const node = t.content.firstChild; node.removeAttribute("width"); node.removeAttribute("height");
+      node.setAttribute("role", "img"); node.setAttribute("aria-label", "Illustrated avatar");
+      photo.prepend(node); syncImgTools(); return;
+    }
+    astyle.value = "marble";
+    photo.querySelectorAll("img, svg").forEach(n => n.remove());
+    photo.prepend(svgNode()); syncImgTools();
+  }
+  function renderPhoto(reseed = true) {
+    if (reseed) { seed = hex(8); showSeed(); autosave(); }
+    const url = srcSel.value === "tpdne" ? TPDNE : urlIn.value.trim();
+    if (style === "real" && url) {
+      photo.querySelectorAll("img, svg").forEach(n => n.remove());
+      const img = new Image();
+      img.alt = "Generated face"; img.referrerPolicy = "no-referrer";
+      img.src = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now() + rnd(1e6);
+      img.onerror = () => { img.remove(); renderIllustrated(); };
+      photo.prepend(img); syncImgTools();
+    } else {
+      renderIllustrated();
+    }
+  }
+  function avatarBlob(size = 512) {
+    return new Promise((resolve, reject) => {
+      const svg = photo.querySelector("svg"); if (!svg) return reject(new Error("no avatar"));
+      const src = new XMLSerializer().serializeToString(svg);
+      const url = URL.createObjectURL(new Blob([src], { type: "image/svg+xml" }));
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas"); c.width = c.height = size;
+        c.getContext("2d").drawImage(img, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+        c.toBlob(b => b ? resolve(b) : reject(new Error("render failed")), "image/png");
+      };
+      img.onerror = () => reject(new Error("render failed"));
+      img.src = url;
+    });
+  }
+  $("saveimg").addEventListener("click", async e => {
+    try { download(await avatarBlob(), (current ? current.username : "avatar") + ".png"); flash(e.target, "Saved"); }
+    catch (_) { e.target.textContent = "Save failed"; }
+  });
+  $("copyimg").addEventListener("click", async e => {
+    try { await navigator.clipboard.write([new ClipboardItem({ "image/png": await avatarBlob() })]); flash(e.target, "Copied"); }
+    catch (_) { e.target.textContent = "Copy not supported here"; }
+  });
+
+  // ---------- rows ----------
+  function row(dl, label, value, opts = {}) {
+    const rb = document.createElement("button");
+    rb.className = "reroll"; rb.type = "button"; rb.innerHTML = ICON;
+    rb.setAttribute("aria-label", "New " + label.toLowerCase());
+    rb.addEventListener("click", () => {
+      if (opts.sec !== undefined) securityOne(current, opts.sec); else if (opts.cus !== undefined) current.custom[opts.cus].value = answer(); else gen[opts.key](current);
+      rb.classList.add("spin"); setTimeout(() => rb.classList.remove("spin"), 400);
+      renderFields();
+    });
+    const dt = document.createElement("dt"); dt.textContent = label;
+    const listRow = opts.sec !== undefined ? current.security[opts.sec] : opts.cus !== undefined ? current.custom[opts.cus] : null;
+    if (listRow) {
+      dt.contentEditable = "plaintext-only"; dt.spellcheck = false; dt.title = "Click to edit";
+      dt.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); dt.blur(); } });
+      dt.addEventListener("blur", () => { listRow[opts.sec !== undefined ? "question" : "label"] = dt.textContent.trim(); autosave(); });
+    }
+    const dd = document.createElement("dd"); dd.textContent = value;
+    dd.contentEditable = "plaintext-only"; dd.spellcheck = false; dd.title = "Click to edit";
+    if (opts.suffix) dd.insertAdjacentHTML("beforeend", `<small contenteditable="false">${opts.suffix}</small>`);
+    dd.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); dd.blur(); } if (ev.key === "Escape") { dd.textContent = value; if (opts.suffix) dd.insertAdjacentHTML("beforeend", `<small contenteditable="false">${opts.suffix}</small>`); dd.blur(); } });
+    dd.addEventListener("blur", () => {
+      const text = Array.from(dd.childNodes).filter(n => n.nodeType === 3).map(n => n.textContent).join("").trim();
+      if (text === value) return;
+      if (opts.sec !== undefined) current.security[opts.sec].answer = text;
+      else if (opts.cus !== undefined) current.custom[opts.cus].value = text;
+      else if (opts.key === "fullName") { const parts = text.split(/\s+/); current.firstName = parts[0] || ""; current.lastName = parts.slice(1).join(" ") || ""; current.fullName = text; }
+      else if (opts.key === "birthdate") { current.birthdate = text; const d = new Date(text); current.age = isNaN(d) ? 0 : Math.floor((Date.now() - d) / (365.25 * 24 * 3600 * 1000)); }
+      else if (opts.key === "city" && label === "Location") { const [c, st] = text.split(",").map(x => x.trim()); current.city = c || current.city; if (st) current.state = st; }
+      else if (opts.key === "city" && label === "State") current.state = text;
+      else if (opts.field) current[opts.field] = text;
+      else current[opts.key] = text;
+      renderFields();
+    });
+    const btn = document.createElement("button");
+    btn.className = "copy"; btn.type = "button"; btn.textContent = "Copy";
+    btn.addEventListener("click", () => copy(btn, listRow ? (listRow.answer ?? listRow.value) : valueOf(opts, label)));
+    dl.append(rb, dt, dd, btn);
+    if (listRow) {
+      const x = document.createElement("button");
+      x.className = "remove"; x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remove this row");
+      x.addEventListener("click", () => { (opts.sec !== undefined ? current.security : current.custom).splice(opts.sec ?? opts.cus, 1); renderFields(); });
+      dl.append(x);
+    }
+  }
+  function valueOf(opts, label) {
+    const s = sections(current);
+    for (const rows of Object.values(s)) for (const r of rows) if (r[0] === label) return r[1];
+    return "";
+  }
+  function sections(id) {
+    return {
+      core: [["Full name", id.fullName, { key: "fullName" }], ["Birthdate", id.birthdate, { key: "birthdate", suffix: id.age ? ` (age ${id.age})` : "" }], ["Gender", id.gender, { key: "gender" }], ["Location", `${id.city}, ${id.state}`, { key: "city" }]],
+      account: [["Username", id.username, { key: "username" }], ["Display name", id.displayName, { key: "displayName" }], ["Email", id.emailLocalPart, { suffix: "@", key: "emailLocalPart" }], ["Password", id.password, { key: "password" }], ["PIN", id.pin, { key: "pin" }], ["Phone", id.phone, { key: "phone" }]],
+      profile: [["Street", id.street, { key: "street" }], ["City", id.city, { key: "city", field: "city" }], ["State", id.state, { key: "city", field: "state" }], ["ZIP", id.zip, { key: "zip" }], ["Country", id.country, { key: "country" }], ["Occupation", id.occupation, { key: "occupation" }], ["Company", id.company, { key: "company" }], ["Language", id.language, { key: "language" }], ["Favorite color", id.favoriteColor, { key: "favoriteColor" }], ["Hobby", id.hobby, { key: "hobby" }], ["Bio", id.bio, { key: "bio" }]],
+      security: id.security.map((s, i) => [s.question, s.answer, { sec: i }]),
+      custom: (id.custom || []).map((c, i) => [c.label, c.value, { cus: i }]),
+    };
+  }
+  function renderFields() {
+    $("name").textContent = current.fullName;
+    $("tagline").textContent = `${current.occupation} in ${current.city}`;
+    $("sechint").style.display = current.security.length ? "none" : "";
+    const s = sections(current);
+    for (const key of ["core","account","profile","security","custom"]) {
+      const dl = $(key); dl.innerHTML = "";
+      for (const [label, value, opts] of s[key]) row(dl, label, value, opts);
+    }
+    if (astyle.value === "initials" && style !== "real") renderPhoto(false);
+    autosave();
+  }
+  function showSeed() { $("seedview").textContent = current ? `${current.seed}-${seed}` : ""; }
+  function snapshot() { return { current, seed, site: $("site").value, notes: $("notes").value }; }
+  function autosave() { if (!current) return; try { localStorage.setItem("currentIdentity", JSON.stringify(snapshot())); } catch (_) {} }
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("identityHistory") || "[]"); } catch (_) {}
+  function pushHistory() {
+    if (!current) return;
+    history.push(snapshot()); if (history.length > 10) history.shift();
+    try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
+    $("undo").disabled = false;
+  }
+  function restore(snap) {
+    current = snap.current; seed = snap.seed;
+    $("site").value = snap.site || ""; $("notes").value = snap.notes || "";
+    renderFields(); renderPhoto(false); showSeed();
+  }
+  function undo() {
+    if (!history.length) return;
+    const snap = history.pop();
+    try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
+    $("undo").disabled = !history.length;
+    restore(snap);
+  }
+  function render(idSeed, photoSeed) {
+    pushHistory();
+    current = identity(idSeed || hex(8));
+    $("site").value = ""; $("notes").value = "";
+    renderFields();
+    if (photoSeed) { seed = photoSeed; renderPhoto(false); } else renderPhoto();
+    showSeed();
+  }
+  $("site").addEventListener("input", autosave); $("notes").addEventListener("input", autosave);
+  $("undo").addEventListener("click", undo);
+  document.querySelectorAll("[data-section]").forEach(b => {
+    b.innerHTML = ICON;
+    b.addEventListener("click", () => {
+      for (const k of sectionKeys[b.dataset.section]) gen[k](current);
+      b.classList.add("spin"); setTimeout(() => b.classList.remove("spin"), 400);
+      renderFields();
+    });
+  });
+
+  // ---------- export ----------
+  function meta() { return { site: $("site").value.trim(), notes: $("notes").value.trim(), seed: `${current.seed}-${seed}` }; }
+  function asText() {
+    const s = sections(current), m = meta(), lines = [];
+    if (m.site) lines.push(`Site: ${m.site}`);
+    lines.push(current.fullName, "");
+    const block = (title, rows) => { lines.push(title); for (const [l, v, o] of rows) lines.push(`  ${l}: ${v}${o && o.suffix ? o.suffix : ""}`); lines.push(""); };
+    block("Basics", s.core); block("Account", s.account); block("Profile", [...s.profile, ...s.custom.map(([l, v, o]) => [l || "(field)", v, o])]);
+    if (s.security.length) block("Security questions", s.security.map(([q, a, o]) => [q || "(question)", a, o]));
+    if (m.notes) lines.push("Notes", "  " + m.notes.replace(/\n/g, "\n  "), "");
+    lines.push(`Seed: ${m.seed}`);
+    return lines.join("\n").trim();
+  }
+  function asMarkdown() {
+    const s = sections(current), m = meta(), lines = [`# ${current.fullName}`, ""];
+    if (m.site) lines.push(`**Site:** ${m.site}`, "");
+    const block = (title, rows) => { lines.push(`## ${title}`, "", "| Field | Value |", "|---|---|"); for (const [l, v, o] of rows) lines.push(`| ${l} | ${String(v).replace(/\|/g, "\\|")}${o && o.suffix ? o.suffix : ""} |`); lines.push(""); };
+    block("Basics", s.core); block("Account", s.account); block("Profile", [...s.profile, ...s.custom.map(([l, v, o]) => [l || "(field)", v, o])]);
+    if (s.security.length) block("Security questions", s.security.map(([q, a, o]) => [q || "(question)", a, o]));
+    if (m.notes) lines.push("## Notes", "", m.notes, "");
+    lines.push(`_Seed: ${m.seed}_`);
+    return lines.join("\n");
+  }
+  function asJSON() { const c = { ...meta(), ...current }; delete c._displayFmt; delete c._bioFmt; return JSON.stringify(c, null, 2); }
+  function download(blob, name) {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+  const fileBase = () => (current.username || "identity").replace(/[^a-z0-9_-]/gi, "");
+  async function copy(btn, text) {
+    try { await navigator.clipboard.writeText(text); flash(btn, "Copied"); }
+    catch (_) { btn.textContent = "Copy failed — select manually"; }
+  }
+  function flash(btn, msg) {
+    const prev = btn.textContent; btn.textContent = msg; btn.classList.add("done");
+    setTimeout(() => { btn.textContent = prev; btn.classList.remove("done"); }, 1200);
+  }
+
+  $("new").addEventListener("click", () => render());
+  $("addsec").addEventListener("click", addSecurity);
+  $("addcustom").addEventListener("click", addCustom);
+  $("newphoto").addEventListener("click", () => renderPhoto());
+  $("copytext").addEventListener("click", e => copy(e.target, asText()));
+  $("copymd").addEventListener("click", e => copy(e.target, asMarkdown()));
+  $("copyjson").addEventListener("click", e => copy(e.target, asJSON()));
+  $("dltext").addEventListener("click", () => download(new Blob([asText()], { type: "text/plain" }), fileBase() + ".txt"));
+  $("dlmd").addEventListener("click", () => download(new Blob([asMarkdown()], { type: "text/markdown" }), fileBase() + ".md"));
+  $("copyseed").addEventListener("click", e => copy(e.target, `${current.seed}-${seed}`));
+  $("loadseed").addEventListener("click", e => {
+    const m = $("seedin").value.trim().match(/^([0-9a-f]{16})-([0-9a-f]{16})$/i);
+    if (!m) { e.target.textContent = "Seed looks wrong"; setTimeout(() => e.target.textContent = "Load", 1500); return; }
+    render(m[1].toLowerCase(), m[2].toLowerCase()); $("seedin").value = ""; flash(e.target, "Loaded");
+  });
+  document.addEventListener("keydown", ev => {
+    const t = ev.target;
+    if (ev.metaKey || ev.ctrlKey || ev.altKey || t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+    if (ev.key === "n" || ev.key === "N") { ev.preventDefault(); render(); }
+    if (ev.key === "p" || ev.key === "P") { ev.preventDefault(); renderPhoto(); }
+    if (ev.key === "u" || ev.key === "U") { ev.preventDefault(); undo(); }
+  });
+
+  syncSeg();
+  $("undo").disabled = !history.length;
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem("currentIdentity") || "null"); } catch (_) {}
+  if (saved && saved.current && saved.current.firstName) restore(saved); else render();
+})();
+</script>
+</body>
+</html>
