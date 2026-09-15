@@ -1,5 +1,10 @@
 # identity-gen
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/cover-dark.svg">
+  <img src="docs/cover-light.svg" alt="identity-gen: a fresh identity for every signup" width="100%">
+</picture>
+
 A single-page, offline generator for throwaway signup identities. One click
 produces a name, username, email handle, password, birthdate, address,
 occupation and an avatar, so no two of your accounts share the same details.
