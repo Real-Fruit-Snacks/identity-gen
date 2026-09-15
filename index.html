@@ -132,6 +132,15 @@
   .pw .toggles { display: flex; gap: 1rem; flex-wrap: wrap; }
   .pw label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 13.5px; color: var(--twb-text-soft); }
   .pw input[type=checkbox] { accent-color: var(--twb-accent); width: 15px; height: 15px; }
+  .panel .note { margin: 0 0 0.75rem; }
+  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .ghost.danger { color: var(--twb-red); border-color: var(--twb-red); }
+  .ghost.danger:hover { background: var(--twb-red); color: var(--twb-text-on-accent); }
+  .primary.danger { background: var(--twb-red); border-color: var(--twb-red); color: #fff; }
+  dialog { background: var(--twb-bg-1); color: var(--twb-text-normal); border: 1px solid var(--twb-border-strong); border-radius: var(--twb-radius-l); padding: 1.25rem 1.5rem; max-width: 26rem; width: calc(100% - 2rem); font-family: var(--twb-font-ui); }
+  dialog::backdrop { background: rgba(9, 12, 13, 0.7); }
+  dialog h2 { color: var(--twb-red); margin-bottom: 0.6rem; }
+  dialog .row { justify-content: flex-end; margin-top: 1rem; }
   details { margin-top: 1rem; color: var(--twb-text-muted); font-size: 12.5px; }
   summary { cursor: pointer; }
   .settings { display: grid; gap: 0.6rem; margin-top: 0.75rem; max-width: 560px; }
@@ -253,6 +262,23 @@
     </div>
   </section>
 
+  <section class="panel">
+    <h2>Stored on this device</h2>
+    <p class="note">Settings, the current identity, the last ten identities for Undo, and the list of names and handles already used. Nothing leaves your browser.</p>
+    <div class="row"><button class="ghost danger" id="reset" type="button">Reset everything</button></div>
+  </section>
+
+  <dialog id="confirm">
+    <form method="dialog">
+      <h2>Reset everything?</h2>
+      <p class="note">This clears your settings, the current identity, the Undo history and the used-names memory from this browser. It cannot be undone.</p>
+      <div class="row">
+        <button class="ghost" value="cancel" type="submit">Cancel</button>
+        <button class="primary danger" value="ok" type="submit" autofocus>Reset</button>
+      </div>
+    </form>
+  </dialog>
+
   <details>
     <summary>Photo settings</summary>
     <div class="settings">
@@ -265,7 +291,6 @@
       <label>Image URL
         <input id="url" type="url" placeholder="https://example.com/random-face.jpg" spellcheck="false">
       </label>
-      <button class="copy" id="reset" type="button">Reset everything stored on this device</button>
       <p class="note">A random timestamp is added on every click so the browser never reuses a cached face. If the image fails to load (or you're viewing in a sandboxed preview), the illustrated avatar is shown instead. To save a photo, right-click it and choose Save image. Faces from thispersondoesnotexist carry a small watermark in the bottom-right corner; crop it before uploading. The People and Abstract styles are generated entirely in this page and work offline. The Illustrated styles are drawn in your browser by <a href="https://www.dicebear.com" style="color:inherit">DiceBear</a>, loaded from a CDN only when you pick one; only its CC0 (public-domain) styles are offered, so no credit is ever required.</p>
     </div>
   </details>
@@ -847,10 +872,14 @@
     $("unlenv").textContent = unEls.len.value; saveSettings();
     if (current) { gen.username(current); gen.emailLocalPart(current); renderFields(); }
   }));
-  $("reset").addEventListener("click", e => {
-    if (!confirm("Clear saved settings, the current identity, undo history and the used-names memory from this browser?")) return;
-    try { localStorage.clear(); } catch (_) {}
-    location.reload();
+  $("reset").addEventListener("click", () => {
+    const dlg = $("confirm");
+    dlg.addEventListener("close", () => {
+      if (dlg.returnValue !== "ok") return;
+      try { localStorage.clear(); } catch (_) {}
+      location.reload();
+    }, { once: true });
+    dlg.showModal();
   });
   Object.values(pwEls).forEach(el => el.addEventListener("input", () => {
     $("pwlenv").textContent = pwEls.len.value; $("unlenv").textContent = unEls.len.value; saveSettings();

@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.3.0
+- "Stored on this device" panel with a visible reset button and a themed confirmation dialog.
 - Pixel avatars rebuilt at 48x48: egg-shaped heads, curved shading, big eyes, strand-cut hair, rounded shoulders and a sticker halo.
 - Nine character kits: knight, wizard, robot, astronaut, elf, vampire, royal, detective, punk.
 - Hats now replace hair: hair is clipped under any headwear and limited to styles that read clearly beneath a brim.

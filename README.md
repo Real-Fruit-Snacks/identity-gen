@@ -63,8 +63,8 @@ The page makes no network requests by default. Three optional features do:
   the page.
 
 All state (settings, current identity, undo history, used-name memory)
-lives in your browser's local storage and can be cleared with the reset
-button under Photo settings.
+lives in your browser's local storage. The "Stored on this device" panel
+lists exactly what is kept and has a reset button that clears it.
 
 ## Intended use
 
