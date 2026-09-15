@@ -173,13 +173,13 @@
           <span class="imgtools" id="imgtools">
             <select id="astyle" class="copy" aria-label="Illustration style">
               <optgroup label="Abstract (offline)">
+                <option value="initials">Initials</option>
                 <option value="marble">Marble</option>
                 <option value="bauhaus">Bauhaus</option>
                 <option value="sunset">Sunset</option>
                 <option value="terrain">Terrain</option>
                 <option value="rings">Rings</option>
                 <option value="bloom">Bloom</option>
-                <option value="initials">Initials</option>
               </optgroup>
               <optgroup label="Illustrated (needs internet)">
                 <option value="lorelei">Lorelei</option>
@@ -539,8 +539,8 @@
 
   try {
     style = localStorage.getItem("photoStyle") || "local";
-    astyle.value = localStorage.getItem("avatarStyle") || "marble";
-    if (!astyle.value) astyle.value = "marble";
+    astyle.value = localStorage.getItem("avatarStyle") || "initials";
+    if (!astyle.value) astyle.value = "initials";
     srcSel.value = localStorage.getItem("photoSource") || "tpdne";
     urlIn.value = localStorage.getItem("photoUrl") || "";
     const un = JSON.parse(localStorage.getItem("unSettings") || "null");
