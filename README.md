@@ -25,7 +25,7 @@ occupation and an avatar, so no two of your accounts share the same details.
   class controls and look-alike avoidance.
 - Avatar styles:
   - **People (offline):** Initials on a gradient, and Pixel, a 48x48
-    pixel-art portrait generator with shaded forms, sixteen hair styles,
+    pixel-art portrait generator with shaded forms, fifteen hair styles,
     hats, glasses, facial hair and fourteen character kits (knight, wizard,
     robot, astronaut, elf, vampire, royal, detective, punk, pirate, ninja,
     chef, alien, cat). A slider sets how often kits appear.

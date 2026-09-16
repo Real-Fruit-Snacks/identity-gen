@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.4.0
+- Removed the pigtails hair style.
 - Installable as an app: web manifest, icons and a service worker for offline use.
 - Recent identities panel with one-click restore.
 - Passphrases are the default password style, with word count, separator, capitalisation and number options; random characters remain available.
