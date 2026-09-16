@@ -538,8 +538,22 @@
     let clothBase = "#3f70d8";
     for (let k = 0; k < 8; k++) { clothBase = pick(["#3f70d8","#d84a4a","#3cae6d","#e3a53c","#8c5fd8","#2f95ad","#dc5a7e","#5f5f6c","#ece7db","#2d2d35","#c76a3d","#86a86f","#f0d24e","#6bb5d9"]); if (dist(clothBase, hairBase) > 90) break; }
     const cloth = tones(clothBase, 0.9);
-    const bgBase = pick(["#f6f2ec","#eef3f7","#f3eef7","#eef6ef","#f8efe6","#f0f0f2"]);
-    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) grid[y][x] = bgBase;
+    const bgSets = [["#f6f2ec","#ead9c4","#e0c7a8"],["#eef3f7","#cfe0ee","#b3cbe0"],["#f3eef7","#dccbe9","#c6a9da"],["#eef6ef","#cfe8d4","#a9d3b3"],["#f8efe6","#f2d9c2","#e9be9c"],["#f0f0f2","#d9d9de","#bfbfc7"],["#fdf1f4","#f6d3dc","#efb3c2"],["#eef7f7","#c9e6e6","#a6d5d5"],["#f7f4e8","#ebe3bd","#dccd8f"]];
+    const nightSets = [["#1e1b3a","#2c2857","#4a4390"],["#141d33","#1f2d4d","#31487a"],["#2a1a33","#3f2a4d","#5c3f70"]];
+    const bgStyle = theme === "astronaut" ? 5 : theme === "wizard" ? pick([5, 6]) : theme === "pirate" ? 7 : theme === "vampire" ? pick([5, 9]) : ri(0, 9);
+    const night = bgStyle === 5 || bgStyle === 9;
+    const [bg0, bg1, bg2] = pick(night ? nightSets : bgSets);
+    const bgBase = bg0;
+    const fill = (fn) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const c = fn(x, y); if (c) grid[y][x] = c; } };
+    fill(() => bg0);
+    if (bgStyle === 1) fill((x, y) => (x % 6 === 2 && y % 6 === 2) ? bg1 : null);                                        // dot grid
+    if (bgStyle === 2) fill((x, y) => { const d = Math.hypot(x + 0.5 - 24, y + 0.5 - 24); return d < 13 ? bg2 : d < 19 ? bg1 : null; }); // soft glow
+    if (bgStyle === 3) fill((x, y) => ((x + y) % 8 < 3) ? bg1 : null);                                                     // diagonal stripes
+    if (bgStyle === 4) fill((x, y) => { const a = Math.atan2(y + 0.5 - 26, x + 0.5 - 24); return (Math.floor((a + Math.PI) / (Math.PI / 8)) % 2 === 0) ? bg1 : null; }); // sunburst
+    if (bgStyle === 5 || bgStyle === 9) { fill((x, y) => y < 16 ? bg0 : y < 32 ? bg1 : bg2); for (let i = 0; i < 26; i++) { const x = ri(0, W - 1), y = ri(0, 30); put(x, y, i % 4 === 0 ? "#fff6c8" : mix(bg2, "#ffffff", 0.55)); if (i % 6 === 0) { put(x - 1, y, mix(bg2, "#ffffff", 0.3)); put(x + 1, y, mix(bg2, "#ffffff", 0.3)); put(x, y - 1, mix(bg2, "#ffffff", 0.3)); put(x, y + 1, mix(bg2, "#ffffff", 0.3)); } } if (bgStyle === 9) { const moon = mask(); ell(moon, 38, 9, 5, 5); const bite = mask(); ell(bite, 40.5, 7.5, 4.2, 4.2); sub(moon, bite); paint(moon, "#f3e9c0"); } } // night sky, with a crescent moon for 9
+    if (bgStyle === 6) { fill((x, y) => y < 12 ? bg0 : y < 24 ? mix(bg0, bg1, 0.5) : y < 34 ? bg1 : bg2); fill((x, y) => ((x + y * 3) % 7 === 0 && y > 8 && y < 36) ? (y < 24 ? mix(bg0, bg1, 0.75) : mix(bg1, bg2, 0.5)) : null); } // dithered gradient
+    if (bgStyle === 7) { fill((x, y) => y < 28 ? bg0 : y < 31 ? bg1 : bg2); for (let x = 2; x < W; x += 6) { put(x, 33 + (x % 12 === 2 ? 0 : 3), mix(bg2, "#ffffff", 0.35)); put(x + 1, 33 + (x % 12 === 2 ? 0 : 3), mix(bg2, "#ffffff", 0.35)); } const sun = mask(); ell(sun, 12, 16, 5, 5); paint(sun, mix(bg1, "#ffd27a", 0.5)); } // horizon and sea
+    if (bgStyle === 8) { fill((x, y) => y >= 30 ? bg1 : null); const hills = [[6, 28, 9, 6], [20, 30, 12, 8], [38, 29, 10, 7]]; for (const [hx, hy, rx, ry] of hills) { const m = mask(); ell(m, hx, hy + ry, rx, ry); fill((x, y) => m[y][x] ? bg2 : null); } fill((x, y) => (y > 34 && (x + y) % 5 === 0) ? mix(bg1, bg2, 0.5) : null); } // hills
 
     // ----- geometry -----
     const cx = 24, headCy = 19, headRx = 11, headRy = 12;
@@ -744,7 +758,8 @@
     if (patch) { const pm = mask(); ell(pm, eRx + 1.5, eyeY + 1.5, 3.4, 2.8); render(pm, tones("#1a161c"), { light: 0, shadow: 0, outline: false }); put(eRx, eyeY, "#3a3a48"); for (let x = eLx - 4; x <= eRx - 1; x++) { const y = eyeY - 1 - Math.round((x - (eLx - 4)) / 5); put(x, y, "#1a161c"); } for (let x = eRx + 4; x <= cx + headRx; x++) put(x, eyeY - 1, "#1a161c"); }
 
     // ----- sticker halo -----
-    const isBg = c => c === bgBase;
+    const bgTones = new Set(); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (y < 2 || x < 2 || x > W - 3) bgTones.add(grid[y][x]);
+    const isBg = c => c === bgBase || c === bg1 || c === bg2 || bgTones.has(c);
     const out = grid.map(rw => rw.slice());
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
       if (!isBg(grid[y][x])) continue;

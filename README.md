@@ -28,7 +28,8 @@ occupation and an avatar, so no two of your accounts share the same details.
     pixel-art portrait generator with shaded forms, fourteen hair styles,
     hats, glasses, facial hair and fourteen character kits (knight, wizard,
     robot, astronaut, elf, vampire, royal, detective, punk, pirate, ninja,
-    chef, alien, cat). A slider sets how often kits appear.
+    chef, alien, cat) on ten backdrops (glow, dot grid, stripes, sunburst,
+    gradient, hills, sea, night skies). A slider sets how often kits appear.
   - **Abstract (offline):** Marble, Bauhaus, Sunset, Terrain, Rings, Bloom.
   - **Illustrated (needs internet):** DiceBear's Lorelei, Notionists and
     Open Peeps, loaded from a CDN only when selected.
