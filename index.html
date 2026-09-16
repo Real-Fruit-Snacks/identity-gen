@@ -126,6 +126,9 @@
   footer button { font-family: var(--twb-font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--twb-text-soft); background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); padding: 0.45rem 0.8rem; cursor: pointer; }
   footer button:hover { background: var(--twb-bg-3); border-color: var(--twb-border-strong); color: var(--twb-text-normal); }
   footer > span { width: 100%; }
+  .ver { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--twb-text-faint); margin-right: 0.8rem; }
+  .update { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); display: none; gap: 0.75rem; align-items: center; background: var(--twb-bg-3); color: var(--twb-text-normal); border: 1px solid var(--twb-accent); border-radius: var(--twb-radius-l); padding: 0.6rem 0.9rem; font-size: 13px; z-index: 10; max-width: calc(100% - 2rem); }
+  .update.show { display: flex; }
   .panel { margin-top: 0.9rem; background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-l); padding: 1rem 1.25rem; }
   .panel h2 { margin-bottom: 0.7rem; color: var(--twb-accent-alt); }
   .pw { display: grid; gap: 0.6rem 1.25rem; align-items: center; }
@@ -246,7 +249,7 @@
     <button id="copyjson" type="button">Copy as JSON</button>
     <button id="dltext" type="button">Download .txt</button>
     <button id="dlmd" type="button">Download .md</button>
-    <span>Click any value to edit it. Generated in your browser; nothing is sent. The page keeps your settings, the current identity (so a refresh doesn't lose it), the last 10 identities for Undo, and a list of names already used, all in this browser only.</span>
+    <span><span class="ver" id="ver"></span>Click any value to edit it. Generated in your browser; nothing is sent. The page keeps your settings, the current identity (so a refresh doesn't lose it), the last 10 identities for Undo, and a list of names already used, all in this browser only.</span>
   </footer>
 
   <section class="panel">
@@ -307,6 +310,12 @@
     <div class="row"><button class="ghost danger" id="reset" type="button">Reset everything</button></div>
   </section>
 
+  <div class="update" id="update" role="status">
+    <span>A new version of identity-gen is ready.</span>
+    <button class="copy" id="reloadbtn" type="button">Reload</button>
+    <button class="ghost" id="laterbtn" type="button" style="padding:0.3rem 0.6rem;font-size:11px">Later</button>
+  </div>
+
   <dialog id="confirm">
     <form method="dialog">
       <h2>Reset everything?</h2>
@@ -337,6 +346,7 @@
 
 <script>
 (() => {
+  const VERSION = "1.7.0";
   // ---------- data ----------
   const first = ["Aaron", "Abigail", "Adam", "Adrian", "Aiden", "Aisha", "Alan", "Alejandro", "Alex", "Alice", "Alicia", "Alina", "Alma", "Amara", "Amelia", "Amir", "Amy", "Ana", "Anders", "Andrea", "Andrew", "Angela", "Anika", "Anna", "Anthony", "Anya", "April", "Arjun", "Arlo", "Asha", "Ashley", "Astrid", "Aubrey", "Audrey", "August", "Aurora", "Ava", "Axel", "Beatriz", "Ben", "Benjamin", "Bianca", "Blake", "Brenda", "Brian", "Bridget", "Brooke", "Caleb", "Callum", "Camila", "Cara", "Carla", "Carlos", "Carmen", "Caroline", "Casey", "Cassandra", "Cecilia", "Celeste", "Charlotte", "Chloe", "Chris", "Christina", "Claire", "Clara", "Cole", "Colin", "Connor", "Cora", "Corey", "Dana", "Daniel", "Daniela", "Dario", "Darius", "David", "Dean", "Deborah", "Declan", "Delia", "Derek", "Desmond", "Dev", "Diana", "Diego", "Dominic", "Dylan", "Edgar", "Edith", "Eleanor", "Elena", "Eli", "Elias", "Elin", "Elise", "Ella", "Ellie", "Elliot", "Emil", "Emily", "Emma", "Eric", "Erin", "Esme", "Esther", "Ethan", "Eva", "Evan", "Evelyn", "Ezra", "Fabian", "Farah", "Felix", "Fiona", "Flora", "Frances", "Frank", "Freya", "Gabe", "Gabriel", "Gemma", "George", "Gia", "Gideon", "Grace", "Greta", "Gwen", "Hana", "Hannah", "Harper", "Harriet", "Harvey", "Hazel", "Heidi", "Helen", "Henry", "Hugo", "Ian", "Ida", "Idris", "Imani", "Ingrid", "Irene", "Iris", "Isaac", "Isabel", "Isla", "Ivan", "Ivy", "Jack", "Jacob", "Jade", "James", "Jamie", "Jane", "Jasmine", "Jason", "Jasper", "Jenna", "Jesse", "Joanna", "Joel", "Jonah", "Jordan", "Joseph", "Josie", "Juan", "Judith", "Julia", "Julian", "Jun", "June", "Kai", "Karen", "Karl", "Kate", "Katya", "Keith", "Kelly", "Kenji", "Kevin", "Kira", "Kyle", "Laila", "Lara", "Laura", "Lauren", "Leah", "Leo", "Leon", "Lena", "Lewis", "Liam", "Lila", "Lily", "Lior", "Lisa", "Logan", "Lorenzo", "Louis", "Luca", "Lucas", "Lucy", "Luis", "Luna", "Lydia", "Maeve", "Maggie", "Malik", "Marcus", "Margaret", "Maria", "Marina", "Mario", "Mark", "Martin", "Mason", "Mateo", "Matthew", "Maya", "Megan", "Melissa", "Mia", "Micah", "Michael", "Miguel", "Mika", "Miles", "Milo", "Mira", "Miriam", "Mohammed", "Molly", "Monica", "Morgan", "Nadia", "Naomi", "Natalie", "Nathan", "Nell", "Nico", "Nicole", "Nina", "Noah", "Noor", "Nora", "Oliver", "Olivia", "Omar", "Oscar", "Otis", "Owen", "Paige", "Patrick", "Paul", "Paz", "Pedro", "Penelope", "Peter", "Philip", "Phoebe", "Piper", "Priya", "Quinn", "Rachel", "Rafael", "Ralph", "Ray", "Rebecca", "Remy", "Renee", "Rhea", "Riley", "Robert", "Robin", "Rosa", "Rose", "Rowan", "Ruby", "Rufus", "Ruth", "Ryan", "Sadie", "Sam", "Samira", "Samuel", "Sana", "Sara", "Sasha", "Scott", "Sean", "Selin", "Seth", "Sienna", "Silas", "Simon", "Sofia", "Sophie", "Stella", "Stephen", "Susan", "Tara", "Tessa", "Theo", "Thomas", "Tobias", "Tomas", "Tony", "Tyler", "Uma", "Valentina", "Vera", "Victor", "Vincent", "Violet", "Vivian", "Wade", "Walter", "Wendy", "Wesley", "Will", "William", "Willow", "Wren", "Xavier", "Yara", "Yasmin", "Yusuf", "Zach", "Zara", "Zoe", "Zoey"];
   const last = ["Abbott", "Adler", "Ahmed", "Alvarez", "Amari", "Anand", "Andersen", "Archer", "Armstrong", "Arnold", "Ashford", "Atkins", "Bailey", "Bakker", "Baldwin", "Banks", "Barker", "Barnes", "Barrett", "Bauer", "Baxter", "Beck", "Bell", "Bennett", "Berg", "Bishop", "Blackwood", "Blake", "Boone", "Bowen", "Boyd", "Bradley", "Brandt", "Brennan", "Briggs", "Brooks", "Bryant", "Burke", "Burns", "Byrne", "Calder", "Cameron", "Campbell", "Carlson", "Carr", "Carter", "Castro", "Chambers", "Chan", "Chandler", "Chapman", "Chen", "Clarke", "Cohen", "Cole", "Coleman", "Collins", "Conway", "Cooper", "Costa", "Cox", "Craig", "Cross", "Cruz", "Cunningham", "Dahl", "Dalton", "Daniels", "Davies", "Dawson", "Dean", "Delgado", "Diaz", "Dixon", "Doyle", "Duffy", "Duncan", "Duran", "Eaton", "Elliott", "Ellis", "Emerson", "Espinoza", "Evans", "Farrell", "Farrow", "Ferguson", "Fernandez", "Ferreira", "Fischer", "Fisher", "Fitzgerald", "Fleming", "Fletcher", "Flores", "Foley", "Ford", "Foster", "Fox", "Francis", "Franklin", "Frost", "Gale", "Gallagher", "Garcia", "Gardner", "Garrett", "Gibson", "Gilbert", "Gomez", "Gonzalez", "Gordon", "Graham", "Grant", "Gray", "Greene", "Griffin", "Gupta", "Haas", "Hale", "Hall", "Hamilton", "Hansen", "Hardy", "Harper", "Harris", "Hart", "Hawkins", "Hayes", "Henderson", "Hernandez", "Higgins", "Hill", "Hoffman", "Holland", "Holloway", "Holmes", "Hopkins", "Howard", "Hudson", "Hughes", "Hunt", "Hunter", "Ibarra", "Ingram", "Ito", "Jackson", "Jansen", "Jenkins", "Jennings", "Jensen", "Johansson", "Jordan", "Joyce", "Kade", "Kane", "Kaur", "Keller", "Kelly", "Kennedy", "Khan", "Kim", "Klein", "Knight", "Kowalski", "Kramer", "Lambert", "Lane", "Lang", "Larsen", "Lawson", "Lee", "Leonard", "Lima", "Lindqvist", "Little", "Lloyd", "Long", "Lopez", "Lowe", "Lund", "Lynch", "Mack", "Maddox", "Malone", "Marsh", "Marshall", "Martin", "Mason", "Matthews", "Maxwell", "May", "McCarthy", "McDonald", "Mehta", "Mendoza", "Meyer", "Miller", "Mills", "Mitchell", "Molina", "Monroe", "Moore", "Mora", "Moreau", "Morgan", "Morris", "Moss", "Murphy", "Murray", "Nair", "Nakamura", "Nash", "Nelson", "Newman", "Nguyen", "Nichols", "Nolan", "Novak", "O'Brien", "O'Connor", "Okafor", "Oliver", "Olsen", "Ortiz", "Osborne", "Owens", "Page", "Palmer", "Park", "Parker", "Patel", "Patterson", "Payne", "Pearson", "Perez", "Perry", "Petrov", "Phillips", "Pierce", "Porter", "Powell", "Price", "Quinn", "Quist", "Ramirez", "Ramos", "Ray", "Reed", "Reyes", "Reynolds", "Rhodes", "Richards", "Riley", "Rivera", "Roberts", "Robinson", "Rogers", "Romero", "Rose", "Ross", "Roth", "Rowe", "Russell", "Ryan", "Sanders", "Santos", "Sato", "Schmidt", "Schneider", "Scott", "Sharma", "Shaw", "Shepherd", "Silva", "Simmons", "Simpson", "Singh", "Sloan", "Smith", "Snyder", "Solis", "Spencer", "Stanley", "Steele", "Stevens", "Stewart", "Stone", "Sullivan", "Sutton", "Tan", "Tanaka", "Taylor", "Thompson", "Thornton", "Torres", "Tucker", "Turner", "Vance", "Varga", "Vargas", "Vaughn", "Vega", "Vogel", "Wagner", "Walker", "Wallace", "Walsh", "Ward", "Warner", "Watson", "Weaver", "Webb", "Weber", "Wells", "West", "Wheeler", "Whitaker", "White", "Wilkins", "Williams", "Wilson", "Wolfe", "Wong", "Wood", "Wright", "Yamada", "Yang", "Yates", "Young", "Zhou", "Zimmerman"];
@@ -1269,7 +1279,24 @@
     if (ev.key === "u" || ev.key === "U") { ev.preventDefault(); undo(); }
   });
 
-  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(() => {});
+  $("ver").textContent = "v" + VERSION;
+  if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (refreshing) return; refreshing = true; location.reload(); });
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      const offer = (worker) => {
+        $("update").classList.add("show");
+        $("reloadbtn").onclick = () => worker.postMessage("SKIP_WAITING");
+        $("laterbtn").onclick = () => $("update").classList.remove("show");
+      };
+      if (reg.waiting && navigator.serviceWorker.controller) offer(reg.waiting);
+      reg.addEventListener("updatefound", () => {
+        const w = reg.installing; if (!w) return;
+        w.addEventListener("statechange", () => { if (w.state === "installed" && navigator.serviceWorker.controller) offer(w); });
+      });
+      setInterval(() => reg.update().catch(() => {}), 60 * 60 * 1000);
+    }).catch(() => {});
+  }
   syncSeg();
   $("undo").disabled = !history.length; renderRecent();
   let saved = null;

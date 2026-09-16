@@ -94,8 +94,11 @@ playwright install chromium
 python tests/test_page.py
 ```
 
-`sw.js` caches the page for offline use. Bump the `CACHE` name in it when
-you ship a change you want installed copies to pick up immediately.
+`sw.js` caches the page for offline use. When shipping a change, set the
+same version string in `index.html` (`const VERSION`), `sw.js` and the top
+of `CHANGELOG.md`; the test checks they agree. Installed copies detect the
+new version in the background and show a "Reload" notice; the version in
+use is printed in the page footer.
 
 ## Credits
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.7.0
+- Version number shown in the footer.
+- Installed copies show an "update available" notice with a Reload button when a new version is ready.
+
 ## 1.6.3
 - Fixed the character-kit slider not responding.
 - Tests now cover the kit slider and password mode switch.

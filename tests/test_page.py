@@ -88,6 +88,13 @@ with sync_playwright() as p:
     page.wait_for_timeout(500)
     check("reset produces a fresh identity", page.text_content("#name") != name)
 
+    import re
+    v_page = re.search(r'const VERSION = "([^"]+)"', open(os.path.join(ROOT, "index.html")).read()).group(1)
+    v_sw = re.search(r'const VERSION = "([^"]+)"', open(os.path.join(ROOT, "sw.js")).read()).group(1)
+    v_log = re.search(r"## ([0-9.]+)", open(os.path.join(ROOT, "CHANGELOG.md")).read()).group(1)
+    check("version matches between page, service worker and changelog", v_page == v_sw == v_log)
+    check("footer shows the version", page.text_content("#ver") == "v" + v_page)
+
     check("no page errors overall", not errors)
     browser.close()
 
