@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.1
+- Removed the braids hair style.
+
 ## 1.5.0
 - Removed the pigtails hair style.
 - Recent identities are ordered by creation time.

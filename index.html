@@ -557,14 +557,13 @@
     };
 
     // ----- back hair -----
-    let hs = theme === "vampire" ? 0 : theme === "punk" ? 5 : theme === "wizard" ? 3 : ["knight","robot","astronaut","alien"].includes(theme) ? 10 : theme === "ninja" ? 0 : ri(0, 12);
-    if (brimY) hs = ({ 0: 0, 1: 0, 2: 0, 3: 3, 4: 3, 5: 0, 6: 0, 7: 0, 8: 3, 9: 3, 10: 10, 11: 0, 12: 12, 13: 12 })[hs]; // under a hat: short, long both sides, braids, or none
+    let hs = theme === "vampire" ? 0 : theme === "punk" ? 5 : theme === "wizard" ? 3 : ["knight","robot","astronaut","alien"].includes(theme) ? 10 : theme === "ninja" ? 0 : ri(0, 11);
+    if (brimY) hs = ({ 0: 0, 1: 0, 2: 0, 3: 3, 4: 3, 5: 0, 6: 0, 7: 0, 8: 3, 9: 3, 10: 10, 11: 0 })[hs]; // under a hat: short, long both sides, or none
     const backM = mask();
     if (hs === 3) { ell(backM, cx, 22, headRx + 3.5, 15); rect(backM, cx - headRx - 3, 22, cx + headRx + 3, 36); ell(backM, cx, 36, headRx + 3.5, 6); } // long, rounded ends
     if (hs === 4) { ell(backM, cx, 18, headRx + 4.5, 15); }                                                                  // big curly
     if (hs === 8) { ell(backM, cx, 22, headRx + 3, 14); rect(backM, cx - headRx - 3, 22, cx + headRx + 3, 31); }             // bob
     if (hs === 9) { ell(backM, cx + headRx + 0.5, 22, 4, 8); ell(backM, cx + headRx + 2.5, 30, 3, 7); }                      // ponytail, attached at the crown
-    if (hs === 12) { for (const sx of [cx - headRx - 2.5, cx + headRx + 2.5]) { for (let k = 0; k < 5; k++) ell(backM, sx, 20 + k * 4.4, 3.2 - k * 0.2, 3.2); ell(backM, sx, 41, 2, 2.4); } } // braids, segmented and tapered
     sub(backM, headM); clipUnderHat(backM);
     render(backM, hair, { light: 0, shadow: 3 });
 
@@ -694,7 +693,6 @@
     else if (hs === 9) capShape();
     else if (hs === 10) { }                                                                                                                      // bald
     else if (hs === 11) { ell(frontM, cx, 10.5, headRx - 2, 9); sub(frontM, foreheadCut()); }                                                    // undercut
-    else if (hs === 12) capShape();
     // strand notches along the fringe for a hand-drawn edge
     if (hs !== 10 && hs !== 1 && hs !== 11) { for (let i = 0; i < 4; i++) { const nx = cx - 8 + i * 5 + ri(-1, 1); const n = mask(); tri(n, nx - 1.5, 18, nx + 1.5, 18, nx, 14 + ri(0, 1)); const keep = shift(frontM, 0, -4); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (n[y][x] && keep[y][x]) frontM[y][x] = false; } }
     { const eyes = mask(); rect(eyes, 15, 18, 33, 27); sub(frontM, eyes); }
