@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0
+- Installable as an app: web manifest, icons and a service worker for offline use.
+- Recent identities panel with one-click restore.
+- Passphrases are the default password style, with word count, separator, capitalisation and number options; random characters remain available.
+- Theme toggle in the header: automatic, light or dark.
+- Five new pixel character kits (pirate, ninja, chef, alien, cat) and a slider for how often kits appear.
+- Browser test script (tests/test_page.py) and a GitHub Actions workflow that runs it on every push.
+
 ## 1.3.1
 - Email is now a plain handle with no trailing @ in the display or exports.
 
