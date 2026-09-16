@@ -1024,7 +1024,7 @@
   function sections(id) {
     return {
       core: [["Full name", id.fullName, { key: "fullName" }], ["Birthdate", id.birthdate, { key: "birthdate", suffix: id.age ? ` (age ${id.age})` : "" }], ["Gender", id.gender, { key: "gender" }], ["Location", `${id.city}, ${id.state}`, { key: "city" }]],
-      account: [["Username", id.username, { key: "username" }], ["Display name", id.displayName, { key: "displayName" }], ["Email", id.emailLocalPart, { suffix: "@", key: "emailLocalPart" }], ["Password", id.password, { key: "password" }], ["PIN", id.pin, { key: "pin" }], ["Phone", id.phone, { key: "phone" }]],
+      account: [["Username", id.username, { key: "username" }], ["Display name", id.displayName, { key: "displayName" }], ["Email handle", id.emailLocalPart, { key: "emailLocalPart" }], ["Password", id.password, { key: "password" }], ["PIN", id.pin, { key: "pin" }], ["Phone", id.phone, { key: "phone" }]],
       profile: [["Street", id.street, { key: "street" }], ["City", id.city, { key: "city", field: "city" }], ["State", id.state, { key: "city", field: "state" }], ["ZIP", id.zip, { key: "zip" }], ["Country", id.country, { key: "country" }], ["Occupation", id.occupation, { key: "occupation" }], ["Company", id.company, { key: "company" }], ["Language", id.language, { key: "language" }], ["Favorite color", id.favoriteColor, { key: "favoriteColor" }], ["Hobby", id.hobby, { key: "hobby" }], ["Bio", id.bio, { key: "bio" }]],
       security: id.security.map((s, i) => [s.question, s.answer, { sec: i }]),
       custom: (id.custom || []).map((c, i) => [c.label, c.value, { cus: i }]),

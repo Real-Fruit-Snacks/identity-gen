@@ -48,8 +48,9 @@ occupation and an avatar, so no two of your accounts share the same details.
 Open `index.html` in any modern browser, or use the hosted copy above.
 Nothing needs to be installed or built.
 
-Email addresses are shown as `handle@` so you can pair them with your own
-alias service or domain.
+The email field is a handle only (the part before the @), so you can pair it
+with your own alias service or domain, or paste it into a password manager
+that adds the domain itself.
 
 ## Privacy
 

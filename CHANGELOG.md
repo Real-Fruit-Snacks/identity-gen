@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.1
+- Email is now a plain handle with no trailing @ in the display or exports.
+
 ## 1.3.0
 - "Stored on this device" panel with a visible reset button and a themed confirmation dialog.
 - Pixel avatars rebuilt at 48x48: egg-shaped heads, curved shading, big eyes, strand-cut hair, rounded shoulders and a sticker halo.
