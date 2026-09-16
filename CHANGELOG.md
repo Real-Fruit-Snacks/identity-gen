@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.3
+- Fixed the character-kit slider not responding.
+- Tests now cover the kit slider and password mode switch.
+
+## 1.6.2
+- Ninja kit now wears a full hood instead of showing hair.
+- Backdrops are chosen at random for every avatar rather than matched to kits.
+
 ## 1.6.1
 - Fixed the sticker halo being drawn inside characters on the new backdrops.
 

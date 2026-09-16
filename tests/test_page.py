@@ -75,6 +75,11 @@ with sync_playwright() as p:
     check("identity survives reload", page.text_content("#name") == name)
     check("recent list populated", page.locator("#recent li").count() >= 1)
 
+    page.evaluate("() => { const r = document.getElementById('kitrate'); r.value = 80; r.dispatchEvent(new Event('input', { bubbles: true })); }")
+    check("kit slider updates its label", page.text_content("#kitratev") == "80%")
+    page.click("#pwModeChars")
+    check("random-character mode changes the password", len(page.locator("#account dd").nth(3).text_content()) == 20)
+
     page.click("#themebtn")
     check("theme toggle sets data-theme", page.evaluate("document.documentElement.getAttribute('data-theme')") == "light")
 
