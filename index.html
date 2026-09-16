@@ -555,6 +555,8 @@
     if (bgStyle === 7) { fill((x, y) => y < 28 ? bg0 : y < 31 ? bg1 : bg2); for (let x = 2; x < W; x += 6) { put(x, 33 + (x % 12 === 2 ? 0 : 3), mix(bg2, "#ffffff", 0.35)); put(x + 1, 33 + (x % 12 === 2 ? 0 : 3), mix(bg2, "#ffffff", 0.35)); } const sun = mask(); ell(sun, 12, 16, 5, 5); paint(sun, mix(bg1, "#ffd27a", 0.5)); } // horizon and sea
     if (bgStyle === 8) { fill((x, y) => y >= 30 ? bg1 : null); const hills = [[6, 28, 9, 6], [20, 30, 12, 8], [38, 29, 10, 7]]; for (const [hx, hy, rx, ry] of hills) { const m = mask(); ell(m, hx, hy + ry, rx, ry); fill((x, y) => m[y][x] ? bg2 : null); } fill((x, y) => (y > 34 && (x + y) % 5 === 0) ? mix(bg1, bg2, 0.5) : null); } // hills
 
+    const backdrop = grid.map(rw => rw.slice());   // snapshot: a cell is background only if it still holds its backdrop colour
+
     // ----- geometry -----
     const cx = 24, headCy = 19, headRx = 11, headRy = 12;
     const headM = mask(); ell(headM, cx, headCy - 1, headRx, headRx); ell(headM, cx, headCy + 3, headRx - 1.6, headRy - 3); // egg
@@ -758,12 +760,11 @@
     if (patch) { const pm = mask(); ell(pm, eRx + 1.5, eyeY + 1.5, 3.4, 2.8); render(pm, tones("#1a161c"), { light: 0, shadow: 0, outline: false }); put(eRx, eyeY, "#3a3a48"); for (let x = eLx - 4; x <= eRx - 1; x++) { const y = eyeY - 1 - Math.round((x - (eLx - 4)) / 5); put(x, y, "#1a161c"); } for (let x = eRx + 4; x <= cx + headRx; x++) put(x, eyeY - 1, "#1a161c"); }
 
     // ----- sticker halo -----
-    const bgTones = new Set(); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (y < 2 || x < 2 || x > W - 3) bgTones.add(grid[y][x]);
-    const isBg = c => c === bgBase || c === bg1 || c === bg2 || bgTones.has(c);
+    const isBgAt = (x, y) => grid[y][x] === backdrop[y][x];
     const out = grid.map(rw => rw.slice());
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-      if (!isBg(grid[y][x])) continue;
-      if ([[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]].some(([dx, dy]) => inb(x + dx, y + dy) && !isBg(grid[y + dy][x + dx]))) out[y][x] = "#ffffff";
+      if (!isBgAt(x, y)) continue;
+      if ([[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]].some(([dx, dy]) => inb(x + dx, y + dy) && !isBgAt(x + dx, y + dy))) out[y][x] = "#ffffff";
     }
     let svg = "";
     for (let y = 0; y < H; y++) { let x = 0; while (x < W) { const c = out[y][x]; let x2 = x; while (x2 + 1 < W && out[y][x2 + 1] === c) x2++; svg += `<rect x="${x}" y="${y}" width="${x2 - x + 1}" height="1" fill="${c}"/>`; x = x2 + 1; } }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.1
+- Fixed the sticker halo being drawn inside characters on the new backdrops.
+
 ## 1.6.0
 - Ten designed pixel-art backdrops, some matched to character kits (stars for astronauts and wizards, sea for pirates, night for vampires).
 
