@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.1
+- House windows are always placed on a wall, clear of edges, roof and door; doors are centred with a window either side.
+
 ## 1.10.0
 - Removed the white sticker outline from the Pixel, Duck and House styles; parts keep their own dark outlines.
 
