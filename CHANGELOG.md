@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.0
+- New House avatar style under a Places group: fifteen building types with materials, seasons, day and night, and garden details.
+
 ## 1.8.0
 - New Duck avatar style: front-facing rubber ducks with 57 designs across eight themed collections, body colours, patterns, expressions and accessories.
 - The character-kit slider also controls how often ducks belong to a collection.

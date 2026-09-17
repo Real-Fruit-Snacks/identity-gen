@@ -200,6 +200,9 @@
                 <option value="pixel">Pixel</option>
                 <option value="duck">Duck</option>
               </optgroup>
+              <optgroup label="Places">
+                <option value="house">House</option>
+              </optgroup>
               <optgroup label="Abstract">
                 <option value="marble">Marble</option>
                 <option value="bauhaus">Bauhaus</option>
@@ -347,7 +350,7 @@
 
 <script>
 (() => {
-  const VERSION = "1.8.0";
+  const VERSION = "1.9.0";
   // ---------- data ----------
   const first = ["Aaron", "Abigail", "Adam", "Adrian", "Aiden", "Aisha", "Alan", "Alejandro", "Alex", "Alice", "Alicia", "Alina", "Alma", "Amara", "Amelia", "Amir", "Amy", "Ana", "Anders", "Andrea", "Andrew", "Angela", "Anika", "Anna", "Anthony", "Anya", "April", "Arjun", "Arlo", "Asha", "Ashley", "Astrid", "Aubrey", "Audrey", "August", "Aurora", "Ava", "Axel", "Beatriz", "Ben", "Benjamin", "Bianca", "Blake", "Brenda", "Brian", "Bridget", "Brooke", "Caleb", "Callum", "Camila", "Cara", "Carla", "Carlos", "Carmen", "Caroline", "Casey", "Cassandra", "Cecilia", "Celeste", "Charlotte", "Chloe", "Chris", "Christina", "Claire", "Clara", "Cole", "Colin", "Connor", "Cora", "Corey", "Dana", "Daniel", "Daniela", "Dario", "Darius", "David", "Dean", "Deborah", "Declan", "Delia", "Derek", "Desmond", "Dev", "Diana", "Diego", "Dominic", "Dylan", "Edgar", "Edith", "Eleanor", "Elena", "Eli", "Elias", "Elin", "Elise", "Ella", "Ellie", "Elliot", "Emil", "Emily", "Emma", "Eric", "Erin", "Esme", "Esther", "Ethan", "Eva", "Evan", "Evelyn", "Ezra", "Fabian", "Farah", "Felix", "Fiona", "Flora", "Frances", "Frank", "Freya", "Gabe", "Gabriel", "Gemma", "George", "Gia", "Gideon", "Grace", "Greta", "Gwen", "Hana", "Hannah", "Harper", "Harriet", "Harvey", "Hazel", "Heidi", "Helen", "Henry", "Hugo", "Ian", "Ida", "Idris", "Imani", "Ingrid", "Irene", "Iris", "Isaac", "Isabel", "Isla", "Ivan", "Ivy", "Jack", "Jacob", "Jade", "James", "Jamie", "Jane", "Jasmine", "Jason", "Jasper", "Jenna", "Jesse", "Joanna", "Joel", "Jonah", "Jordan", "Joseph", "Josie", "Juan", "Judith", "Julia", "Julian", "Jun", "June", "Kai", "Karen", "Karl", "Kate", "Katya", "Keith", "Kelly", "Kenji", "Kevin", "Kira", "Kyle", "Laila", "Lara", "Laura", "Lauren", "Leah", "Leo", "Leon", "Lena", "Lewis", "Liam", "Lila", "Lily", "Lior", "Lisa", "Logan", "Lorenzo", "Louis", "Luca", "Lucas", "Lucy", "Luis", "Luna", "Lydia", "Maeve", "Maggie", "Malik", "Marcus", "Margaret", "Maria", "Marina", "Mario", "Mark", "Martin", "Mason", "Mateo", "Matthew", "Maya", "Megan", "Melissa", "Mia", "Micah", "Michael", "Miguel", "Mika", "Miles", "Milo", "Mira", "Miriam", "Mohammed", "Molly", "Monica", "Morgan", "Nadia", "Naomi", "Natalie", "Nathan", "Nell", "Nico", "Nicole", "Nina", "Noah", "Noor", "Nora", "Oliver", "Olivia", "Omar", "Oscar", "Otis", "Owen", "Paige", "Patrick", "Paul", "Paz", "Pedro", "Penelope", "Peter", "Philip", "Phoebe", "Piper", "Priya", "Quinn", "Rachel", "Rafael", "Ralph", "Ray", "Rebecca", "Remy", "Renee", "Rhea", "Riley", "Robert", "Robin", "Rosa", "Rose", "Rowan", "Ruby", "Rufus", "Ruth", "Ryan", "Sadie", "Sam", "Samira", "Samuel", "Sana", "Sara", "Sasha", "Scott", "Sean", "Selin", "Seth", "Sienna", "Silas", "Simon", "Sofia", "Sophie", "Stella", "Stephen", "Susan", "Tara", "Tessa", "Theo", "Thomas", "Tobias", "Tomas", "Tony", "Tyler", "Uma", "Valentina", "Vera", "Victor", "Vincent", "Violet", "Vivian", "Wade", "Walter", "Wendy", "Wesley", "Will", "William", "Willow", "Wren", "Xavier", "Yara", "Yasmin", "Yusuf", "Zach", "Zara", "Zoe", "Zoey"];
   const last = ["Abbott", "Adler", "Ahmed", "Alvarez", "Amari", "Anand", "Andersen", "Archer", "Armstrong", "Arnold", "Ashford", "Atkins", "Bailey", "Bakker", "Baldwin", "Banks", "Barker", "Barnes", "Barrett", "Bauer", "Baxter", "Beck", "Bell", "Bennett", "Berg", "Bishop", "Blackwood", "Blake", "Boone", "Bowen", "Boyd", "Bradley", "Brandt", "Brennan", "Briggs", "Brooks", "Bryant", "Burke", "Burns", "Byrne", "Calder", "Cameron", "Campbell", "Carlson", "Carr", "Carter", "Castro", "Chambers", "Chan", "Chandler", "Chapman", "Chen", "Clarke", "Cohen", "Cole", "Coleman", "Collins", "Conway", "Cooper", "Costa", "Cox", "Craig", "Cross", "Cruz", "Cunningham", "Dahl", "Dalton", "Daniels", "Davies", "Dawson", "Dean", "Delgado", "Diaz", "Dixon", "Doyle", "Duffy", "Duncan", "Duran", "Eaton", "Elliott", "Ellis", "Emerson", "Espinoza", "Evans", "Farrell", "Farrow", "Ferguson", "Fernandez", "Ferreira", "Fischer", "Fisher", "Fitzgerald", "Fleming", "Fletcher", "Flores", "Foley", "Ford", "Foster", "Fox", "Francis", "Franklin", "Frost", "Gale", "Gallagher", "Garcia", "Gardner", "Garrett", "Gibson", "Gilbert", "Gomez", "Gonzalez", "Gordon", "Graham", "Grant", "Gray", "Greene", "Griffin", "Gupta", "Haas", "Hale", "Hall", "Hamilton", "Hansen", "Hardy", "Harper", "Harris", "Hart", "Hawkins", "Hayes", "Henderson", "Hernandez", "Higgins", "Hill", "Hoffman", "Holland", "Holloway", "Holmes", "Hopkins", "Howard", "Hudson", "Hughes", "Hunt", "Hunter", "Ibarra", "Ingram", "Ito", "Jackson", "Jansen", "Jenkins", "Jennings", "Jensen", "Johansson", "Jordan", "Joyce", "Kade", "Kane", "Kaur", "Keller", "Kelly", "Kennedy", "Khan", "Kim", "Klein", "Knight", "Kowalski", "Kramer", "Lambert", "Lane", "Lang", "Larsen", "Lawson", "Lee", "Leonard", "Lima", "Lindqvist", "Little", "Lloyd", "Long", "Lopez", "Lowe", "Lund", "Lynch", "Mack", "Maddox", "Malone", "Marsh", "Marshall", "Martin", "Mason", "Matthews", "Maxwell", "May", "McCarthy", "McDonald", "Mehta", "Mendoza", "Meyer", "Miller", "Mills", "Mitchell", "Molina", "Monroe", "Moore", "Mora", "Moreau", "Morgan", "Morris", "Moss", "Murphy", "Murray", "Nair", "Nakamura", "Nash", "Nelson", "Newman", "Nguyen", "Nichols", "Nolan", "Novak", "O'Brien", "O'Connor", "Okafor", "Oliver", "Olsen", "Ortiz", "Osborne", "Owens", "Page", "Palmer", "Park", "Parker", "Patel", "Patterson", "Payne", "Pearson", "Perez", "Perry", "Petrov", "Phillips", "Pierce", "Porter", "Powell", "Price", "Quinn", "Quist", "Ramirez", "Ramos", "Ray", "Reed", "Reyes", "Reynolds", "Rhodes", "Richards", "Riley", "Rivera", "Roberts", "Robinson", "Rogers", "Romero", "Rose", "Ross", "Roth", "Rowe", "Russell", "Ryan", "Sanders", "Santos", "Sato", "Schmidt", "Schneider", "Scott", "Sharma", "Shaw", "Shepherd", "Silva", "Simmons", "Simpson", "Singh", "Sloan", "Smith", "Snyder", "Solis", "Spencer", "Stanley", "Steele", "Stevens", "Stewart", "Stone", "Sullivan", "Sutton", "Tan", "Tanaka", "Taylor", "Thompson", "Thornton", "Torres", "Tucker", "Turner", "Vance", "Varga", "Vargas", "Vaughn", "Vega", "Vogel", "Wagner", "Walker", "Wallace", "Walsh", "Ward", "Warner", "Watson", "Weaver", "Webb", "Weber", "Wells", "West", "Wheeler", "Whitaker", "White", "Wilkins", "Williams", "Wilson", "Wolfe", "Wong", "Wood", "Wright", "Yamada", "Yang", "Yates", "Young", "Zhou", "Zimmerman"];
@@ -990,14 +993,189 @@
     for (let y = 0; y < H; y++) { let x = 0; while (x < W) { const c = out[y][x]; let x2 = x; while (x2 + 1 < W && out[y][x2 + 1] === c) x2++; svg += `<rect x="${x}" y="${y}" width="${x2 - x + 1}" height="1" fill="${c}"/>`; x = x2 + 1; } }
     return `<g shape-rendering="crispEdges">${svg}</g>`;
   }
+  // ---------- houses (offline, 48x48) ----------
+  function houseAvatar(r, forceStyle) {
+    const W = 48, H = 48;
+    const pick = a => a[Math.floor(r() * a.length)];
+    const chance = p => r() < p;
+    const ri = (a, b) => a + Math.floor(r() * (b - a + 1));
+    const hex2 = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)];
+    const toHex = v => "#" + v.map(n => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0")).join("");
+    const mix = (a, b, t) => { const A = hex2(a), B = hex2(b); return toHex(A.map((v, i) => v + (B[i] - v) * t)); };
+    const INK = "#2b1f33";
+    const tones = (c, k = 1) => ({ o: mix(c, INK, 0.62), d: mix(c, INK, 0.28 * k), b: c, l: mix(c, "#ffffff", 0.3 * k) });
+    const grid = Array.from({ length: H }, () => Array(W).fill(null));
+    const inb = (x, y) => x >= 0 && x < W && y >= 0 && y < H;
+    const get = (x, y) => inb(x, y) ? grid[y][x] : null;
+    const put = (x, y, c) => { if (inb(x, y) && c) grid[y][x] = c; };
+    const mask = () => Array.from({ length: H }, () => Array(W).fill(false));
+    const has = (m, x, y) => inb(x, y) && m[y][x];
+    const ell = (m, cx, cy, rx, ry) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const dx = (x + 0.5 - cx) / rx, dy = (y + 0.5 - cy) / ry; if (dx * dx + dy * dy <= 1) m[y][x] = true; } };
+    const rect = (m, x0, y0, x1, y1) => { for (let y = Math.max(0, y0); y <= Math.min(H - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(W - 1, x1); x++) m[y][x] = true; };
+    const tri = (m, x0, y0, x1, y1, x2, y2) => { const A = (ax, ay, bx, by, cx, cy) => (bx - ax) * (cy - ay) - (cx - ax) * (by - ay);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const px = x + 0.5, py = y + 0.5; const a = A(x0, y0, x1, y1, px, py), b = A(x1, y1, x2, y2, px, py), c = A(x2, y2, x0, y0, px, py); if ((a >= 0 && b >= 0 && c >= 0) || (a <= 0 && b <= 0 && c <= 0)) m[y][x] = true; } };
+    const sub = (m, s) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (s[y][x]) m[y][x] = false; };
+    const add = (m, s) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (s[y][x]) m[y][x] = true; };
+    const copy = m => m.map(rw => rw.slice());
+    const shift = (m, dx, dy) => { const o = mask(); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m[y][x] && inb(x + dx, y + dy)) o[y + dy][x + dx] = true; return o; };
+    const edge8 = (m, x, y) => has(m, x, y) && [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,-1],[-1,1],[1,1]].some(([dx, dy]) => !has(m, x + dx, y + dy));
+    function render(m, t, o = {}) {
+      const { light = 2, shadow = 3, outline = true } = o;
+      const L = light ? (() => { const c = copy(m); sub(c, shift(m, light, light)); return c; })() : null;
+      const D = shadow ? (() => { const c = copy(m); sub(c, shift(m, -shadow, -shadow)); return c; })() : null;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (!m[y][x]) continue; let c = t.b; if (D && D[y][x]) c = t.d; if (L && L[y][x] && !(D && D[y][x])) c = t.l; if (outline && edge8(m, x, y)) c = t.o; grid[y][x] = c; }
+    }
+    const paint = (m, c) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m[y][x]) grid[y][x] = c; };
+    const line = (y, x0, x1, c) => { for (let x = x0; x <= x1; x++) put(x, y, c); };
+    const vline = (x, y0, y1, c) => { for (let y = y0; y <= y1; y++) put(x, y, c); };
+    const fill = (fn) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const c = fn(x, y); if (c) grid[y][x] = c; } };
+
+    // ----- style, palette, time of day -----
+    const style = forceStyle || pick(["cottage","cabin","townhouse","barn","lighthouse","windmill","chalet","tower","tent","treehouse","shop","church","castle","farmhouse","beachhut"]);
+    const night = chance(0.25);
+    let season = pick(["spring","summer","autumn","winter"]);
+    if (style === "beachhut") season = pick(["spring","summer"]);
+    const wallCols = ["#f4e7c8","#f9d9b4","#e9c7a3","#d7e7f3","#f5c9c9","#e8e2f6","#d9ead0","#f0f0ee","#c9d8e6","#e0c7a0"];
+    const wood = ["#a86f4c","#8a5535","#c98c66","#6f4a30"];
+    const roofCols = ["#c8373f","#5a86ad","#3a6f4a","#8a5535","#4a4a5c","#d9773a","#7a4fb3","#b0463e","#2f4f6a","#c9a24a"];
+    const stone = ["#b3bcc9","#9aa3b1","#c7ccd6"];
+    const wallBase = ["cabin","barn","chalet","treehouse"].includes(style) ? pick(wood) : ["tower","castle","lighthouse","church"].includes(style) ? pick(stone) : style === "tent" ? pick(["#c8373f","#3f70d8","#3cae6d","#e3a53c","#8c5fd8"]) : pick(wallCols);
+    const wall = tones(wallBase, 0.8);
+    const roofBase = style === "barn" ? pick(["#4a4a5c","#8a5535","#c8373f"]) : pick(roofCols);
+    const roof = tones(roofBase);
+    const trim = tones(pick(["#f4f4f6","#2b2430","#5a3a29","#3a6f4a","#c8373f"]));
+    const doorBase = pick(["#8a5535","#c8373f","#2e4a8a","#3a6f4a","#e3a53c","#5a3a29","#2b2430"]);
+    const door = tones(doorBase);
+    const glass = night ? tones("#ffd27a") : tones("#9fd3ee");
+
+    // ----- sky, ground -----
+    const skySets = night ? [["#1e1b3a","#2c2857","#4a4390"],["#141d33","#1f2d4d","#31487a"]] : season === "winter" ? [["#e8eef5","#d0dcea","#b9c9dc"]] : [["#cfe6f7","#b9d8f0","#9fc6e6"],["#f7e1c8","#f3c9a8","#e9ad8a"],["#e6e2f5","#cfc6ea","#b7a9dd"],["#dff2f5","#c2e6ea","#a3d6dc"]];
+    const [sk0, sk1, sk2] = pick(skySets);
+    fill((x, y) => y < 14 ? sk0 : y < 26 ? sk1 : sk2);
+    fill((x, y) => ((x + y * 3) % 7 === 0 && y > 8 && y < 30) ? (y < 20 ? mix(sk0, sk1, 0.6) : mix(sk1, sk2, 0.6)) : null);
+    if (night) { for (let i = 0; i < 18; i++) { const x = ri(0, W - 1), y = ri(0, 22); put(x, y, i % 4 === 0 ? "#fff6c8" : mix(sk2, "#ffffff", 0.55)); } if (chance(0.7)) { const moon = mask(); ell(moon, 40, 8, 4.5, 4.5); if (chance(0.5)) { const bite = mask(); ell(bite, 42.5, 6.5, 3.8, 3.8); sub(moon, bite); } paint(moon, "#f3e9c0"); } }
+    else { if (chance(0.6)) { const sun = mask(); ell(sun, pick([8, 40]), 8, 4, 4); paint(sun, "#ffd27a"); put(pick([8, 40]) - 1, 7, "#fff2c0"); } for (let i = 0; i < ri(1, 3); i++) { const cx = ri(6, 42), cy = ri(4, 16); const cl = mask(); ell(cl, cx - 3, cy + 1, 4, 2.5); ell(cl, cx + 3, cy + 1, 4.5, 3); ell(cl, cx, cy, 5, 3); paint(cl, "#ffffff"); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (cl[y][x] && edge8(cl, x, y) && y > cy) put(x, y, mix("#ffffff", sk1, 0.35)); } }
+    const groundY = 40;
+    const grassBase = season === "winter" ? "#f0f4f8" : season === "autumn" ? "#c9a24a" : style === "beachhut" ? "#f2dfb0" : pick(["#7ddc6a","#6cc35e","#8fd27a"]);
+    const grass = tones(grassBase, 0.7);
+    fill((x, y) => y >= groundY ? grass.b : null);
+    line(groundY, 0, W - 1, grass.l);
+    fill((x, y) => (y > groundY + 1 && (x * 3 + y * 5) % 11 === 0) ? grass.d : null);
+    if (style === "beachhut" || style === "lighthouse") { fill((x, y) => y >= groundY + 5 ? "#6fb7e6" : null); line(groundY + 5, 0, W - 1, "#9fd3ee"); for (let x = 2; x < W; x += 9) { put(x, groundY + 7, "#9fd3ee"); put(x + 1, groundY + 7, "#9fd3ee"); } }
+    // distant hills
+    if (!["beachhut","lighthouse"].includes(style)) { const hillC = season === "winter" ? mix(sk2, "#ffffff", 0.5) : mix(sk2, grassBase, 0.5); for (const [hx, rx, ry] of [[6, 12, 6], [30, 14, 7], [46, 10, 5]]) { const m = mask(); ell(m, hx, groundY + 1, rx, ry); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m[y][x] && y < groundY) put(x, y, hillC); } }
+    const backdrop = grid.map(rw => rw.slice());
+
+    // ----- building -----
+    const cx = 24;
+    const bodyM = mask(), roofM = mask();
+    let wallTop = 22, wallBot = groundY, x0 = 12, x1 = 35;
+    if (style === "cottage" || style === "farmhouse" || style === "shop") { x0 = style === "shop" ? 10 : 12; x1 = 47 - x0; wallTop = style === "farmhouse" ? 20 : 23; rect(bodyM, x0, wallTop, x1, wallBot); tri(roofM, x0 - 3, wallTop + 1, x1 + 3, wallTop + 1, cx, wallTop - 11); }
+    if (style === "cabin") { x0 = 11; x1 = 36; wallTop = 24; rect(bodyM, x0, wallTop, x1, wallBot); tri(roofM, x0 - 3, wallTop + 1, x1 + 3, wallTop + 1, cx, wallTop - 9); }
+    if (style === "townhouse") { x0 = 14; x1 = 33; wallTop = 12; rect(bodyM, x0, wallTop, x1, wallBot); rect(roofM, x0 - 1, wallTop - 3, x1 + 1, wallTop); }
+    if (style === "barn") { x0 = 10; x1 = 37; wallTop = 24; rect(bodyM, x0, wallTop, x1, wallBot);
+      // gambrel: steep lower slopes, shallow upper slopes
+      const P = [[x0 - 2, wallTop + 1], [x0 - 2, wallTop - 2], [x0 + 5, wallTop - 10], [cx, wallTop - 14], [x1 - 5, wallTop - 10], [x1 + 2, wallTop - 2], [x1 + 2, wallTop + 1]];
+      for (let i = 1; i < P.length - 1; i++) tri(roofM, P[0][0], P[0][1], P[i][0], P[i][1], P[i + 1][0], P[i + 1][1]);
+      tri(roofM, P[0][0], P[0][1], P[P.length - 1][0], P[P.length - 1][1], cx, wallTop - 14);
+      rect(bodyM, x0 + 6, wallTop - 9, x1 - 6, wallTop); }
+    if (style === "lighthouse") { x0 = 18; x1 = 29; wallTop = 10; tri(bodyM, x0 - 4, wallBot, x1 + 4, wallBot, cx, wallTop - 22); const cut = mask(); rect(cut, 0, 0, W - 1, wallTop - 1); sub(bodyM, cut); rect(bodyM, x0 - 1, wallTop - 1, x1 + 1, wallTop + 1); tri(roofM, x0 - 2, wallTop - 5, x1 + 2, wallTop - 5, cx, wallTop - 10); }
+    if (style === "windmill") { x0 = 17; x1 = 30; wallTop = 18; tri(bodyM, x0 - 3, wallBot, x1 + 3, wallBot, cx, wallTop - 16); const cut = mask(); rect(cut, 0, 0, W - 1, wallTop - 1); sub(bodyM, cut); ell(roofM, cx, wallTop - 1, 8.5, 5); const rc = mask(); rect(rc, 0, wallTop, W - 1, H - 1); sub(roofM, rc); }
+    if (style === "chalet") { x0 = 10; x1 = 37; wallTop = 24; rect(bodyM, x0, wallTop, x1, wallBot); tri(roofM, x0 - 4, wallTop + 2, x1 + 4, wallTop + 2, cx, wallTop - 8); }
+    if (style === "tower" || style === "castle") { x0 = style === "castle" ? 9 : 16; x1 = 47 - x0; wallTop = style === "castle" ? 18 : 10; rect(bodyM, x0, wallTop, x1, wallBot); for (let x = x0; x <= x1; x += 4) rect(roofM, x, wallTop - 3, x + 1, wallTop); if (style === "castle") { rect(bodyM, x0 - 2, wallTop - 6, x0 + 5, wallBot); rect(bodyM, x1 - 5, wallTop - 6, x1 + 2, wallBot); for (const tx of [x0 - 2, x1 - 5]) for (let x = tx; x <= tx + 7; x += 3) rect(roofM, x, wallTop - 9, x + 1, wallTop - 6); } }
+    if (style === "tent") { x0 = 8; x1 = 39; wallTop = 40; tri(bodyM, x0, wallBot, x1, wallBot, cx, 16); }
+    if (style === "treehouse") { x0 = 13; x1 = 34; wallTop = 16; rect(bodyM, x0, wallTop, x1, 29); tri(roofM, x0 - 3, wallTop + 1, x1 + 3, wallTop + 1, cx, wallTop - 9); }
+    if (style === "church") { x0 = 12; x1 = 35; wallTop = 24; rect(bodyM, x0, wallTop, x1, wallBot); tri(roofM, x0 - 2, wallTop + 1, x1 + 2, wallTop + 1, cx, wallTop - 8); rect(bodyM, x0 + 1, 12, x0 + 8, wallTop); tri(roofM, x0, 12, x0 + 9, 12, x0 + 4.5, 4); }
+    if (style === "beachhut") { x0 = 14; x1 = 33; wallTop = 22; rect(bodyM, x0, wallTop, x1, wallBot - 2); rect(roofM, x0 - 2, wallTop - 4, x1 + 2, wallTop); }
+
+    if (style === "treehouse") { const canopy = mask(); ell(canopy, cx, 19, 21, 11); ell(canopy, cx - 12, 24, 9, 7); ell(canopy, cx + 12, 24, 9, 7); render(canopy, tones(season === "autumn" ? "#d9773a" : season === "winter" ? "#6f4a30" : "#3a9a52"), { light: 2, shadow: 4 }); if (season === "winter") for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (canopy[y][x] && !canopy[y - 1]?.[x]) put(x, y, "#ffffff"); }
+    const wallT = style === "tent" ? tones(wallBase) : wall;
+    render(bodyM, wallT, { light: 1, shadow: 3 });
+    // wall texture
+    if (["cabin","chalet","treehouse","barn","beachhut"].includes(style)) for (let y = wallTop + 2; y < wallBot; y += 3) for (let x = x0 + 1; x < x1; x++) if (get(x, y) === wallT.b || get(x, y) === wallT.l) put(x, y, wallT.d);
+    if (["tower","castle","lighthouse","church"].includes(style)) for (let y = wallTop + 2; y < wallBot; y += 3) for (let x = x0 + 1 + ((y / 3) % 2 ? 2 : 0); x < x1; x += 5) if (get(x, y) === wallT.b) put(x, y, wallT.d);
+    if (style === "tent") for (let y = 17; y < wallBot; y += 1) { const c = mix(wallBase, "#ffffff", 0.35); for (let x = cx - Math.floor((y - 16) * 0.45); x <= cx + Math.floor((y - 16) * 0.45); x += 5) if (get(x, y) === wallT.b) put(x, y, c); }
+    if (style === "lighthouse") for (let y = wallTop + 3; y < wallBot; y += 6) for (let x = 0; x < W; x++) for (let k = 0; k < 3; k++) if (bodyM[y + k] && bodyM[y + k][x] && !edge8(bodyM, x, y + k)) put(x, y + k, "#c8373f");
+    // roof
+    if (style !== "tent") render(roofM, style === "windmill" ? tones(pick(["#8a5535","#c8373f","#3a6f4a"])) : roof, { light: 2, shadow: 3 });
+    if (["cottage","cabin","chalet","farmhouse","church","treehouse","shop","barn"].includes(style)) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (roofM[y][x] && !edge8(roofM, x, y) && ((x + y) % 4 === 0)) put(x, y, roof.d);
+    if (style === "townhouse" || style === "beachhut") { line(wallTop - 4, x0 - 1, x1 + 1, roof.o); for (let x = x0; x < x1; x += 3) put(x, wallTop - 1, roof.l); }
+    // chimney
+    if (["cottage","cabin","chalet","farmhouse","townhouse","shop"].includes(style) && chance(0.7)) { const ch = mask(); rect(ch, cx + 6, wallTop - 11, cx + 9, wallTop - 3); rect(ch, cx + 5, wallTop - 12, cx + 10, wallTop - 11); render(ch, tones(pick(stone)), { light: 1, shadow: 1 }); if (chance(0.7)) for (let i = 0; i < 3; i++) { const sm = mask(); ell(sm, cx + 8 + i * 1.5, wallTop - 15 - i * 3, 1.6 + i * 0.5, 1.4 + i * 0.4); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (sm[y][x] && get(x, y) === backdrop[y][x]) put(x, y, mix(sk0, "#ffffff", 0.6)); } }
+    if (style === "barn") { const loft = mask(); rect(loft, cx - 3, wallTop - 8, cx + 3, wallTop - 2); render(loft, tones("#3a2a22"), { light: 0, shadow: 0 }); for (let k = -3; k <= 3; k++) { put(cx + k, wallTop - 5 + Math.abs(k) - 3 + 3, "#5a3a29"); } put(cx, wallTop - 5, "#f2d34b"); }
+    // windmill sails
+    if (style === "windmill") { const hub = cx, hy = wallTop + 2, sailC = tones("#f4f4f6"); for (let k = 0; k < 4; k++) { const ang = k * Math.PI / 2 + Math.PI / 5; const ux = Math.cos(ang), uy = Math.sin(ang), px = -uy, py = ux; const blade = mask(); const P = (d, w) => [hub + ux * d + px * w, hy + uy * d + py * w]; const [a, b, c, d] = [P(4, 0), P(15, 0), P(15, 3.5), P(6, 3.5)]; tri(blade, a[0], a[1], b[0], b[1], c[0], c[1]); tri(blade, a[0], a[1], c[0], c[1], d[0], d[1]); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (blade[y][x] && (get(x, y) === backdrop[y][x] || roofM[y][x])) put(x, y, edge8(blade, x, y) ? sailC.o : ((Math.round((x - hub) * px + (y - hy) * py) % 2) ? sailC.d : sailC.b)); for (let dd = 0; dd <= 15; dd++) put(Math.round(hub + ux * dd), Math.round(hy + uy * dd), "#5a3a29"); } const hubM = mask(); ell(hubM, hub + 0.5, hy + 0.5, 1.8, 1.8); paint(hubM, INK); }
+    // lighthouse lamp
+    if (style === "lighthouse") { const room = mask(); rect(room, x0 + 1, wallTop - 5, x1 - 1, wallTop - 2); paint(room, "#ffe15a"); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (room[y][x] && edge8(room, x, y)) put(x, y, INK); put(cx, wallTop - 4, "#ffffff"); put(cx - 1, wallTop - 4, "#ffffff"); line(wallTop - 1, x0 - 1, x1 + 1, INK); if (night) { for (let d = 3; d < 12; d++) { put(x0 - d, wallTop - 4 + Math.floor(d / 4), mix("#ffe15a", sk0, 0.35 + d * 0.04)); put(x1 + d, wallTop - 4 + Math.floor(d / 4), mix("#ffe15a", sk0, 0.35 + d * 0.04)); } } }
+    // tower flag
+    if (style === "tower" || style === "castle") { vline(cx, wallTop - 10, wallTop - 3, "#5a3a29"); const fl = mask(); tri(fl, cx + 1, wallTop - 10, cx + 7, wallTop - 8, cx + 1, wallTop - 6); render(fl, tones(pick(["#c8373f","#3f70d8","#f2d34b"])), { light: 0, shadow: 1 }); }
+    // church cross
+    if (style === "church") { vline(x0 + 4, 1, 5, trim.b); line(3, x0 + 3, x0 + 5, trim.b); }
+    // treehouse tree
+    if (style === "treehouse") { const trunk = mask(); rect(trunk, cx - 3, 29, cx + 2, groundY); render(trunk, tones("#6f4a30"), { light: 1, shadow: 2 }); const lad = mask(); rect(lad, cx - 8, 29, cx - 7, groundY); render(lad, tones("#a86f4c"), { light: 0, shadow: 0 }); for (let y = 31; y < groundY; y += 3) line(y, cx - 8, cx - 7, "#5a3a29"); }
+    // door
+    const doorX = ["lighthouse","windmill"].includes(style) ? cx : style === "shop" ? cx + 6 : style === "castle" ? cx : cx + (chance(0.5) ? -5 : 5);
+    const doorTop = style === "treehouse" ? 21 : style === "tent" ? 30 : wallBot - 9;
+    const doorBot = style === "treehouse" ? 29 : wallBot;
+    const dm = mask(); rect(dm, doorX - 2, doorTop + 2, doorX + 2, doorBot); ell(dm, doorX + 0.5, doorTop + 2, 2.4, 2.4); const below = mask(); rect(below, 0, doorBot + 1, W - 1, H - 1); sub(dm, below);
+    if (style === "barn") { const bd = mask(); rect(bd, cx - 5, wallBot - 10, cx + 5, wallBot); render(bd, door, { light: 0, shadow: 1 }); vline(cx, wallBot - 9, wallBot, door.o); for (let k = 0; k < 9; k++) { put(cx - 4 + Math.round(k * 0.4), wallBot - 9 + k, door.l); put(cx + 4 - Math.round(k * 0.4), wallBot - 9 + k, door.l); } }
+    else if (style === "tent") { const flap = mask(); tri(flap, cx - 5, wallBot, cx + 5, wallBot, cx, 26); render(flap, tones(mix(wallBase, INK, 0.55)), { light: 0, shadow: 0 }); }
+    else { render(dm, door, { light: 1, shadow: 2 }); put(doorX + 1, doorTop + 6, "#f2d34b"); if (chance(0.5)) { const step = mask(); rect(step, doorX - 3, doorBot + 1, doorX + 3, doorBot + 1); paint(step, mix(grass.b, INK, 0.3)); } }
+    // windows
+    const winW = 4, winH = 4;
+    const winAt = (wx, wy, round = false, box = true) => {
+      const m = mask(); if (round) ell(m, wx + 0.5, wy + 0.5, 3, 3); else rect(m, wx - 3, wy - 3, wx + 3, wy + 3);
+      paint(m, glass.b); for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (m[y][x] && edge8(m, x, y)) put(x, y, trim.b);
+      if (!round) { line(wy, wx - 2, wx + 2, trim.b); vline(wx, wy - 2, wy + 2, trim.b); put(wx - 2, wy - 2, glass.l); put(wx - 1, wy - 2, glass.l); put(wx - 2, wy - 1, glass.l); put(wx + 2, wy + 2, glass.d); put(wx + 1, wy + 2, glass.d); line(wy + 4, wx - 4, wx + 4, trim.d); }
+      else { put(wx - 1, wy - 1, glass.l); put(wx + 1, wy + 1, glass.d); }
+      if (night) { put(wx - 1, wy - 1, "#fff2c0"); }
+      if (box && chance(0.45) && !round) { for (let x = wx - 3; x <= wx + 3; x += 2) put(x, wy + 5, pick(["#e63946","#f2d34b","#ff9ecf","#8b57d1","#ffffff"])); for (let x = wx - 3; x <= wx + 3; x++) if (get(x, wy + 6) !== null) put(x, wy + 6, "#3a9a52"); }
+    };
+    const wins = [];
+    if (["cottage","cabin","chalet","farmhouse","shop","church","barn","beachhut"].includes(style)) { const wy = wallTop + 8; wins.push([doorX > cx ? cx - 7 : cx + 7, wy]); if (style !== "beachhut" && style !== "church") wins.push([doorX > cx ? cx + 12 : cx - 12, wy]); }
+    const gable = (style === "farmhouse" || style === "chalet") ? [cx, wallTop - 3] : null;
+    if (style === "townhouse") { for (const wy of [wallTop + 6, wallTop + 16]) wins.push([cx - 5, wy], [cx + 5, wy]); }
+    if (style === "tower") { for (let wy = wallTop + 5; wy < wallBot - 10; wy += 8) wins.push([cx, wy]); }
+    if (style === "castle") { wins.push([x0 + 2, wallTop - 1], [x1 - 2, wallTop - 1], [cx - 7, wallTop + 6], [cx + 7, wallTop + 6]); }
+    if (style === "lighthouse") { wins.push([cx, wallTop + 14]); }
+    if (style === "windmill") { wins.push([cx, wallTop + 12]); }
+    if (style === "treehouse") { wins.push([cx - 5, wallTop + 7], [cx + 6, wallTop + 7]); }
+    for (const [wx, wy] of wins) winAt(wx, wy, style === "church" || style === "windmill" || style === "lighthouse", style !== "townhouse");
+    if (gable) winAt(gable[0], gable[1], false, false);
+    if (style === "shop") { const aw = mask(); rect(aw, x0 + 1, wallTop + 3, x1 - 1, wallTop + 6); render(aw, tones(pick(["#c8373f","#3f70d8","#3cae6d"])), { light: 1, shadow: 1 }); for (let x = x0 + 2; x < x1 - 1; x += 3) vline(x, wallTop + 4, wallTop + 6, "#f4f4f6"); const sign = mask(); rect(sign, cx - 6, wallTop - 1, cx + 6, wallTop + 2); render(sign, tones("#f4f4f6"), { light: 0, shadow: 1 }); line(wallTop + 0.5 | 0, cx - 4, cx + 4, INK); }
+    // fence first, then trees over it
+    if (chance(0.4)) { const fc = tones("#f4f4f6"); for (const [fx0, fx1] of [[0, x0 - 4], [x1 + 4, W - 1]]) { line(groundY - 2, fx0, fx1, fc.b); line(groundY - 4, fx0, fx1, fc.b); for (let x = fx0; x <= fx1; x += 3) vline(x, groundY - 5, groundY - 1, fc.d); } }
+    const decor = ri(2, 4);
+    for (let i = 0; i < decor; i++) {
+      const side = chance(0.5) ? ri(1, 7) : ri(40, 46), kind = pick(["tree","bush","flowers","pine"]);
+      if (kind === "tree") { const trunk = mask(); rect(trunk, side - 1, groundY - 7, side, groundY); render(trunk, tones("#6f4a30"), { light: 0, shadow: 1 });
+        if (season === "winter") { const bc = "#6f4a30"; vline(side, groundY - 14, groundY - 7, bc); for (const [dx, dy, len, dir] of [[0, -9, 4, -1], [0, -11, 4, 1], [0, -13, 3, -1], [0, -12, 3, 1]]) for (let k = 1; k <= len; k++) put(side + dx + k * dir, groundY + dy - k, bc); put(side, groundY - 15, "#ffffff"); }
+        else { const lv = mask(); ell(lv, side, groundY - 11, 5, 5.5); render(lv, tones(season === "autumn" ? "#d9773a" : "#3a9a52"), { light: 2, shadow: 3 }); } }
+      if (kind === "pine") { const c = tones(season === "winter" ? "#4a7a5a" : "#2f7a4a"); for (let k = 0; k < 3; k++) { const m = mask(); tri(m, side - 5 + k, groundY - 1 - k * 5, side + 5 - k, groundY - 1 - k * 5, side, groundY - 9 - k * 5); render(m, c, { light: 1, shadow: 2 }); } if (season === "winter") for (let k = 0; k < 3; k++) line(groundY - 9 - k * 5, side - 1, side + 1, "#ffffff"); }
+      if (kind === "bush") { const m = mask(); ell(m, side, groundY - 2, 4.5, 3); render(m, tones(season === "autumn" ? "#c98a3a" : "#4fbf6a"), { light: 1, shadow: 2 }); }
+      if (kind === "flowers") for (let k = -2; k <= 2; k += 2) { vline(side + k, groundY - 3, groundY - 1, "#3a9a52"); put(side + k, groundY - 4, pick(["#e63946","#f2d34b","#ff9ecf","#8b57d1","#ffffff"])); }
+    }
+    if (chance(0.6)) { for (let y = groundY + 1; y < H; y++) for (let x = doorX - 2 - (y - groundY); x <= doorX + 2 + (y - groundY); x++) if ((x + y) % 2 === 0) put(x, y, mix(grass.b, "#c9a24a", 0.6)); }
+    if (season === "winter") { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (roofM[y][x] && !roofM[y - 1]?.[x] && get(x, y) !== null) { put(x, y, "#ffffff"); put(x, y + 1, "#eef4fb"); } for (let i = 0; i < 20; i++) put(ri(0, W - 1), ri(0, groundY - 1), "#ffffff"); }
+    if (season === "autumn" && !["beachhut","lighthouse"].includes(style)) for (let i = 0; i < 10; i++) put(ri(0, W - 1), ri(groundY - 1, H - 1), pick(["#d9773a","#c8373f","#f2d34b"]));
+
+    // ----- halo -----
+    const isBgAt = (x, y) => grid[y][x] === backdrop[y][x];
+    const out = grid.map(rw => rw.slice());
+    for (let y = 0; y < groundY; y++) for (let x = 0; x < W; x++) { if (!isBgAt(x, y)) continue; if ([[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]].some(([dx, dy]) => inb(x + dx, y + dy) && !isBgAt(x + dx, y + dy) && y + dy < groundY)) out[y][x] = "#ffffff"; }
+    let svg = "";
+    for (let y = 0; y < H; y++) { let x = 0; while (x < W) { const c = out[y][x]; let x2 = x; while (x2 + 1 < W && out[y][x2 + 1] === c) x2++; svg += `<rect x="${x}" y="${y}" width="${x2 - x + 1}" height="1" fill="${c}"/>`; x = x2 + 1; } }
+    return `<g shape-rendering="crispEdges">${svg}</g>`;
+  }
   styles.pixel = r => pixelAvatar(r, undefined, kitRate());
+  styles.house = r => houseAvatar(r);
   styles.duck = r => duckAvatar(r, undefined, kitRate());
 
   function avatarSVG(styleName, seedStr, text) {
     const r = prng(seedStr + styleName);
     const p = shuffle(palettes[Math.floor(r() * palettes.length)], r);
     const fn = styles[styleName] || styles.initials;
-    const box = (styleName === "pixel" || styleName === "duck") ? 48 : 256;
+    const box = (styleName === "pixel" || styleName === "duck" || styleName === "house") ? 48 : 256;
     return `<svg viewBox="0 0 ${box} ${box}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avatar">${fn(r, p, text)}</svg>`;
   }
 
