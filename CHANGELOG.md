@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.2
+- House doors always end level with the bottom of the wall (beach huts on stilts, treehouses, lighthouses).
+
 ## 1.10.1
 - House windows are always placed on a wall, clear of edges, roof and door; doors are centred with a window either side.
 
