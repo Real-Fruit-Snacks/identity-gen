@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.0
+- Removed the white sticker outline from the Pixel, Duck and House styles; parts keep their own dark outlines.
+
 ## 1.9.1
 - Pixel people: astronaut visors now show the face; long hair under hats no longer drapes as side locks; natural hair colours are weighted higher and always contrast with skin; aliens and robots never get glasses.
 - Ducks: wizard beard; bolder mummy wrapping; cloud duck on a blue body; ice-cream cone the right way up; football face guard clears the beak; accessories no longer stack on hats or on themed heads.

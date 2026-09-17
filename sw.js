@@ -1,4 +1,4 @@
-const VERSION = "1.9.1";
+const VERSION = "1.10.0";
 const CACHE = "identity-gen-" + VERSION;
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png"];
 
