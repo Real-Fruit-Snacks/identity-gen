@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.0
+- New Duck avatar style: front-facing rubber ducks with 57 designs across eight themed collections, body colours, patterns, expressions and accessories.
+- The character-kit slider also controls how often ducks belong to a collection.
+
 ## 1.7.0
 - Version number shown in the footer.
 - Installed copies show an "update available" notice with a Reload button when a new version is ready.

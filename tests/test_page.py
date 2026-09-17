@@ -55,7 +55,7 @@ with sync_playwright() as p:
     check("text export includes custom field", "Referral code" in text)
     check("email handle has no trailing @", "@" not in [l for l in text.splitlines() if "Email handle" in l][0])
 
-    for style in ["initials", "pixel", "marble", "bauhaus", "sunset", "terrain", "rings", "bloom"]:
+    for style in ["initials", "pixel", "duck", "marble", "bauhaus", "sunset", "terrain", "rings", "bloom"]:
         page.select_option("#astyle", style)
         page.click("#newphoto")
         page.wait_for_timeout(80)
@@ -65,6 +65,10 @@ with sync_playwright() as p:
     for _ in range(100):
         page.click("#newphoto")
     check("100 pixel renders without errors", not errors)
+    page.select_option("#astyle", "duck")
+    for _ in range(100):
+        page.click("#newphoto")
+    check("100 duck renders without errors", not errors)
 
     with page.expect_download() as d:
         page.click("#saveimg")
