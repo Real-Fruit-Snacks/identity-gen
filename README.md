@@ -1,110 +1,48 @@
 # identity-gen
 
+Offline generator for throwaway signup identities
+
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/cover-dark.svg">
-  <img src="docs/cover-light.svg" alt="identity-gen: a fresh identity for every signup" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/cover-dark.svg">
+  <img alt="identity-gen: an identity card with a pixel-art avatar, a name and job, birthdate and location, and an account section with username, email handle, passphrase and PIN, each with a copy button" src="docs/assets/cover-light.svg" width="100%">
 </picture>
 
-A single-page, offline generator for throwaway signup identities. One click
-produces a name, username, email handle, password, birthdate, address,
-occupation and an avatar, so no two of your accounts share the same details.
+Open **[real-fruit-snacks.github.io/identity-gen](https://real-fruit-snacks.github.io/identity-gen/)**. To keep it, use your browser's Install or Add to Home Screen; it then works offline. Or download `index.html` and open it from disk.
 
-**Live:** https://real-fruit-snacks.github.io/identity-gen/
+Sites keep asking for more about you than they need. One click here makes a complete stand-in: name, username, email handle, passphrase, birthdate, address, job and an avatar, so no two of your accounts share details. It is one HTML file with no server and no build step, and it assumes you keep the result in a password manager.
 
-## Features
+## What's in it
 
-- Everything is generated in the browser. No server, no analytics, no
-  network requests unless you opt into an online avatar style or photo mode.
-- Reroll any single field, a whole section, or the entire identity.
-- Click any value to edit it. Add custom fields and security questions only
-  when a site asks for them; the question text is editable and the answer is
-  generated for you.
-- Username and email-handle rules (max length, separators, digits).
-- Passwords default to passphrases (word count, separator, capitalisation,
-  trailing number); switch to random characters with length and character
-  class controls and look-alike avoidance.
-- Avatar styles:
-  - **People (offline):** Initials on a gradient, and Pixel, a 48x48
-    pixel-art portrait generator with shaded forms, fourteen hair styles,
-    hats, glasses, facial hair and fourteen character kits (knight, wizard,
-    robot, astronaut, elf, vampire, royal, detective, punk, pirate, ninja,
-    chef, alien, cat) on ten randomly chosen backdrops (glow, dot grid,
-    stripes, sunburst, gradient, hills, sea, night skies). A slider sets how
-    often kits appear.
-  - **Abstract (offline):** Marble, Bauhaus, Sunset, Terrain, Rings, Bloom.
-  - **Illustrated (needs internet):** DiceBear's Lorelei, Notionists and
-    Open Peeps, loaded from a CDN only when selected.
-  - **Photo:** a face from an external image source, if you choose one.
-- Save any generated avatar as a 512px PNG or copy it to the clipboard.
-- Export as plain text, Markdown or JSON, or download `.txt` / `.md`,
-  ready to paste into a password manager. Exports include the site, notes
-  and seed.
-- Seeds: every identity shows a seed that reproduces it and its avatar.
-- Names, usernames and handles already generated on your device are
-  remembered so new identities never repeat them.
-- The current identity survives a refresh. Undo steps back through the
-  last ten, and a Recent identities panel lets you restore any of them
-  directly.
-- Keyboard shortcuts: `N` new identity, `P` new photo, `U` undo.
-- Installable as an app: on a phone or desktop browser, choose "Add to
-  Home Screen" or "Install". A service worker keeps it working offline.
-- Automatic, light or dark theme (header toggle), styled with the
-  [Terminal Workbench](https://github.com/Real-Fruit-Snacks/terminal-workbench-suite)
-  design tokens.
+| Part | Does |
+|---|---|
+| Identity | Name, gender, birthdate, location, username, display name, email handle, password, PIN, phone, address, occupation, company and a short bio |
+| Reroll | Any single field, a whole section, or the entire identity (`N`); `U` steps back through the last ten |
+| Editing | Click any value to change it. Add custom fields, and security questions whose answers are generated for you |
+| Passwords | Passphrases by default (word count, separator, capitals, trailing number), or random characters with length and character-class controls |
+| Avatars | Initials, Pixel (48×48 people with fourteen character kits), Duck, House, six abstract styles, three DiceBear styles, or a photo. Save as a 512px PNG or copy |
+| Seeds | Every identity shows a seed that reproduces it and its avatar exactly |
+| Export | Plain text, Markdown or JSON to the clipboard, or `.txt` / `.md` files, with the site, notes and seed included |
+| Memory | Names and handles already generated on this device are never handed out again; a Recent panel restores any of the last ten |
 
-## Usage
+The email field is a handle only, the part before the `@`, so it pairs with your own alias service or domain.
 
-Open `index.html` in any modern browser, or use the hosted copy above.
-Nothing needs to be installed or built. The hosted copy can be installed as
-an app from the browser menu.
+## Tested on
 
-The email field is a handle only (the part before the @), so you can pair it
-with your own alias service or domain, or paste it into a password manager
-that adds the domain itself.
+- Chromium (Playwright) on Ubuntu, every push: 100 renders each of the Pixel, Duck and House styles, seeds, undo, export, reload, theme and version checks (`tests/test_page.py`)
+- *Not* tested: Firefox, Safari, mobile browsers. It uses nothing unusual, but I haven't checked.
 
-## Privacy
+## Known issues
 
-The page makes no network requests by default. Three optional features do:
+- The page sends nothing by default. Two opt-in features do make requests: the Illustrated avatar styles load DiceBear from jsDelivr (Initials is shown if that fails), and Photo mode fetches a face from thispersondoesnotexist.com or a URL you set.
+- Everything is kept in this browser's local storage. Another browser, another device or a cleared profile starts empty; export anything you need to keep.
+- Don't use generated details where you must give accurate information: financial, government, medical or employment services.
 
-- **Illustrated avatars** load the DiceBear library from jsDelivr when you
-  select one of those styles. If the library cannot be loaded, the page
-  shows the Initials avatar instead.
-- **Photo mode** fetches a face from the configured image source.
-- Nothing else. The People and Abstract avatar styles are drawn entirely in
-  the page.
+## Configuration
 
-All state (settings, current identity, undo history, used-name memory)
-lives in your browser's local storage. The "Stored on this device" panel
-lists exactly what is kept and has a reset button that clears it.
+All settings are on the page: username and handle rules, password rules, how often Pixel avatars wear a character kit, the photo source, and the theme (Auto, Dayshift or Nightshift). They are saved in the browser. "Reset everything" under Stored on this device clears them along with the current identity, undo history and used-name memory.
 
-## Intended use
-
-This is for ordinary sites that ask for more personal detail than they
-need. Do not use generated details where you are required to give accurate
-information, such as financial, government, medical or employment services.
-
-## Development
-
-The page is a single file with no build step. Browser checks live in
-`tests/test_page.py` and run on every push through GitHub Actions:
-
-```
-pip install playwright
-playwright install chromium
-python tests/test_page.py
-```
-
-`sw.js` caches the page for offline use. When shipping a change, set the
-same version string in `index.html` (`const VERSION`), `sw.js` and the top
-of `CHANGELOG.md`; the test checks they agree. Installed copies detect the
-new version in the background and show a "Reload" notice; the version in
-use is printed in the page footer.
-
-## Credits
-
-- Design tokens: [Terminal Workbench Suite](https://github.com/Real-Fruit-Snacks/terminal-workbench-suite) (MIT)
-- Illustrated avatars: [DiceBear](https://www.dicebear.com) Lorelei, Notionists and Open Peeps styles (CC0, no attribution required)
+To change the page: it is a single file with no build step. Run the checks with `pip install playwright`, `playwright install chromium`, `python tests/test_page.py`. When shipping, set the same version in `index.html` (`const VERSION`), `sw.js` and the top of `CHANGELOG.md`; the test checks they agree, and installed copies then offer a Reload.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. The bundled IBM Plex fonts are under the SIL Open Font License (`fonts/OFL.txt`). DiceBear's Lorelei, Notionists and Open Peeps styles are CC0.

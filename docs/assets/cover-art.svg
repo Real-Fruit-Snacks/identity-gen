@@ -1,0 +1,43 @@
+<!-- identity-gen cover panel: the identity card, laid out like the app (avatar from the app's Pixel style).
+     Name and field values are examples. 480x368, origin = panel top-left.
+     Rendered by Real-Fruit-Snacks/.github tools/make-cover.py. -->
+<rect width="480" height="368" fill="{surface}"/>
+<image x="20" y="20" width="144" height="144" image-rendering="pixelated" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAIAAABoJHXvAAAFMUlEQVR42u2dTWgdVRSAX9pQGqzQil2VJtZFikgbNFShCUXQRSAtiGgLlSzswkWr2B8ibW0kEPyhYm2pdaGgYIgotlK0wS5a6E9aiG5MQEq60P7QlbYVDURCQ13MvBOZw7tv5s7c+Xvft7pk3tx73zucj3PmDqTp4ZWdlRzw2JJ7gb9cmW5mP5oFFSgUBKxgNBdx09pXduTEcmQYSoTc0PTliYveaPfOnYWzXG/PUxZ3jZ7+qa4kqRKBgDWmErNtnLV5Vi6b9QY37y4KL8DJ8bE429BrGXhy8x5vMPL5ETIMCFjjNM6HDh9OrYAUE468/bE32LBrtyMBGlYXN1746FDgM7KfzrWr/D9teyN9N5JhKBGyUmKarbSY0KCpxE1oVyV+duC1DFtpMgwlQlZKTLNfNkhSyjMRl9jSXbEappLU/DF1zBssX72DDAMChhITVJCwtGXOG/w1s9B1caiLVeGff+uv7s6EZBhKhPIpUReHYTzz/btHXJeLYt1I25Cv466D1o9zyTCUCC5J9cRZK1FOMQyHKWFKSlHrg4vnwu9HH6aE2YauWiMpMeahFRmGEqHEStSWs5NbpLt0vyzbMMyjC1o7JZJhKBFonAPIG4buDpHtqs3cIrUlGYYSoXxKhKjwLBElQiGU6O517jAnL2HuitSAJ7UNMgwIWGMqMSkTujNP4pIkw4CAlZeMj1fCvP0iJP5eYlLbiHm8EqnSJsNQIjhVYtuaTemv2nrvRl0XGQR44fSniWxjQ8+rFpKUjd1obiXDgIChxASVGBM7NxpMGAmUCAQMJSZCX3ebNzh/7mItuYm4kqoJI9ny6Id7a33m+A+XvMHw2HUyDAgYSoxvQs3Q3r5c/S4Tv/5Wy4SaNN1IhqFEcEk27yWKAAfeHw5cujq2xWLC9u5v6n4m0swt1cHMsvfCb54MAwKGEuPw4qau2qXXRl9BnxwNXBrY/nq17DxlsajdzIatkmFAwGicHTXOUsu1b/3dGzzzwcve4Fz/SLDw+2qVTUlZnVnQS8jMUiVm0jhfG3/LGzzy9DtkGEqEklWJ7c/5urt6JtjnShPa1x28689jU764KjXdaNc4iwlliUp/8K6YJhwafNP/goMHLX4xMSEZhhKhoErUhc2892prQReQEz9+7Q0e6FruF2y/3AlcarHaodwuE8oShpntSkE7E5JhKBFKo0RtQjta7u7zXdSrrlUvZTLz8y+85A1OfvctGQYEDCW64H812MZg72n1fo68RdPx+KN+TajOjjW6TZaNiQnn/0NfJQM3kmEoERpBiVpBhrOYMCacb12rTykjHRnLY8/K2EHlPapEIGBlJdqJs+E5YeIYlJjU+zA5efuaDEOJUKwqUXpG/Rd3lZKWkkhSqyyMJIsoQDIMJUKeq8RsTxYiVZJ21iXDgIBRJYYnJyYkw4CAgSMlPrRiTZH3/3f4xll30EX87mQYAQMCBgSMgEEOG+dMWDd91nAx2Zl/XvIsGQYEDCXm23s+r6wN/kv60fuxFpUJv5icrbuNnNiSDEOJ4JKmJ3r258qE2nsGRu93xFm9t2mi7mfEljlxIxmGEqE0SjTUYJFMmAnajZlIkgxDiVB0JcYsBQskyRTcSIahRCioEstqwmzdSIahRHBJGscrZTWh/oKG5poMQ4nQmEoMc3ZceuRHSLxcJMNQIhRCiY3TJhtYv2KhN7h8a86RG8kwlAjFqhIb0IRh3EiGoUQgYEDACBg0eJU4dXuOn5UMAwJGwICAAQGjSgyQ+NMzIMMIGKTFf68K5j6INadBAAAAAElFTkSuQmCC"/>
+<rect x="20.5" y="20.5" width="143" height="143" fill="none" stroke="{line}"/>
+<rfs-text font="mono-semibold" size="22" x="184.0" y="48" anchor="start" ls="-0.6" fill="{text}">Wendy Jordan</rfs-text>
+<rect x="184" y="58" width="276" height="1" fill="{line}"/>
+<rfs-text font="sans" size="12" x="184.0" y="76" anchor="start" ls="0" fill="{amber}">Bartender in Knoxville</rfs-text>
+<rfs-text font="mono" size="8.5" x="184.0" y="104" anchor="start" ls="0.7" fill="{mute}">FULL NAME</rfs-text>
+<rfs-text font="mono" size="11.5" x="260.0" y="104" anchor="start" ls="0" fill="{text}">Wendy Jordan</rfs-text>
+<rect x="425.8" y="92" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="104" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rfs-text font="mono" size="8.5" x="184.0" y="128" anchor="start" ls="0.7" fill="{mute}">BIRTHDATE</rfs-text>
+<rfs-text font="mono" size="11.5" x="260.0" y="128" anchor="start" ls="0" fill="{text}">07/14/1991</rfs-text>
+<rect x="425.8" y="116" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="128" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rfs-text font="mono" size="8.5" x="184.0" y="152" anchor="start" ls="0.7" fill="{mute}">LOCATION</rfs-text>
+<rfs-text font="mono" size="11.5" x="260.0" y="152" anchor="start" ls="0" fill="{text}">Knoxville, TN</rfs-text>
+<rect x="425.8" y="140" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="152" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rect y="186" width="480" height="1" fill="{line}"/>
+<rfs-text font="mono" size="9" x="20.0" y="210" anchor="start" ls="0.8" fill="{ember}">ACCOUNT</rfs-text>
+<rfs-text font="mono" size="8.5" x="20.0" y="236" anchor="start" ls="0.7" fill="{mute}">USERNAME</rfs-text>
+<rfs-text font="mono" size="11.5" x="124.0" y="236" anchor="start" ls="0" fill="{text}">wren.harbor</rfs-text>
+<rect x="425.8" y="224" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="236" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rfs-text font="mono" size="8.5" x="20.0" y="262" anchor="start" ls="0.7" fill="{mute}">EMAIL HANDLE</rfs-text>
+<rfs-text font="mono" size="11.5" x="124.0" y="262" anchor="start" ls="0" fill="{text}">quietmaple58</rfs-text>
+<rect x="425.8" y="250" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="262" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rfs-text font="mono" size="8.5" x="20.0" y="288" anchor="start" ls="0.7" fill="{mute}">PASSWORD</rfs-text>
+<rfs-text font="mono" size="11.5" x="124.0" y="288" anchor="start" ls="0" fill="{text}">Lantern-Fig-Orbit-Crane-47</rfs-text>
+<rect x="425.8" y="276" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="288" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rfs-text font="mono" size="8.5" x="20.0" y="314" anchor="start" ls="0.7" fill="{mute}">PIN</rfs-text>
+<rfs-text font="mono" size="11.5" x="124.0" y="314" anchor="start" ls="0" fill="{text}">6021</rfs-text>
+<rect x="425.8" y="302" width="34.2" height="17" rx="3" fill="{ember}" fill-opacity="0.13" stroke="{ember}" stroke-opacity="0.35"/>
+<rfs-text font="mono" size="8.5" x="442.9" y="314" anchor="middle" ls="0.6" fill="{ember}">COPY</rfs-text>
+<rect y="336" width="480" height="32" fill="{raised}"/><rect y="336" width="480" height="1" fill="{line}"/>
+<rfs-text font="sans" size="10.5" x="20.0" y="356" anchor="start" ls="0" fill="{mute}">Click any value to edit it. Generated in your browser.</rfs-text>
+<rect x="372" y="342" width="94" height="20" rx="4" fill="{ember}"/>
+<rfs-text font="mono-semibold" size="10" x="419.0" y="356" anchor="middle" ls="0" fill="{on-ember}">New identity</rfs-text>

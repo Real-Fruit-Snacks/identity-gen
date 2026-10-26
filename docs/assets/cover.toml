@@ -1,0 +1,14 @@
+# Cover + social preview. Regenerate with Real-Fruit-Snacks/.github, from the folder holding both clones:
+#   python3 .github/tools/make-cover.py identity-gen/docs/assets/cover.toml
+name        = "identity-gen"
+description = "Offline generator for throwaway signup identities."
+bullets = [
+  "Name, handles, passphrase, address, avatar",
+  "Runs in your browser; sends nothing by default",
+  "Seeds reproduce any identity and its avatar",
+  "Installs as an app and works offline",
+]
+
+[panel]
+kind = "art"
+file = "cover-art.svg"

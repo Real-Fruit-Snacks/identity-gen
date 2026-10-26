@@ -1,0 +1,25 @@
+name: Bug
+description: Something on the page is wrong or broken
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you saw, and what you expected. A seed that shows it helps.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown at the bottom of the page
+      placeholder: "v1.11.0"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: "Firefox 131, Windows 11"
+    validations:
+      required: true

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.11.0
+- RFS look: Nightshift (dark) and Dayshift (light) colours with the Ember accent, IBM Plex Sans and IBM Plex Mono (bundled, so it still works offline). The theme button names them: Auto, Dayshift, Nightshift. Your saved theme choice carries over.
+- New app icon and favicon.
+
 ## 1.10.2
 - House doors always end level with the bottom of the wall (beach huts on stilts, treehouses, lighthouses).
 

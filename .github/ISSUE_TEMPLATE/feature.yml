@@ -1,0 +1,10 @@
+name: Change request
+description: Something identity-gen should do differently
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What you want and why
+      description: The kind of signup form or field it would help with.
+    validations:
+      required: true
