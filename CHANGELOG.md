@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.11.1
+- No change to how the page works: every seed gives the same identity and avatar as in 1.11.0.
+- New README, led by a deck of six identities the page drew from the seeds printed on them, with a worked example of restoring one.
+- The README now spells out two limits: a seed's birth year counts back from today, so it comes out a year later after each 1 January; and the used-name memory only applies when you reroll a single name, username or email handle, not to New identity or a restored seed.
+
 ## 1.11.0
 - RFS look: Nightshift (dark) and Dayshift (light) colours with the Ember accent, IBM Plex Sans and IBM Plex Mono (bundled, so it still works offline). The theme button names them: Auto, Dayshift, Nightshift. Your saved theme choice carries over.
 - New app icon and favicon.
