@@ -1,0 +1,26 @@
+name: links
+
+# Links in the README and the other Markdown files. Monthly as well, because the pages they point at
+# move without this repo changing.
+on:
+  push:
+    branches: [main]
+    paths: ['**.md']
+  schedule:
+    - cron: '41 6 4 * *'
+  workflow_dispatch:
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress --max-retries 4 --retry-wait-time 10 --timeout 30
+            --accept 200,206,429
+            './**/*.md'
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

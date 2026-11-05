@@ -16,3 +16,17 @@ jobs:
       - run: pip install playwright
       - run: playwright install --with-deps chromium
       - run: python tests/test_page.py
+
+  art:
+    # The README deck is the page's own output for six seeds. Fail if docs/assets/deck-*.svg no longer match
+    # what docs/art/make-deck.py draws from index.html: the script changed, or a seed now makes someone else.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r docs/art/requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: python docs/art/make-deck.py
+      - run: git diff --exit-code -- docs/assets/deck-dark.svg docs/assets/deck-light.svg
