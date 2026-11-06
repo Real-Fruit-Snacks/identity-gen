@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.0
+- The `index.html` attached to each release now has the IBM Plex fonts and the icon built in, so the one file opened from disk looks like the website, with no network. Before, it fell back to system fonts and had no icon. The repo's `index.html` is unchanged.
+- Each release also has `identity-gen-1.12.0-dev-windows-x64.zip`, a dev kit for working on the page with no network on Windows x64: the source, the Python packages and the Chromium the checks use, and `offline/setup.ps1`. It needs Python 3.12; see "Developing offline" in `CONTRIBUTING.md`.
+- `SHA256SUMS.txt` on each release lists a SHA-256 for every file.
+- No change to how the page works: every seed gives the same identity and avatar as in 1.11.1.
+
 ## 1.11.1
 - No change to how the page works: every seed gives the same identity and avatar as in 1.11.0.
 - New README, led by a deck of six identities the page drew from the seeds printed on them, with a worked example of restoring one.

@@ -1,0 +1,202 @@
+name: Release
+
+# Pushing a tag vX.Y.Z checks CHANGELOG.md has a "## X.Y.Z" section, builds the downloads, proves both work
+# with the network cut off on a clean Windows runner, then publishes the release with notes from that section.
+# Run it by hand (Actions > Release > Run workflow) to do all of it except publishing.
+#
+#   index.html                                 the page with its fonts and icon built in (tools/build-standalone.py)
+#   identity-gen-X.Y.Z-dev-windows-x64.zip     the offline dev kit (tools/build-dev-kit.py)
+#   SHA256SUMS.txt                             a SHA-256 for each of those
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        name: Version agrees everywhere, and CHANGELOG.md has its section
+        run: |
+          v=$(sed -n 's/.*const VERSION = "\([^"]*\)".*/\1/p' index.html)
+          sw=$(sed -n 's/.*const VERSION = "\([^"]*\)".*/\1/p' sw.js)
+          [ -n "$v" ] && [ "$v" = "$sw" ] || { echo "::error::index.html says '$v', sw.js says '$sw'"; exit 1; }
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "v$v" ]; then
+            echo "::error::tag $GITHUB_REF_NAME, but index.html says $v"; exit 1
+          fi
+          awk -v h="## $v" '$0 == h { f = 1; next } /^## / { if (f) exit } f' CHANGELOG.md | sed -e '/./,$!d' > notes.md
+          grep -q '[^[:space:]]' notes.md || { echo "::error::CHANGELOG.md has no '## $v' section"; exit 1; }
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          cat notes.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: notes
+          path: notes.md
+
+  build:
+    needs: notes
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - run: pip install -r tests/requirements.txt
+      - run: python tools/build-standalone.py
+      - run: python tools/build-dev-kit.py
+      - name: SHA256SUMS.txt
+        shell: python
+        run: |
+          import hashlib, pathlib
+          dist = pathlib.Path("dist")
+          files = sorted(p for p in dist.iterdir() if p.is_file() and p.name != "SHA256SUMS.txt")
+          sums = "".join("%s  %s\n" % (hashlib.sha256(p.read_bytes()).hexdigest(), p.name) for p in files)
+          (dist / "SHA256SUMS.txt").write_bytes(sums.encode())
+          print(sums + "".join("%s: %.1f MB\n" % (p.name, p.stat().st_size / 1e6) for p in files))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: assets
+          path: dist/
+          compression-level: 0
+          if-no-files-found: error
+
+  kit-offline:
+    # Unzip the kit on a clean runner, cut off the network, then set up and run every check from the kit alone.
+    # No checkout: nothing here comes from the repo except what's in the zip.
+    needs: build
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]   # setup.ps1 in Windows PowerShell 5.1 and in PowerShell 7
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: assets
+          path: ${{ runner.temp }}\assets
+      - name: Unzip the kit into a fresh folder
+        shell: pwsh
+        run: |
+          $zip = Get-ChildItem "$env:RUNNER_TEMP\assets\identity-gen-*-dev-windows-x64.zip"
+          $dest = New-Item -ItemType Directory "$env:RUNNER_TEMP\kit"
+          & "$env:SystemRoot\System32\tar.exe" -xf $zip.FullName -C $dest.FullName
+          if ($LASTEXITCODE) { exit 1 }
+          $top = @(Get-ChildItem $dest.FullName)
+          if ($top.Count -ne 1 -or $top[0].Name -ne $zip.BaseName.Replace('-windows-x64', '')) { throw "expected one folder, got: $($top.Name)" }
+          "KIT=$($top[0].FullName)" >> $env:GITHUB_ENV
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: ${{ env.KIT }}\.python-version
+      - name: Cut off package registries and the internet for every step after this
+        shell: pwsh
+        run: |
+          $fresh = "$env:RUNNER_TEMP\fresh"
+          New-Item -ItemType Directory "$fresh\pip-cache", "$fresh\browsers", "$fresh\localappdata" | Out-Null
+          @(
+            'HTTP_PROXY=http://127.0.0.1:9', 'HTTPS_PROXY=http://127.0.0.1:9', 'ALL_PROXY=http://127.0.0.1:9',
+            'NO_PROXY=localhost,127.0.0.1',
+            'PIP_INDEX_URL=http://127.0.0.1:9/simple', 'PIP_NO_INDEX=1', "PIP_CACHE_DIR=$fresh\pip-cache",
+            'PLAYWRIGHT_DOWNLOAD_HOST=http://127.0.0.1:9',
+            "PLAYWRIGHT_BROWSERS_PATH=$fresh\browsers",   # empty: only the kit's own browser can satisfy a launch
+            "LOCALAPPDATA=$fresh\localappdata"
+          ) >> $env:GITHUB_ENV
+      - name: The cut-off holds
+        shell: python
+        run: |
+          import urllib.request
+          try:
+              urllib.request.urlopen("https://pypi.org/simple/", timeout=15)
+          except OSError as e:
+              print("pypi.org unreachable, as intended:", e)
+          else:
+              raise SystemExit("pypi.org answered; the network isn't cut off")
+      - name: offline\setup.ps1 in ${{ matrix.shell }}
+        working-directory: ${{ env.KIT }}
+        shell: cmd
+        run: ${{ matrix.shell }} -NoProfile -ExecutionPolicy Bypass -File offline\setup.ps1
+      - name: Page checks
+        working-directory: ${{ env.KIT }}
+        shell: cmd
+        run: .venv\Scripts\python.exe tests\test_page.py
+      - name: Release index.html, built in the kit and opened from disk (Chromium)
+        working-directory: ${{ env.KIT }}
+        shell: pwsh
+        run: |
+          .venv\Scripts\python.exe tools\build-standalone.py --out "$env:RUNNER_TEMP\kit-dist"
+          if ($LASTEXITCODE) { exit 1 }
+          .venv\Scripts\python.exe tests\test_download.py "$env:RUNNER_TEMP\kit-dist\index.html" --browsers chromium
+      - name: Art check (the README deck redraws byte-for-byte)
+        working-directory: ${{ env.KIT }}
+        shell: pwsh
+        run: |
+          $svgs = 'docs\assets\deck-dark.svg', 'docs\assets\deck-light.svg'
+          $before = (Get-FileHash $svgs).Hash
+          .venv\Scripts\python.exe docs\art\make-deck.py
+          if ($LASTEXITCODE) { exit 1 }
+          $after = (Get-FileHash $svgs).Hash
+          if ("$before" -ne "$after") { throw "make-deck.py drew a different deck: $svgs" }
+          "deck unchanged"
+      - name: Nothing was fetched
+        shell: pwsh
+        run: |
+          $got = @(Get-ChildItem -Recurse -File "$env:RUNNER_TEMP\fresh\pip-cache", "$env:RUNNER_TEMP\fresh\browsers")
+          if ($got) { $got.FullName; throw "files appeared in the fresh caches" }
+          "fresh caches still empty"
+
+  download-offline:
+    # The release index.html opened straight from disk, network cut off, in Chromium and Firefox.
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - run: pip install -r tests/requirements.txt
+      - run: python -m playwright install --only-shell chromium firefox
+      - uses: actions/download-artifact@v4
+        with:
+          name: assets
+          path: ${{ runner.temp }}\assets
+      - name: Cut off package registries and the internet for every step after this
+        shell: pwsh
+        run: |
+          @(
+            'HTTP_PROXY=http://127.0.0.1:9', 'HTTPS_PROXY=http://127.0.0.1:9', 'ALL_PROXY=http://127.0.0.1:9',
+            'NO_PROXY=localhost,127.0.0.1', 'PIP_INDEX_URL=http://127.0.0.1:9/simple', 'PIP_NO_INDEX=1',
+            'PLAYWRIGHT_DOWNLOAD_HOST=http://127.0.0.1:9'
+          ) >> $env:GITHUB_ENV
+      - name: Open the release index.html from disk
+        run: python tests/test_download.py "${{ runner.temp }}\assets\index.html" --browsers chromium,firefox
+
+  publish:
+    if: github.ref_type == 'tag'
+    needs: [notes, build, kit-offline, download-offline]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: assets
+          path: assets
+      - uses: actions/download-artifact@v4
+        with:
+          name: notes
+      - name: Check the sums
+        working-directory: assets
+        run: sha256sum -c SHA256SUMS.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag --latest \
+            --title "$GITHUB_REF_NAME" --notes-file notes.md \
+            assets/index.html assets/identity-gen-*-dev-windows-x64.zip assets/SHA256SUMS.txt

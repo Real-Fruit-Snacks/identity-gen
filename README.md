@@ -7,7 +7,7 @@ Offline generator for throwaway signup identities
   <img alt="A deck of five identity cards with the middle one in front: Wren Elliott, technical writer in Seattle, with a pixel-art wizard avatar, username olivewillowrook, password View-Shelf-Dial-File-79, birthdate 03/26/1991, phone (555) 017-5184 and seed 881ed162ae2eb154-c7a2ea20b2f14c94. Behind it are cards with a Bauhaus, a lighthouse, a duck in a witch's hat and an astronaut avatar. An N key presses and the deck steps one card left" src="docs/assets/deck-light.svg" width="100%">
 </picture>
 
-Open **[real-fruit-snacks.github.io/identity-gen](https://real-fruit-snacks.github.io/identity-gen/)** and press **New identity** (<kbd>N</kbd>). To keep it, use your browser's Install or Add to Home Screen; it then works offline. Or download [`index.html`](index.html) and open it from disk.
+Open **[real-fruit-snacks.github.io/identity-gen](https://real-fruit-snacks.github.io/identity-gen/)** and press **New identity** (<kbd>N</kbd>). To keep it, use your browser's Install or Add to Home Screen; it then works offline. Or download [`index.html`](https://github.com/Real-Fruit-Snacks/identity-gen/releases/latest/download/index.html) from the latest release and open it from disk; it has the fonts and icon built in, so it needs no network.
 
 Sites keep asking for more about you than they need. One key press makes a complete stand-in: name, birthdate, username, email handle, passphrase, PIN, phone, address, job, a short bio and an avatar, so no two of your accounts share details. It is one HTML file with no server and no build step, it sends nothing by default, and it assumes you keep the result in a password manager.
 
@@ -68,7 +68,8 @@ The email field is a handle only, the part before the `@`, so it pairs with your
 ## Tested on
 
 - Chromium (Playwright) on Ubuntu, on every push to `main` and every pull request: 100 renders each of the Pixel, Duck and House styles, seeds, undo, export, reload, theme and version checks (`tests/test_page.py`), and the six seeds in the deck above, regenerated and compared
-- *Not* tested: Firefox, Safari, mobile browsers. It uses nothing unusual, but I haven't checked.
+- The release's `index.html`, opened from disk with the network blocked, in Chromium and Firefox (Playwright), on every push to `main` and before each release: the fonts and icon load from the file, and it makes identities and avatars (`tests/test_download.py`)
+- *Not* tested: Firefox beyond that check, Safari, mobile browsers. It uses nothing unusual, but I haven't checked.
 
 ## Known issues
 
@@ -83,7 +84,7 @@ All settings are on the page: username and handle rules, password rules, how oft
 
 ## Changing the page
 
-It is a single file with no build step. Run the checks with `pip install playwright`, `playwright install chromium`, `python tests/test_page.py`. When shipping, set the same version in `index.html` (`const VERSION`), `sw.js` and the top of `CHANGELOG.md`; the test checks they agree, and installed copies then offer a Reload.
+It is a single file with no build step. Run the checks with `pip install -r tests/requirements.txt`, `python -m playwright install chromium`, `python tests/test_page.py`. To work on it with no network, each release has `identity-gen-<version>-dev-windows-x64.zip` with the source, the packages and Chromium the checks need, and a setup script; see [Developing offline](CONTRIBUTING.md#developing-offline). When shipping, set the same version in `index.html` (`const VERSION`), `sw.js` and the top of `CHANGELOG.md`; the test checks they agree, and installed copies then offer a Reload.
 
 If a change alters what a seed produces, the deck above changes with it. Redraw it and commit the two SVGs:
 
