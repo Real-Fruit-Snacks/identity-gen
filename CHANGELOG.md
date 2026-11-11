@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.13.0
+- New page layout built around filling in a sign-up form. The fields are listed in the order forms usually ask for them (account, basics, address, profile, extra fields, security questions), one row is marked as next, and <kbd>Enter</kbd> copies it and moves to the next one. Copied rows say "ok · copied" until their value changes, and the bar at the top counts them ("6 of 21 copied", with the site if you entered one).
+- New keys: <kbd>J</kbd> and <kbd>K</kbd> move the marked row, <kbd>R</kbd> gives it a new value, <kbd>E</kbd> edits it. Tabbing to a row's Copy button and pressing Enter copies it and moves focus to the next row's button.
+- The portrait, name and seed stay in view on wide screens. Username, password and avatar rules, Recent identities and Stored on this device are in one Rules section below the list; the Rules link on the username, email handle and password rows jumps to theirs.
+- Basics and Address now have their own Reroll.
+- Colours match the RFS brand values exactly (Dayshift Ember, control borders, Raspberry for errors).
+- No change to what a seed produces or to the exports: every seed gives the same identity and avatar as in 1.12.0, and the text, Markdown and JSON keep their order.
+
 ## 1.12.0
 - The `index.html` attached to each release now has the IBM Plex fonts and the icon built in, so the one file opened from disk looks like the website, with no network. Before, it fell back to system fonts and had no icon. The repo's `index.html` is unchanged.
 - Each release also has `identity-gen-1.12.0-dev-windows-x64.zip`, a dev kit for working on the page with no network on Windows x64: the source, the Python packages and the Chromium the checks use, and `offline/setup.ps1`. It needs Python 3.12; see "Developing offline" in `CONTRIBUTING.md`.

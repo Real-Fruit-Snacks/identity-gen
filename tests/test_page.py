@@ -89,6 +89,10 @@ with sync_playwright() as p:
     check("random-character mode changes the password", len(page.locator("#account dd").nth(3).text_content()) == 20)
 
     page.click("#themebtn")
+    try:   # the switch runs inside a view transition, so it can land a frame after the click
+        page.wait_for_function("document.documentElement.getAttribute('data-theme') === 'light'", timeout=2000)
+    except Exception:
+        pass
     check("theme toggle sets data-theme", page.evaluate("document.documentElement.getAttribute('data-theme')") == "light")
 
     page.click("#reset")

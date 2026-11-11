@@ -1,4 +1,4 @@
-const VERSION = "1.12.0";
+const VERSION = "1.13.0";
 const CACHE = "identity-gen-" + VERSION;
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png",
   "./fonts/IBMPlexSans-Regular.woff2", "./fonts/IBMPlexSans-SemiBold.woff2", "./fonts/IBMPlexSans-Bold.woff2", "./fonts/IBMPlexMono-Regular.woff2", "./fonts/IBMPlexMono-Medium.woff2", "./fonts/IBMPlexMono-SemiBold.woff2"];

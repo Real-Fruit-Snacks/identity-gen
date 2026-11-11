@@ -19,7 +19,7 @@
 <style>
   /* RFS tokens: Nightshift (dark, default) / Dayshift (light), accent Ember.
      https://github.com/Real-Fruit-Snacks/rfs-brand/blob/main/BRAND.md
-     Variable names keep the --twb- prefix so the rest of the page is unchanged. */
+     data-theme keeps the values "dark" and "light"; the button names them Nightshift and Dayshift. */
   @font-face { font-family: "IBM Plex Sans"; font-weight: 400; font-display: swap; src: url("fonts/IBMPlexSans-Regular.woff2") format("woff2"); }
   @font-face { font-family: "IBM Plex Sans"; font-weight: 600; font-display: swap; src: url("fonts/IBMPlexSans-SemiBold.woff2") format("woff2"); }
   @font-face { font-family: "IBM Plex Sans"; font-weight: 700; font-display: swap; src: url("fonts/IBMPlexSans-Bold.woff2") format("woff2"); }
@@ -28,345 +28,470 @@
   @font-face { font-family: "IBM Plex Mono"; font-weight: 600; font-display: swap; src: url("fonts/IBMPlexMono-SemiBold.woff2") format("woff2"); }
   :root, :root[data-theme="dark"] {
     color-scheme: dark;
-    --twb-accent: #ff6a3d; --twb-accent-alt: #ffc247; --twb-warm: #ffc247;
-    --twb-red: #ff6e7a; --twb-orange: #ffc247; --twb-violet: #b78cff;
-    --twb-bg-0: #0c0d10; --twb-bg-1: #13151a; --twb-bg-2: #1a1d24; --twb-bg-3: #21252d; --twb-bg-4: #2a2f38;
-    --twb-border: #262a33; --twb-border-strong: #353a45;
-    --twb-text-normal: #e8e6e1; --twb-text-soft: #c2c0ba; --twb-text-muted: #8a8f99; --twb-text-faint: #5e636c; --twb-text-on-accent: #0c0d10;
-    --twb-selection: #ff6a3d33; --twb-active-line: #ffc24713; --twb-nav-active: #ff6a3d1b; --twb-tag-bg: #ff6a3d21; --twb-tag-border: #ff6a3d47; --twb-highlight: #ffc24738; --twb-focus-ring: #ff6a3d2e;
+    --rfs-bg: #0C0D10; --rfs-surface: #13151A; --rfs-raised: #1A1D24; --rfs-line: #262A33; --rfs-line-strong: #636872;
+    --rfs-text: #E8E6E1; --rfs-mute: #8A8F99;
+    --rfs-primary: #FF6A3D; --rfs-primary-hover: #FC7951; --rfs-primary-press: #F98864; --rfs-on-primary: #0C0D10;
+    --rfs-accent: #FFC247; --rfs-signal: #3DDC97; --rfs-fault: #F06292; --rfs-code-bg: #070809;
+    --hover: rgba(232, 230, 225, 0.065); --selection: rgba(255, 106, 61, 0.3); --scrim: rgba(7, 8, 9, 0.72);
   }
   @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
     color-scheme: light;
-    --twb-accent: #c43f11; --twb-accent-alt: #9a6700; --twb-warm: #9a6700;
-    --twb-red: #c8324c; --twb-orange: #9a6700; --twb-violet: #7357b8;
-    --twb-bg-0: #f6f5f2; --twb-bg-1: #ffffff; --twb-bg-2: #eceae4; --twb-bg-3: #e6e3dc; --twb-bg-4: #ddd9d1;
-    --twb-border: #d6d3cb; --twb-border-strong: #bdb9b0;
-    --twb-text-normal: #1a1b1e; --twb-text-soft: #3a3c42; --twb-text-muted: #6b6f78; --twb-text-faint: #9a9ea6; --twb-text-on-accent: #ffffff;
-    --twb-selection: #c43f112b; --twb-active-line: #9a670013; --twb-nav-active: #c43f111b; --twb-tag-bg: #c43f1121; --twb-tag-border: #c43f1147; --twb-highlight: #9a670038; --twb-focus-ring: #c43f112e;
+    --rfs-bg: #F6F5F2; --rfs-surface: #FFFFFF; --rfs-raised: #ECEAE4; --rfs-line: #D6D3CB; --rfs-line-strong: #89867F;
+    --rfs-text: #1A1B1E; --rfs-mute: #666A73;
+    --rfs-primary: #C03B0A; --rfs-primary-hover: #AC370C; --rfs-primary-press: #98330F; --rfs-on-primary: #FFFFFF;
+    --rfs-accent: #925F00; --rfs-signal: #15794D; --rfs-fault: #B0306A; --rfs-code-bg: #FFFFFF;
+    --hover: rgba(26, 27, 30, 0.05); --selection: rgba(192, 59, 10, 0.2); --scrim: rgba(26, 27, 30, 0.45);
   } }
   :root[data-theme="light"] {
     color-scheme: light;
-    --twb-accent: #c43f11; --twb-accent-alt: #9a6700; --twb-warm: #9a6700;
-    --twb-red: #c8324c; --twb-orange: #9a6700; --twb-violet: #7357b8;
-    --twb-bg-0: #f6f5f2; --twb-bg-1: #ffffff; --twb-bg-2: #eceae4; --twb-bg-3: #e6e3dc; --twb-bg-4: #ddd9d1;
-    --twb-border: #d6d3cb; --twb-border-strong: #bdb9b0;
-    --twb-text-normal: #1a1b1e; --twb-text-soft: #3a3c42; --twb-text-muted: #6b6f78; --twb-text-faint: #9a9ea6; --twb-text-on-accent: #ffffff;
-    --twb-selection: #c43f112b; --twb-active-line: #9a670013; --twb-nav-active: #c43f111b; --twb-tag-bg: #c43f1121; --twb-tag-border: #c43f1147; --twb-highlight: #9a670038; --twb-focus-ring: #c43f112e;
+    --rfs-bg: #F6F5F2; --rfs-surface: #FFFFFF; --rfs-raised: #ECEAE4; --rfs-line: #D6D3CB; --rfs-line-strong: #89867F;
+    --rfs-text: #1A1B1E; --rfs-mute: #666A73;
+    --rfs-primary: #C03B0A; --rfs-primary-hover: #AC370C; --rfs-primary-press: #98330F; --rfs-on-primary: #FFFFFF;
+    --rfs-accent: #925F00; --rfs-signal: #15794D; --rfs-fault: #B0306A; --rfs-code-bg: #FFFFFF;
+    --hover: rgba(26, 27, 30, 0.05); --selection: rgba(192, 59, 10, 0.2); --scrim: rgba(26, 27, 30, 0.45);
   }
   :root {
-    --twb-font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-    --twb-font-ui: "IBM Plex Sans", Inter, system-ui, "Segoe UI", sans-serif;
-    --twb-radius-s: 4px; --twb-radius-m: 6px; --twb-radius-l: 8px; --twb-radius-pill: 999px;
-    --twb-transition: 120ms ease;
-    /* aliases used by this page */
-    --paper: var(--twb-bg-0); --card: var(--twb-bg-1); --ink: var(--twb-text-normal); --muted: var(--twb-text-muted);
-    --line: var(--twb-border); --accent: var(--twb-accent); --accent-ink: var(--twb-text-on-accent); --ok: var(--twb-accent); --edit: var(--twb-highlight);
+    --rfs-font-sans: "IBM Plex Sans", Inter, system-ui, "Segoe UI", sans-serif;
+    --rfs-font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --rfs-ease: cubic-bezier(.2, .7, .2, 1); --rfs-dur-fast: 150ms; --rfs-dur-base: 250ms; --rfs-dur-slow: 600ms;
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px; --s8: 64px;
+    --r-s: 4px; --r-m: 6px; --r-l: 8px;
+    --bar: 72px; --gut: 48px;
   }
+
   * { box-sizing: border-box; }
-  ::selection { background: var(--twb-selection); }
-  html, body { margin: 0; background: var(--twb-bg-0); color: var(--twb-text-normal); font-family: var(--twb-font-ui); font-size: 15px; line-height: 1.45; }
-  body { min-height: 100vh; display: grid; place-items: start center; padding: 2rem 1rem 4rem; }
-  main { width: 100%; max-width: 860px; }
+  html { background: var(--rfs-bg); color: var(--rfs-text); font: 16px/1.6 var(--rfs-font-sans); -webkit-text-size-adjust: 100%; scrollbar-color: var(--rfs-line-strong) var(--rfs-bg); }
+  body { margin: 0; min-height: 100vh; caret-color: var(--rfs-primary); }
+  ::selection { background: var(--selection); color: var(--rfs-text); }
+  :focus-visible { outline: 2px solid var(--rfs-primary); outline-offset: 3px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--rfs-line-strong); text-underline-offset: 3px; transition: text-decoration-color var(--rfs-dur-fast) var(--rfs-ease); }
+  @media (hover: hover) { a:hover { text-decoration-color: var(--rfs-primary); } }
+  kbd { display: inline-block; font: 500 11px/1 var(--rfs-font-mono); padding: 3px 5px; border: 1px solid var(--rfs-line-strong); border-radius: var(--r-s); color: inherit; }
+  [hidden] { display: none !important; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .label { margin: 0; font: 500 11px/1.2 var(--rfs-font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rfs-mute); }
 
-  /* manifest label idiom */
-  .manifest, h2, dt, .site label, .seedrow > span, .pw .len label, summary {
-    font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--twb-text-muted);
-  }
+  /* buttons: secondary by default, Ember only for New identity */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); height: 40px; padding: 0 var(--s4); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-m); background: transparent; color: var(--rfs-mute); font: 500 14px/1 var(--rfs-font-sans); white-space: nowrap; cursor: pointer;
+    transition: color var(--rfs-dur-fast) var(--rfs-ease), border-color var(--rfs-dur-fast) var(--rfs-ease), background-color var(--rfs-dur-fast) var(--rfs-ease), transform var(--rfs-dur-fast) var(--rfs-ease); }
+  .btn svg { width: 15px; height: 15px; flex: none; }
+  .btn.sm { height: 32px; padding: 0 var(--s3); font-size: 13px; }
+  .btn kbd { border-color: var(--rfs-line); }
+  @media (hover: hover) { .btn:hover:not(:disabled) { color: var(--rfs-text); border-color: var(--rfs-mute); } }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:disabled { border-color: var(--rfs-line); cursor: default; }
+  .btn:disabled kbd { opacity: 0.6; }
+  .btn.primary { background: var(--rfs-primary); border-color: var(--rfs-primary); color: var(--rfs-on-primary); font-weight: 600; }
+  .btn.primary kbd { border-color: color-mix(in srgb, currentColor 45%, transparent); }
+  @media (hover: hover) { .btn.primary:hover:not(:disabled) { background: var(--rfs-primary-hover); border-color: var(--rfs-primary-hover); color: var(--rfs-on-primary); transform: translateY(-1px); } }
+  .btn.primary:active:not(:disabled) { background: var(--rfs-primary-press); border-color: var(--rfs-primary-press); transform: none; }
+  .btn.done { color: var(--rfs-signal); border-color: var(--rfs-signal); }
+  .btn.fail, .btn.danger { color: var(--rfs-fault); border-color: var(--rfs-fault); }
+  @media (hover: hover) { .btn.danger:hover:not(:disabled) { color: var(--rfs-fault); border-color: var(--rfs-fault); background: var(--hover); } }
+  .ic { width: 32px; height: 32px; flex: none; display: grid; place-items: center; padding: 0; border: 1px solid transparent; border-radius: var(--r-s); background: transparent; color: var(--rfs-mute); cursor: pointer;
+    transition: color var(--rfs-dur-fast) var(--rfs-ease), border-color var(--rfs-dur-fast) var(--rfs-ease), opacity var(--rfs-dur-fast) var(--rfs-ease); }
+  .ic svg { width: 15px; height: 15px; }
+  @media (hover: hover) { .ic:hover { color: var(--rfs-text); border-color: var(--rfs-line-strong); } }
 
-  header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  h1 { font-family: var(--twb-font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin: 0; color: var(--twb-text-muted); }
-  h1::before { content: "$ "; color: var(--twb-accent); }
-  .primary { font: inherit; font-family: var(--twb-font-mono); font-weight: 600; font-size: 13px; letter-spacing: 0.04em; background: var(--twb-accent); color: var(--twb-text-on-accent); border: 1px solid var(--twb-accent); border-radius: var(--twb-radius-m); padding: 0.6rem 1.1rem; cursor: pointer; }
-  .primary:hover { filter: brightness(1.08); }
-  .hdr { display: flex; gap: 0.5rem; align-items: center; }
-  .ghost { font-family: var(--twb-font-mono); font-weight: 600; font-size: 13px; letter-spacing: 0.04em; background: transparent; color: var(--twb-text-soft); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); padding: 0.6rem 1rem; cursor: pointer; }
-  .ghost:hover:not(:disabled) { background: var(--twb-bg-3); border-color: var(--twb-border-strong); color: var(--twb-text-normal); }
-  .ghost:disabled { opacity: 0.45; cursor: default; }
-  .ghost kbd, .primary kbd, footer kbd { font: inherit; font-size: 0.85em; opacity: 0.65; margin-left: 0.45rem; }
-  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [contenteditable]:focus-visible { outline: none; border-color: var(--twb-accent) !important; box-shadow: 0 0 0 2px var(--twb-focus-ring); }
+  /* inputs */
+  .field { width: 100%; min-width: 0; height: 40px; padding: 0 var(--s3); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-m); background: var(--rfs-raised); color: var(--rfs-text); font: 400 14px/1.4 var(--rfs-font-mono); }
+  textarea.field { height: auto; min-height: 112px; padding: var(--s3); line-height: 1.6; resize: vertical; }
+  ::placeholder { color: var(--rfs-mute); opacity: 1; }
+  .sel { position: relative; display: inline-flex; }
+  .sel select { appearance: none; height: 40px; padding: 0 36px 0 var(--s3); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-m); background: var(--rfs-raised); color: var(--rfs-text); font: 400 14px/1 var(--rfs-font-sans); cursor: pointer; }
+  .sel::after { content: ""; position: absolute; right: 15px; top: 50%; width: 7px; height: 7px; border: solid var(--rfs-mute); border-width: 0 1.5px 1.5px 0; transform: translateY(-70%) rotate(45deg); pointer-events: none; }
+  .sel option, .sel optgroup { background: var(--rfs-surface); color: var(--rfs-text); }
+  input[type=checkbox], input[type=radio] { width: 16px; height: 16px; margin: 0; accent-color: var(--rfs-text); flex: none; }
+  input[type=range] { width: 100%; margin: 0; accent-color: var(--rfs-text); }
 
-  .card { background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-l); overflow: hidden; }
-  .top { display: grid; grid-template-columns: 260px 1fr; }
-  .photo { display: flex; flex-direction: column; background: var(--twb-bg-2); border-right: 1px solid var(--twb-border); }
-  .photo img, .photo svg { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; image-rendering: pixelated; }
-  .photo .tools { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; padding: 0.6rem; border-top: 1px solid var(--twb-border); background: var(--twb-bg-1); }
-  .seg { display: inline-flex; background: var(--twb-bg-2); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-pill); padding: 2px; }
-  .seg button { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; border: 0; background: transparent; color: var(--twb-text-muted); border-radius: var(--twb-radius-pill); padding: 0.3rem 0.65rem; cursor: pointer; }
-  .seg button[aria-pressed="true"] { background: var(--twb-bg-3); color: var(--twb-accent); }
-  .imgtools { display: flex; gap: 0.4rem; width: 100%; flex-wrap: wrap; }
-  .hint { width: 100%; font-size: 12px; color: var(--twb-text-faint); }
-  select.copy { appearance: auto; background: var(--twb-bg-2); color: var(--twb-text-normal); }
-  .intro { padding: 1.4rem 1.6rem; }
-  .name { font-family: var(--twb-font-mono); font-size: clamp(1.5rem, 4.4vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 0.3rem; color: var(--twb-text-normal); }
-  .name::after { content: ""; display: block; height: 1px; margin-top: 0.6rem; background: linear-gradient(90deg, var(--twb-border-strong), transparent); }
-  .tagline { margin: 0 0 1.1rem; color: var(--twb-accent-alt); font-size: 14px; }
+  /* bar */
+  .bar { position: sticky; top: 0; z-index: 5; background: var(--rfs-bg); border-bottom: 1px solid var(--rfs-line); }
+  .bar-in { max-width: 1440px; min-height: var(--bar); margin: 0 auto; padding: 0 var(--gut); display: grid; grid-template-columns: 1fr auto 1fr; grid-template-areas: "mark meter acts"; align-items: center; gap: var(--s3) var(--s5); }
+  h1 { grid-area: mark; justify-self: start; margin: 0; position: relative; padding-bottom: 8px; font: 600 20px/1 var(--rfs-font-mono); letter-spacing: -0.05em; white-space: nowrap; }
+  h1::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; border-radius: 2px; background: var(--rfs-primary); transform-origin: left center; }
+  @media (prefers-reduced-motion: no-preference) { h1::after { animation: draw var(--rfs-dur-slow) var(--rfs-ease) 120ms both; } }
+  @keyframes draw { from { transform: scaleX(0); } }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+  .meter { grid-area: meter; display: flex; align-items: center; gap: var(--s3); min-width: 0; font-size: 14px; color: var(--rfs-mute); white-space: nowrap; }
+  .segs { display: flex; gap: 2px; width: 200px; height: 6px; flex: none; }
+  .segs i { flex: 1; border-radius: 1px; background: var(--rfs-line); transition: background-color var(--rfs-dur-base) var(--rfs-ease); }
+  .segs i.on { background: var(--rfs-signal); }
+  .meter b { color: var(--rfs-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .meter .ok { color: var(--rfs-signal); font-weight: 600; }
+  .meter .for { overflow: hidden; text-overflow: ellipsis; max-width: 22ch; }
+  .acts { grid-area: acts; justify-self: end; display: flex; gap: var(--s2); }
 
-  h2 { margin: 0; }
-  .group { padding: 1.1rem 1.6rem; border-top: 1px solid var(--twb-border); }
-  .sechead { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; flex-wrap: wrap; }
-  .sechead .hint { width: auto; flex: 1 1 100%; }
-  dl.sec { grid-template-columns: auto minmax(8rem, max-content) 1fr auto auto; }
-  dl.sec dt { font-family: var(--twb-font-mono); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--twb-text-soft); border: 1px solid transparent; border-radius: var(--twb-radius-s); padding: 0.05rem 0.4rem; margin-left: -0.4rem; cursor: text; min-width: 8rem; }
-  dl.sec dt:hover { background: var(--twb-bg-2); border-color: var(--twb-border); }
-  dl.sec dt:focus { background: var(--twb-bg-2); color: var(--twb-text-normal); border-color: var(--twb-accent); box-shadow: 0 0 0 2px var(--twb-focus-ring); }
-  dl.sec dt:empty::before { content: "Question the site asked"; color: var(--twb-text-faint); }
-  dl#custom { margin-top: 0.4rem; }
-  dl#custom dt:empty::before { content: "Field name"; }
-  dl#custom dd:empty::before { content: "Value"; color: var(--twb-text-faint); }
-  .remove { width: 1.6rem; height: 1.6rem; border-radius: var(--twb-radius-s); border: 1px solid var(--twb-border); background: transparent; color: var(--twb-text-faint); cursor: pointer; font-family: var(--twb-font-mono); font-size: 13px; line-height: 1; padding: 0; }
-  .remove:hover { color: var(--twb-red); border-color: var(--twb-red); }
-  .sechead h2 { color: var(--twb-accent); }
-  dl { margin: 0; display: grid; grid-template-columns: auto max-content 1fr auto; column-gap: 0.8rem; row-gap: 0.4rem; align-items: center; }
-  dd { margin: 0; font-family: var(--twb-font-mono); font-size: 14px; line-height: 1.62; color: var(--twb-text-soft); word-break: break-word; border: 1px solid transparent; border-radius: var(--twb-radius-s); padding: 0.05rem 0.4rem; margin-left: -0.4rem; cursor: text; }
-  dd:hover { background: var(--twb-bg-2); border-color: var(--twb-border); }
-  dd:focus { background: var(--twb-bg-2); color: var(--twb-text-normal); border-color: var(--twb-accent); box-shadow: 0 0 0 2px var(--twb-focus-ring); }
-  dd small { color: var(--twb-text-faint); }
-  .reroll { width: 1.6rem; height: 1.6rem; border-radius: var(--twb-radius-s); border: 1px solid var(--twb-border); background: transparent; color: var(--twb-text-faint); cursor: pointer; display: grid; place-items: center; padding: 0; }
-  .reroll svg { width: 0.85rem; height: 0.85rem; }
-  .reroll:hover { border-color: var(--twb-border-strong); color: var(--twb-accent); background: var(--twb-bg-2); }
-  @media (prefers-reduced-motion: no-preference) { .reroll.spin svg { animation: spin .4s ease; } .copy, footer button, .reroll, .primary { transition: background var(--twb-transition), color var(--twb-transition), border-color var(--twb-transition); } }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .copy { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--twb-accent); background: var(--twb-tag-bg); border: 1px solid var(--twb-tag-border); border-radius: var(--twb-radius-s); padding: 0.25rem 0.55rem; cursor: pointer; white-space: nowrap; }
-  .copy:hover { background: var(--twb-accent); color: var(--twb-text-on-accent); border-color: var(--twb-accent); }
-  .copy.done, footer button.done { background: var(--twb-accent); color: var(--twb-text-on-accent); border-color: var(--twb-accent); }
+  /* walker */
+  .walk { max-width: 1440px; margin: 0 auto; padding: var(--s6) var(--gut) var(--s7); display: grid; grid-template-columns: clamp(296px, 27vw, 400px) minmax(0, 1fr); gap: var(--s6) var(--s7); align-items: start; }
+  .person { position: sticky; top: calc(var(--bar) + var(--s6)); display: grid; gap: var(--s4); grid-template-areas: "photo" "tools" "ident" "seed" "restore"; }
+  #photo { grid-area: photo; aspect-ratio: 1 / 1; border: 1px solid var(--rfs-line); border-radius: var(--r-l); overflow: hidden; background: var(--rfs-raised); }
+  #photo svg, #photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  #photo svg { image-rendering: pixelated; }
+  .avtools { grid-area: tools; display: flex; flex-wrap: wrap; gap: var(--s2); align-items: center; }
+  .seg { display: inline-flex; padding: 3px; border: 1px solid var(--rfs-line-strong); border-radius: var(--r-m); }
+  .seg button { height: 32px; padding: 0 var(--s3); border: 0; border-radius: var(--r-s); background: transparent; color: var(--rfs-mute); font: 500 13px/1 var(--rfs-font-sans); cursor: pointer; transition: color var(--rfs-dur-fast) var(--rfs-ease), background-color var(--rfs-dur-fast) var(--rfs-ease); }
+  .seg button[aria-pressed="true"] { background: var(--rfs-raised); color: var(--rfs-text); }
+  @media (hover: hover) { .seg button:hover { color: var(--rfs-text); } }
+  #imgtools { display: flex; flex-wrap: wrap; gap: var(--s2); }
+  #imghint { flex-basis: 100%; margin: 0; font-size: 13px; line-height: 1.5; color: var(--rfs-mute); }
+  .ident { grid-area: ident; }
+  .name { margin: 0; font: 700 40px/1.05 var(--rfs-font-sans); letter-spacing: -0.03em; text-wrap: balance; overflow-wrap: anywhere; }
+  .tagline { margin: var(--s2) 0 0; color: var(--rfs-mute); }
+  .seed { grid-area: seed; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+  .seed code { padding: 9px 10px; border: 1px solid var(--rfs-line); border-radius: var(--r-s); background: var(--rfs-raised); color: var(--rfs-accent); font: 400 13px/1.2 var(--rfs-font-mono); word-break: break-all; }
+  .restore { grid-area: restore; display: flex; gap: var(--s2); }
 
-  .site { display: grid; grid-template-columns: max-content 1fr; gap: 0.8rem; align-items: center; margin-bottom: 0.9rem; }
-  input.field, textarea.field { font-family: var(--twb-font-mono); font-size: 13.5px; width: 100%; padding: 0.45rem 0.65rem; border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); background: var(--twb-bg-2); color: var(--twb-text-normal); }
-  input.field::placeholder, textarea.field::placeholder { color: var(--twb-text-faint); }
-  textarea.field { min-height: 6rem; resize: vertical; line-height: 1.62; }
-  .seedrow { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-top: 0.8rem; }
-  .seedrow code { font-family: var(--twb-font-mono); font-size: 12.5px; color: var(--twb-accent-alt); background: var(--twb-bg-2); border: 1px solid var(--twb-border); padding: 0.15rem 0.45rem; border-radius: var(--twb-radius-s); }
-  .seedrow input { width: 15rem; max-width: 100%; }
+  .list { min-width: 0; border: 1px solid var(--rfs-line); border-radius: var(--r-l); background: var(--rfs-surface); }
+  .list-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s3) var(--s5); padding: var(--s4) var(--s5); }
+  .list-head h2 { margin: 0; font: 600 22px/1.2 var(--rfs-font-sans); letter-spacing: -0.01em; }
+  .keys { margin: 0; display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); font-size: 13px; color: var(--rfs-mute); }
+  .keys span { display: inline-flex; align-items: center; gap: 6px; }
+  .site { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--s3); padding: 0 var(--s5) var(--s4); }
+  .site label { font-size: 14px; color: var(--rfs-mute); }
+  .rows { position: relative; }
+  .cursor { position: absolute; left: 0; right: 0; top: 0; height: 52px; z-index: 0; background: var(--rfs-raised); opacity: 0; pointer-events: none; }
+  .cursor svg { position: absolute; left: 21px; top: 50%; width: 16px; height: 16px; margin-top: -8px; color: var(--rfs-primary); }
+  @media (prefers-reduced-motion: no-preference) { .cursor.live { transition: transform var(--rfs-dur-base) var(--rfs-ease), height var(--rfs-dur-base) var(--rfs-ease); } }
+  .gh, .gh-hint { position: relative; z-index: 1; }
+  #phraseOpts, #charOpts { display: grid; gap: var(--s4); }
+  .gh { display: flex; align-items: center; gap: var(--s3); min-height: 48px; padding: var(--s2) var(--s5); border-top: 1px solid var(--rfs-line); border-bottom: 1px solid var(--rfs-line); background: var(--rfs-bg); }
+  .gh h3 { flex: 1; }
+  .gh-hint { margin: 0; padding: var(--s3) var(--s5) var(--s4) calc(var(--s5) + 40px + var(--s4)); font-size: 14px; color: var(--rfs-mute); }
+  dl { margin: 0; }
+  .r { position: relative; z-index: 1; display: grid; grid-template-columns: 40px minmax(108px, 156px) minmax(0, 1fr) auto; grid-template-areas: "n dt dd act"; align-items: center; column-gap: var(--s4); min-height: 52px; padding: 6px var(--s5); border-top: 1px solid var(--rfs-line); scroll-margin: calc(var(--bar) + var(--s5)) 0 var(--s5); }
+  dl > .r:first-child { border-top: 0; }
+  .r .n { grid-area: n; font: 500 12px/1 var(--rfs-font-mono); color: var(--rfs-mute); font-variant-numeric: tabular-nums; transition: opacity var(--rfs-dur-fast) var(--rfs-ease); }
+  .r .n, .r dt { cursor: default; }
+  .r dt { grid-area: dt; font-size: 14px; line-height: 1.3; color: var(--rfs-mute); }
+  .r dd { grid-area: dd; min-width: 0; margin: 0 0 0 -8px; padding: 4px 8px; border-radius: var(--r-s); font: 400 19px/1.4 var(--rfs-font-mono); color: var(--rfs-text); overflow-wrap: anywhere; cursor: text; transition: color var(--rfs-dur-base) var(--rfs-ease); }
+  .r dd small { font-size: 14px; color: var(--rfs-mute); }
+  .r dt[contenteditable] { margin-left: -6px; padding: 3px 6px; border-radius: var(--r-s); color: var(--rfs-text); cursor: text; }
+  .r dt:empty::before { content: "Question the site asked"; color: var(--rfs-mute); }
+  #custom .r dt:empty::before { content: "Field name"; }
+  #custom .r dd:empty::before { content: "Value"; color: var(--rfs-mute); }
+  @media (hover: hover) { .r:hover { background: var(--hover); } .r dd:hover, .r dt[contenteditable]:hover { box-shadow: inset 0 0 0 1px var(--rfs-line-strong); } }
+  .r[data-copied] dd { color: var(--rfs-mute); }
+  .r.next { background: transparent; }
+  .r.next .n { opacity: 0; }
+  .r.next dt { color: var(--rfs-text); }
+  .r.next dd { color: var(--rfs-text); font-weight: 500; }
+  .act { grid-area: act; display: flex; align-items: center; justify-content: flex-end; gap: var(--s2); }
+  .r .ic, .r .torule { opacity: 0; }
+  .r:hover .ic, .r:focus-within .ic, .r.next .ic, .r:hover .torule, .r:focus-within .torule, .r.next .torule { opacity: 1; }
+  .torule { font-size: 13px; color: var(--rfs-mute); background: none; border: 0; padding: 4px 2px; cursor: pointer; text-decoration: underline; text-decoration-color: var(--rfs-line-strong); text-underline-offset: 3px; transition: opacity var(--rfs-dur-fast) var(--rfs-ease), color var(--rfs-dur-fast) var(--rfs-ease); }
+  @media (hover: hover) { .torule:hover { color: var(--rfs-text); text-decoration-color: var(--rfs-primary); } }
+  .r .kb { display: none; border-color: var(--rfs-primary); color: var(--rfs-primary); }
+  .r.next .kb { display: inline-block; }
+  .cp, .gh .btn { border-color: transparent; }
+  .cp { min-width: 100px; }
+  @media (hover: hover) { .cp:hover:not(:disabled), .gh .btn:hover:not(:disabled) { border-color: var(--rfs-line-strong); } }
+  .r.next .cp { color: var(--rfs-text); border-color: var(--rfs-mute); }
+  @media (hover: hover) { .r.next .cp:hover:not(:disabled) { border-color: var(--rfs-text); background: var(--hover); } }
+  .cp.done { color: var(--rfs-signal); border-color: transparent; }
+  .r.next .cp.done { border-color: transparent; }
+  @media (hover: hover) { .cp.done:hover:not(:disabled) { color: var(--rfs-signal); border-color: var(--rfs-signal); } }
+  .notes { padding: var(--s4) var(--s5) var(--s5); }
+  .save { display: grid; gap: var(--s3); padding: var(--s5); border-top: 1px solid var(--rfs-line); }
+  .save h3 { margin: 0; font: 600 16px/1.3 var(--rfs-font-sans); }
+  .save p { margin: 0; font-size: 14px; color: var(--rfs-mute); max-width: 62ch; }
+  .row { display: flex; flex-wrap: wrap; gap: var(--s2); }
 
-  footer { display: flex; flex-wrap: wrap; gap: 0.5rem 0.6rem; align-items: center; margin-top: 0.9rem; color: var(--twb-text-muted); font-size: 12.5px; }
-  footer button { font-family: var(--twb-font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--twb-text-soft); background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); padding: 0.45rem 0.8rem; cursor: pointer; }
-  footer button:hover { background: var(--twb-bg-3); border-color: var(--twb-border-strong); color: var(--twb-text-normal); }
-  footer > span { width: 100%; }
-  .ver { font-family: var(--twb-font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--twb-text-faint); margin-right: 0.8rem; }
-  .update { position: fixed; left: 50%; bottom: 1rem; transform: translateX(-50%); display: none; gap: 0.75rem; align-items: center; background: var(--twb-bg-3); color: var(--twb-text-normal); border: 1px solid var(--twb-accent); border-radius: var(--twb-radius-l); padding: 0.6rem 0.9rem; font-size: 13px; z-index: 10; max-width: calc(100% - 2rem); }
-  .update.show { display: flex; }
-  .panel { margin-top: 0.9rem; background: var(--twb-bg-1); border: 1px solid var(--twb-border); border-radius: var(--twb-radius-l); padding: 1rem 1.25rem; }
-  .panel h2 { margin-bottom: 0.7rem; color: var(--twb-accent-alt); }
-  .pw { display: grid; gap: 0.6rem 1.25rem; align-items: center; }
-  .pw .len { display: grid; grid-template-columns: max-content 1fr max-content; gap: 0.6rem; align-items: center; }
-  .pw .len output { font-family: var(--twb-font-mono); font-size: 13px; color: var(--twb-orange); }
-  .pw input[type=range] { width: 100%; accent-color: var(--twb-accent); }
-  .pw .toggles { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .pw label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 13.5px; color: var(--twb-text-soft); }
-  .pw input[type=checkbox], .pw input[type=radio] { accent-color: var(--twb-accent); width: 15px; height: 15px; }
-  .panel .note { margin: 0 0 0.75rem; }
-  .row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
-  .recent { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
-  .recent li { display: grid; grid-template-columns: 1fr auto auto; gap: 0.6rem; align-items: center; padding: 0.35rem 0; border-top: 1px solid var(--twb-border); }
+  /* rules and history */
+  .more { max-width: 1440px; margin: 0 auto; padding: 0 var(--gut) var(--s7); display: grid; gap: var(--s5); }
+  .more h2 { margin: var(--s4) 0 0; font: 600 22px/1.2 var(--rfs-font-sans); letter-spacing: -0.01em; }
+  .panes { display: grid; border: 1px solid var(--rfs-line); border-radius: var(--r-l); background: var(--rfs-surface); }
+  .panes.three { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.45fr); }
+  .panes.two { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .pane { display: grid; gap: var(--s4); align-content: start; padding: var(--s5); scroll-margin-top: calc(var(--bar) + var(--s5)); transition: background-color var(--rfs-dur-slow) var(--rfs-ease); }
+  .pane + .pane { border-left: 1px solid var(--rfs-line); }
+  .pane.lit { background: var(--rfs-raised); transition-duration: var(--rfs-dur-base); }
+  .pane h3 { margin: 0; font: 600 16px/1.3 var(--rfs-font-sans); }
+  .rng { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s2) var(--s3); font-size: 14px; }
+  .rng label { color: var(--rfs-mute); }
+  .rng input { grid-column: 1 / -1; }
+  .rng output { font: 500 14px/1 var(--rfs-font-mono); color: var(--rfs-text); font-variant-numeric: tabular-nums; }
+  .chk { display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5); }
+  .chk label { display: inline-flex; align-items: center; gap: var(--s2); font-size: 14px; cursor: pointer; }
+  .pane > * { min-width: 0; }
+  .pane .sel select { height: 36px; max-width: 100%; font-family: var(--rfs-font-mono); }
+  .sublabel .sel, .sublabel .sel select { width: 100%; min-width: 0; text-overflow: ellipsis; }
+  .sublabel { display: grid; gap: 6px; font-size: 14px; color: var(--rfs-mute); }
+  .note { margin: 0; font-size: 13px; line-height: 1.55; color: var(--rfs-mute); max-width: 64ch; }
+  .recent { list-style: none; margin: 0; padding: 0; }
+  .recent li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--s3); padding: 10px 0; border-top: 1px solid var(--rfs-line); }
   .recent li:first-child { border-top: 0; }
-  .recent .who { font-family: var(--twb-font-mono); font-size: 13px; color: var(--twb-text-soft); }
-  .recent .who small { color: var(--twb-text-faint); margin-left: 0.5rem; }
-  .recent .when { font-size: 12px; color: var(--twb-text-faint); white-space: nowrap; }
-  .recent .empty { color: var(--twb-text-faint); font-size: 12.5px; }
-  .ghost.danger { color: var(--twb-red); border-color: var(--twb-red); }
-  .ghost.danger:hover { background: var(--twb-red); color: var(--twb-text-on-accent); }
-  .primary.danger { background: var(--twb-red); border-color: var(--twb-red); color: #fff; }
-  dialog { background: var(--twb-bg-1); color: var(--twb-text-normal); border: 1px solid var(--twb-border-strong); border-radius: var(--twb-radius-l); padding: 1.25rem 1.5rem; max-width: 26rem; width: calc(100% - 2rem); font-family: var(--twb-font-ui); }
-  dialog::backdrop { background: rgba(12, 13, 16, 0.7); }
-  dialog h2 { color: var(--twb-red); margin-bottom: 0.6rem; }
-  dialog .row { justify-content: flex-end; margin-top: 1rem; }
-  details { margin-top: 1rem; color: var(--twb-text-muted); font-size: 12.5px; }
-  summary { cursor: pointer; }
-  .settings { display: grid; gap: 0.6rem; margin-top: 0.75rem; max-width: 560px; }
-  .settings label { display: grid; gap: 0.25rem; font-size: 12.5px; }
-  .settings input, .settings select { font: inherit; font-family: var(--twb-font-mono); font-size: 13px; padding: 0.45rem 0.65rem; border: 1px solid var(--twb-border); border-radius: var(--twb-radius-m); background: var(--twb-bg-2); color: var(--twb-text-normal); }
-  .note { line-height: 1.7; }
-  .note a { color: var(--twb-accent-alt); }
+  .recent .who { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+  .recent .who small { display: block; font: 400 13px/1.4 var(--rfs-font-mono); color: var(--rfs-mute); }
+  .recent .when { font-size: 13px; color: var(--rfs-mute); white-space: nowrap; }
+  .recent .empty { display: block; padding: 0; border: 0; font-size: 14px; color: var(--rfs-mute); }
 
-  @media (max-width: 600px) {
-    .top { grid-template-columns: 1fr; }
-    .photo { border-right: 0; border-bottom: 1px solid var(--twb-border); }
-    .photo img, .photo svg { aspect-ratio: 1 / 1; width: min(100%, 320px); margin: 0 auto; }
-    dl { grid-template-columns: auto 1fr auto; }
-    dl.sec { grid-template-columns: auto 1fr auto auto; }
-    dt { grid-column: 2 / -1; margin-top: 0.3rem; }
-    .reroll { grid-row: span 2; align-self: start; margin-top: 0.3rem; }
+  footer { max-width: 1440px; margin: 0 auto; padding: var(--s5) var(--gut) var(--s7); display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s2) var(--s5); border-top: 1px solid var(--rfs-line); font-size: 13px; color: var(--rfs-mute); }
+  footer p { margin: 0; max-width: 90ch; }
+  .ver { font: 500 11px/1.6 var(--rfs-font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .update { position: fixed; left: 50%; bottom: var(--s4); z-index: 10; display: none; align-items: center; gap: var(--s3); max-width: calc(100% - 2 * var(--s4)); padding: var(--s3) var(--s3) var(--s3) var(--s4); transform: translateX(-50%); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-l); background: var(--rfs-raised); font-size: 14px; }
+  .update.show { display: flex; }
+  dialog { width: calc(100% - 2 * var(--s4)); max-width: 28rem; padding: var(--s5); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-l); background: var(--rfs-surface); color: var(--rfs-text); }
+  dialog::backdrop { background: var(--scrim); }
+  dialog h2 { margin: 0 0 var(--s3); font: 600 22px/1.2 var(--rfs-font-sans); }
+  dialog p { margin: 0; font-size: 15px; color: var(--rfs-mute); }
+  dialog .row { justify-content: flex-end; margin-top: var(--s5); }
+
+  @media (max-width: 1199px) {
+    :root { --gut: 32px; }
+    .walk { grid-template-columns: minmax(0, 1fr); gap: var(--s5); }
+    .person { position: static; grid-template-columns: 184px minmax(0, 1fr); grid-template-areas: "photo ident" "photo seed" "photo restore" "photo tools"; column-gap: var(--s5); align-items: start; }
+    .name { font-size: 32px; }
+    .panes.three, .panes.two { grid-template-columns: minmax(0, 1fr); }
+    .pane + .pane { border-left: 0; border-top: 1px solid var(--rfs-line); }
+    .segs { width: 88px; }
+    .bar-in { grid-template-columns: auto minmax(0, 1fr) auto; column-gap: var(--s4); }
+    .meter { justify-content: center; }
+    .meter .for { max-width: none; }
   }
+  @media (max-width: 899px) {
+    :root { --bar: 116px; }
+    .bar-in { grid-template-columns: auto 1fr; grid-template-areas: "mark acts" "meter meter"; padding-top: var(--s3); padding-bottom: var(--s3); }
+    .meter .segs { width: auto; flex: 1; }
+  }
+  @media (max-width: 639px) {
+    :root { --gut: 16px; --bar: 104px; }
+    .bar-in { grid-template-columns: auto 1fr auto auto; grid-template-areas: "mark mark . new" "meter meter theme undo"; gap: var(--s2) var(--s2); }
+    h1 { font-size: 18px; }
+    .acts { display: contents; }
+    #themebtn { grid-area: theme; } #undo { grid-area: undo; } #new { grid-area: new; }
+    .acts .btn { height: 36px; padding: 0 var(--s3); font-size: 13px; }
+    .acts .btn kbd, .keys { display: none; }
+    .meter { font-size: 13px; gap: var(--s2); }
+    .meter .for { display: none; }
+    .walk { padding-top: var(--s4); }
+    .person { grid-template-columns: 112px minmax(0, 1fr); grid-template-areas: "photo ident" "seed seed" "restore restore" "tools tools"; column-gap: var(--s4); row-gap: var(--s3); align-items: center; }
+    .name { font-size: 26px; }
+    .seed { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; }
+    .list-head, .site, .gh, .save, .notes { padding-left: var(--s4); padding-right: var(--s4); }
+    .site { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    .r { grid-template-columns: 24px minmax(0, 1fr) auto; grid-template-areas: "n dt act" "n dd dd"; row-gap: 0; column-gap: var(--s3); padding: 8px var(--s4) 10px; }
+    .r .torule { display: none; }
+    .r .n { align-self: start; margin-top: 12px; }
+    .r dd { font-size: 17px; }
+    .cursor svg { left: 12px; top: 16px; margin-top: 0; }
+    .cp { min-width: 0; }
+    .r .kb { display: none !important; }
+    .gh-hint { padding-left: var(--s4); }
+    .pane { padding: var(--s4); }
+    .recent li { grid-template-columns: minmax(0, 1fr) auto; }
+    .recent .when { grid-column: 1; grid-row: 2; }
+  }
+  @media (hover: none) { .r .ic, .r .torule { opacity: 1; } }
 </style>
 </head>
 <body>
-<main>
-  <header>
+<header class="bar">
+  <div class="bar-in">
     <h1>identity-gen</h1>
-    <span class="hdr">
-      <button class="ghost" id="themebtn" type="button" title="Switch between automatic, Dayshift (light) and Nightshift (dark)">Theme: Auto</button>
-      <button class="ghost" id="undo" type="button" title="Bring back the previous identity" disabled>Undo <kbd>U</kbd></button>
-      <button class="primary" id="new">New identity <kbd>N</kbd></button>
-    </span>
-  </header>
-
-  <section class="card" aria-live="polite">
-    <div class="top">
-      <div class="photo" id="photo">
-        <div class="tools">
-          <div class="seg" role="group" aria-label="Photo style">
-            <button type="button" data-style="local" aria-pressed="true">Illustrated</button>
-            <button type="button" data-style="real" aria-pressed="false">Photo</button>
-          </div>
-          <button class="copy" id="newphoto" type="button">New photo (P)</button>
-          <span class="imgtools" id="imgtools">
-            <select id="astyle" class="copy" aria-label="Illustration style">
-              <optgroup label="People">
-                <option value="initials">Initials</option>
-                <option value="pixel">Pixel</option>
-                <option value="duck">Duck</option>
-              </optgroup>
-              <optgroup label="Places">
-                <option value="house">House</option>
-              </optgroup>
-              <optgroup label="Abstract">
-                <option value="marble">Marble</option>
-                <option value="bauhaus">Bauhaus</option>
-                <option value="sunset">Sunset</option>
-                <option value="terrain">Terrain</option>
-                <option value="rings">Rings</option>
-                <option value="bloom">Bloom</option>
-              </optgroup>
-              <optgroup label="Illustrated (needs internet)">
-                <option value="lorelei">Lorelei</option>
-                <option value="notionists">Notionists</option>
-                <option value="openPeeps">Open Peeps</option>
-              </optgroup>
-            </select>
-            <button class="copy" id="saveimg" type="button">Save PNG</button>
-            <button class="copy" id="copyimg" type="button">Copy image</button>
-          </span>
-          <span class="hint" id="imghint">Right-click the photo to save or copy it.</span>
-        </div>
-      </div>
-      <div class="intro">
-        <p class="name" id="name"></p>
-        <p class="tagline" id="tagline"></p>
-        <div class="site">
-          <label for="site">Site</label>
-          <input class="field" id="site" type="text" placeholder="https://example.com (optional, goes at the top of the export)" spellcheck="false" autocomplete="off">
-        </div>
-        <dl id="core"></dl>
-        <div class="seedrow">
-          <span>Seed</span><code id="seedview"></code>
-          <button class="copy" id="copyseed" type="button">Copy</button>
-          <input class="field" id="seedin" type="text" placeholder="Paste a seed to restore" spellcheck="false">
-          <button class="copy" id="loadseed" type="button">Load</button>
-        </div>
-      </div>
+    <div class="meter" id="meter">
+      <span class="segs" id="segs" aria-hidden="true"></span>
+      <span id="metertext"><b>0</b> of 21 copied</span>
+      <span class="for" id="meterfor"></span>
     </div>
-    <div class="group"><div class="sechead"><button class="reroll" type="button" data-section="account" aria-label="Shuffle account"></button><h2>Account</h2></div><dl id="account"></dl></div>
-    <div class="group"><div class="sechead"><button class="reroll" type="button" data-section="profile" aria-label="Shuffle profile"></button><h2>Profile details sites often ask for</h2><button class="copy" id="addcustom" type="button" aria-label="Add a custom field">+ Add field</button></div><dl id="profile"></dl><dl id="custom" class="sec"></dl></div>
-    <div class="group"><div class="sechead"><button class="reroll" type="button" data-section="security" aria-label="New answers for all security questions"></button><h2>Security questions</h2><button class="copy" id="addsec" type="button" aria-label="Add a security question">+ Add</button><span class="hint" id="sechint">Add one when a site asks. Type the site's question; the answer is generated for you.</span></div><dl id="security" class="sec"></dl></div>
-    <div class="group"><div class="sechead"><h2>Notes</h2></div>
-      <textarea class="field" id="notes" placeholder="Anything else about this account: what it's for, quirks of the signup, recovery codes… Cleared when you make a new identity, included in every export."></textarea>
+    <div class="acts">
+      <button class="btn" id="themebtn" type="button" title="Switch between automatic, Dayshift (light) and Nightshift (dark)">Theme: Auto</button>
+      <button class="btn" id="undo" type="button" title="Bring back the previous identity" disabled>Undo <kbd>U</kbd></button>
+      <button class="btn primary" id="new" type="button">New identity <kbd>N</kbd></button>
+    </div>
+  </div>
+</header>
+
+<main class="walk">
+  <aside class="person" aria-label="The person">
+    <div id="photo"></div>
+    <div class="avtools">
+      <div class="seg" role="group" aria-label="Avatar source">
+        <button type="button" data-style="local" aria-pressed="true">Illustrated</button>
+        <button type="button" data-style="real" aria-pressed="false">Photo</button>
+      </div>
+      <span id="imgtools">
+        <span class="sel"><select id="astyle" aria-label="Illustration style">
+          <optgroup label="People">
+            <option value="initials">Initials</option>
+            <option value="pixel">Pixel</option>
+            <option value="duck">Duck</option>
+          </optgroup>
+          <optgroup label="Places">
+            <option value="house">House</option>
+          </optgroup>
+          <optgroup label="Abstract">
+            <option value="marble">Marble</option>
+            <option value="bauhaus">Bauhaus</option>
+            <option value="sunset">Sunset</option>
+            <option value="terrain">Terrain</option>
+            <option value="rings">Rings</option>
+            <option value="bloom">Bloom</option>
+          </optgroup>
+          <optgroup label="Illustrated (needs internet)">
+            <option value="lorelei">Lorelei</option>
+            <option value="notionists">Notionists</option>
+            <option value="openPeeps">Open Peeps</option>
+          </optgroup>
+        </select></span>
+      </span>
+      <button class="btn" id="newphoto" type="button">New avatar <kbd>P</kbd></button>
+      <span class="row" id="imgsave"><button class="btn" id="saveimg" type="button">Save PNG</button><button class="btn" id="copyimg" type="button">Copy image</button></span>
+      <p id="imghint">Right-click the photo to save or copy it.</p>
+    </div>
+    <div class="ident">
+      <h2 class="name" id="name"></h2>
+      <p class="tagline" id="tagline"></p>
+    </div>
+    <div class="seed">
+      <span class="label">Seed</span><code id="seedview"></code>
+      <button class="btn sm" id="copyseed" type="button">Copy</button>
+    </div>
+    <div class="restore">
+      <label class="vh" for="seedin">Seed to restore</label>
+      <input class="field" id="seedin" type="text" placeholder="Paste a seed to restore" spellcheck="false" autocomplete="off">
+      <button class="btn" id="loadseed" type="button">Load</button>
+    </div>
+  </aside>
+
+  <section class="list" aria-labelledby="listhead">
+    <div class="list-head">
+      <h2 id="listhead">Fill order</h2>
+      <p class="keys"><span><kbd>Enter</kbd> copy, then next</span><span><kbd>J</kbd><kbd>K</kbd> move</span><span><kbd>R</kbd> new value</span><span><kbd>E</kbd> edit</span></p>
+    </div>
+    <div class="site">
+      <label for="site">Signing up at</label>
+      <input class="field" id="site" type="text" placeholder="https://example.com (optional; goes at the top of the export)" spellcheck="false" autocomplete="off">
+    </div>
+    <div class="rows" id="rows">
+      <div class="cursor" id="cursor" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5 10.5 8 6 12.5"/></svg></div>
+      <div class="gh"><h3 class="label">Account</h3><button class="btn sm" type="button" data-section="account" aria-label="New account details">Reroll</button></div>
+      <dl id="account"></dl>
+      <div class="gh"><h3 class="label">Basics</h3><button class="btn sm" type="button" data-section="core" aria-label="New name, birthdate and gender">Reroll</button></div>
+      <dl id="core"></dl>
+      <div class="gh"><h3 class="label">Address</h3><button class="btn sm" type="button" data-section="address" aria-label="New address">Reroll</button></div>
+      <dl id="address"></dl>
+      <div class="gh"><h3 class="label">Profile</h3><button class="btn sm" type="button" data-section="profile" aria-label="New profile details">Reroll</button></div>
+      <dl id="profile"></dl>
+      <div class="gh"><h3 class="label">Extra fields</h3><button class="btn sm" id="addcustom" type="button" aria-label="Add a custom field">Add field</button></div>
+      <dl id="custom"></dl>
+      <p class="gh-hint" id="customhint">A field the site asks for that isn't above. Name it; the value is generated for you.</p>
+      <div class="gh"><h3 class="label">Security questions</h3><button class="btn sm" type="button" data-section="security" aria-label="New answers for all security questions">Reroll</button><button class="btn sm" id="addsec" type="button" aria-label="Add a security question">Add question</button></div>
+      <dl id="security"></dl>
+      <p class="gh-hint" id="sechint">Add one when a site asks. Type the site's question; the answer is generated for you.</p>
+    </div>
+    <div class="gh"><h3 class="label"><label for="notes">Notes</label></h3></div>
+    <div class="notes">
+      <textarea class="field" id="notes" placeholder="Anything else about this account: what it's for, quirks of the signup, recovery codes. Cleared when you make a new identity, included in every export."></textarea>
+    </div>
+    <div class="save">
+      <h3>Save it</h3>
+      <p>Everything above, with the site, notes and seed, ready for your password manager.</p>
+      <div class="row">
+        <button class="btn" id="copytext" type="button">Copy as plain text</button>
+        <button class="btn" id="copymd" type="button">Copy as Markdown</button>
+        <button class="btn" id="copyjson" type="button">Copy as JSON</button>
+        <button class="btn" id="dltext" type="button">Download .txt</button>
+        <button class="btn" id="dlmd" type="button">Download .md</button>
+      </div>
     </div>
   </section>
+</main>
 
-  <footer>
-    <button id="copytext" type="button">Copy as plain text</button>
-    <button id="copymd" type="button">Copy as Markdown</button>
-    <button id="copyjson" type="button">Copy as JSON</button>
-    <button id="dltext" type="button">Download .txt</button>
-    <button id="dlmd" type="button">Download .md</button>
-    <span><span class="ver" id="ver"></span>Click any value to edit it. Generated in your browser; nothing is sent. The page keeps your settings, the current identity (so a refresh doesn't lose it), the last 10 identities for Undo, and a list of names already used, all in this browser only.</span>
-  </footer>
-
-  <section class="panel">
-    <h2>Username and email handle settings</h2>
-    <div class="pw">
-      <div class="len"><label for="unlen">Max length</label><input id="unlen" type="range" min="6" max="30" value="20"><output id="unlenv">20</output></div>
-      <div class="toggles">
+<section class="more" aria-labelledby="rulehead">
+  <h2 id="rulehead">Rules</h2>
+  <div class="panes three">
+    <div class="pane" id="rules-handle">
+      <h3>Usernames and email handles</h3>
+      <div class="rng"><label for="unlen">Max length</label><output id="unlenv">20</output><input id="unlen" type="range" min="6" max="30" value="20"></div>
+      <div class="chk">
         <label><input type="checkbox" id="unSep" checked> Allow . and _ separators</label>
         <label><input type="checkbox" id="unDigits" checked> Allow digits</label>
       </div>
     </div>
-  </section>
-  <section class="panel">
-    <h2>Password settings</h2>
-    <div class="pw">
-      <div class="toggles" role="radiogroup" aria-label="Password type">
+    <div class="pane" id="rules-password">
+      <h3>Passwords</h3>
+      <div class="chk" role="radiogroup" aria-label="Password type">
         <label><input type="radio" name="pwmode" id="pwModePhrase" value="phrase" checked> Passphrase</label>
         <label><input type="radio" name="pwmode" id="pwModeChars" value="chars"> Random characters</label>
       </div>
       <div id="phraseOpts">
-        <div class="len"><label for="pwwords">Words</label><input id="pwwords" type="range" min="3" max="8" value="4"><output id="pwwordsv">4</output></div>
-        <div class="toggles">
-          <label>Separator <select id="pwsep" class="copy"><option value="-">-</option><option value=".">.</option><option value="_">_</option><option value=" ">space</option><option value="">none</option></select></label>
+        <div class="rng"><label for="pwwords">Words</label><output id="pwwordsv">4</output><input id="pwwords" type="range" min="3" max="8" value="4"></div>
+        <div class="chk">
+          <label>Separator <span class="sel"><select id="pwsep"><option value="-">-</option><option value=".">.</option><option value="_">_</option><option value=" ">space</option><option value="">none</option></select></span></label>
           <label><input type="checkbox" id="pwCap" checked> Capitalize words</label>
           <label><input type="checkbox" id="pwNum" checked> Add a number</label>
         </div>
       </div>
       <div id="charOpts" hidden>
-      <div class="len"><label for="pwlen">Length</label><input id="pwlen" type="range" min="8" max="64" value="20"><output id="pwlenv">20</output></div>
-      <div class="toggles">
-        <label><input type="checkbox" id="pwUpper" checked> Uppercase</label>
-        <label><input type="checkbox" id="pwLower" checked> Lowercase</label>
-        <label><input type="checkbox" id="pwDigits" checked> Digits</label>
-        <label><input type="checkbox" id="pwSymbols" checked> Symbols</label>
-        <label><input type="checkbox" id="pwAmbig" checked> Avoid look-alikes (0 O l 1 I)</label>
-      </div>
+        <div class="rng"><label for="pwlen">Length</label><output id="pwlenv">20</output><input id="pwlen" type="range" min="8" max="64" value="20"></div>
+        <div class="chk">
+          <label><input type="checkbox" id="pwUpper" checked> Uppercase</label>
+          <label><input type="checkbox" id="pwLower" checked> Lowercase</label>
+          <label><input type="checkbox" id="pwDigits" checked> Digits</label>
+          <label><input type="checkbox" id="pwSymbols" checked> Symbols</label>
+          <label><input type="checkbox" id="pwAmbig" checked> Avoid look-alikes (0 O l 1 I)</label>
+        </div>
       </div>
     </div>
-  </section>
-
-  <section class="panel">
-    <h2>Avatar settings</h2>
-    <div class="pw">
-      <div class="len"><label for="kitrate">Character kits</label><input id="kitrate" type="range" min="0" max="100" value="45"><output id="kitratev">45%</output></div>
-      <p class="note" style="margin:0">How often a Pixel avatar wears a character kit instead of being a civilian, and how often a Duck belongs to a themed collection instead of being plain.</p>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>Recent identities</h2>
-    <p class="note">The last ten identities you replaced, newest created first. Restoring one brings it back with its notes and site; the one you were on takes its place in the list.</p>
-    <ul class="recent" id="recent"></ul>
-  </section>
-
-  <section class="panel">
-    <h2>Stored on this device</h2>
-    <p class="note">Settings, the current identity, the last ten identities for Undo, and the list of names and handles already used. Nothing leaves your browser.</p>
-    <div class="row"><button class="ghost danger" id="reset" type="button">Reset everything</button></div>
-  </section>
-
-  <div class="update" id="update" role="status">
-    <span>A new version of identity-gen is ready.</span>
-    <button class="copy" id="reloadbtn" type="button">Reload</button>
-    <button class="ghost" id="laterbtn" type="button" style="padding:0.3rem 0.6rem;font-size:11px">Later</button>
-  </div>
-
-  <dialog id="confirm">
-    <form method="dialog">
-      <h2>Reset everything?</h2>
-      <p class="note">This clears your settings, the current identity, the Undo history and the used-names memory from this browser. It cannot be undone.</p>
-      <div class="row">
-        <button class="ghost" value="cancel" type="submit">Cancel</button>
-        <button class="primary danger" value="ok" type="submit" autofocus>Reset</button>
-      </div>
-    </form>
-  </dialog>
-
-  <details>
-    <summary>Photo settings</summary>
-    <div class="settings">
-      <label>Source for the Photo style
-        <select id="src">
+    <div class="pane" id="rules-avatar">
+      <h3>Avatars</h3>
+      <div class="rng"><label for="kitrate">Character kits</label><output id="kitratev">45%</output><input id="kitrate" type="range" min="0" max="100" value="45"></div>
+      <p class="note">How often a Pixel avatar wears a character kit instead of being a civilian, and how often a Duck belongs to a themed collection instead of being plain.</p>
+      <label class="sublabel">Photo source
+        <span class="sel"><select id="src">
           <option value="tpdne">thispersondoesnotexist.com</option>
           <option value="url">Other image URL that returns a random face</option>
-        </select>
+        </select></span>
       </label>
-      <label>Image URL
-        <input id="url" type="url" placeholder="https://example.com/random-face.jpg" spellcheck="false">
+      <label class="sublabel">Image URL
+        <input class="field" id="url" type="url" placeholder="https://example.com/random-face.jpg" spellcheck="false">
       </label>
-      <p class="note">A random timestamp is added on every click so the browser never reuses a cached face. If the image fails to load (or you're viewing in a sandboxed preview), the illustrated avatar is shown instead. To save a photo, right-click it and choose Save image. Faces from thispersondoesnotexist carry a small watermark in the bottom-right corner; crop it before uploading. The People and Abstract styles are generated entirely in this page and work offline. The Illustrated styles are drawn in your browser by <a href="https://www.dicebear.com" style="color:inherit">DiceBear</a>, loaded from a CDN only when you pick one; only its CC0 (public-domain) styles are offered, so no credit is ever required.</p>
+      <p class="note">Photo and the Illustrated styles are the only parts that use the network. Photo adds a random timestamp to each request so the browser never reuses a face; if the image fails to load, the illustrated avatar is shown instead. Faces from thispersondoesnotexist carry a small watermark in the bottom-right corner; crop it before uploading. The Illustrated styles are drawn in your browser by <a href="https://www.dicebear.com">DiceBear</a>, loaded from a CDN only when you pick one; only its CC0 styles are offered, so no credit is needed. Every other style is drawn in this page and works offline.</p>
     </div>
-  </details>
-</main>
+  </div>
+  <div class="panes two">
+    <div class="pane">
+      <h3>Recent identities</h3>
+      <p class="note">The last ten identities you replaced, newest created first. Restoring one brings it back with its notes and site; the one you were on takes its place in the list.</p>
+      <ul class="recent" id="recent"></ul>
+    </div>
+    <div class="pane">
+      <h3>Stored on this device</h3>
+      <p class="note">Settings, the current identity, the last ten identities for Undo, and the list of names and handles already used. Nothing leaves your browser.</p>
+      <div class="row"><button class="btn danger" id="reset" type="button">Reset everything</button></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="ver" id="ver"></span>
+  <p>Click any value to edit it. Generated in your browser; nothing is sent. The page keeps your settings, the current identity (so a refresh doesn't lose it), the last 10 identities for Undo, and a list of names already used, all in this browser only. <a href="https://github.com/Real-Fruit-Snacks/identity-gen">Source</a></p>
+</footer>
+
+<p class="vh" id="announce" role="status" aria-live="polite"></p>
+
+<div class="update" id="update" role="status">
+  <span>A new version of identity-gen is ready.</span>
+  <button class="btn sm" id="reloadbtn" type="button">Reload</button>
+  <button class="btn sm" id="laterbtn" type="button">Later</button>
+</div>
+
+<dialog id="confirm">
+  <form method="dialog">
+    <h2>Reset everything?</h2>
+    <p>This clears your settings, the current identity, the Undo history and the used-names memory from this browser. It can't be undone.</p>
+    <div class="row">
+      <button class="btn" value="cancel" type="submit">Cancel</button>
+      <button class="btn danger" value="ok" type="submit" autofocus>Reset</button>
+    </div>
+  </form>
+</dialog>
 
 <script>
 (() => {
-  const VERSION = "1.12.0";
+  const VERSION = "1.13.0";
   // ---------- data ----------
   const first = ["Aaron", "Abigail", "Adam", "Adrian", "Aiden", "Aisha", "Alan", "Alejandro", "Alex", "Alice", "Alicia", "Alina", "Alma", "Amara", "Amelia", "Amir", "Amy", "Ana", "Anders", "Andrea", "Andrew", "Angela", "Anika", "Anna", "Anthony", "Anya", "April", "Arjun", "Arlo", "Asha", "Ashley", "Astrid", "Aubrey", "Audrey", "August", "Aurora", "Ava", "Axel", "Beatriz", "Ben", "Benjamin", "Bianca", "Blake", "Brenda", "Brian", "Bridget", "Brooke", "Caleb", "Callum", "Camila", "Cara", "Carla", "Carlos", "Carmen", "Caroline", "Casey", "Cassandra", "Cecilia", "Celeste", "Charlotte", "Chloe", "Chris", "Christina", "Claire", "Clara", "Cole", "Colin", "Connor", "Cora", "Corey", "Dana", "Daniel", "Daniela", "Dario", "Darius", "David", "Dean", "Deborah", "Declan", "Delia", "Derek", "Desmond", "Dev", "Diana", "Diego", "Dominic", "Dylan", "Edgar", "Edith", "Eleanor", "Elena", "Eli", "Elias", "Elin", "Elise", "Ella", "Ellie", "Elliot", "Emil", "Emily", "Emma", "Eric", "Erin", "Esme", "Esther", "Ethan", "Eva", "Evan", "Evelyn", "Ezra", "Fabian", "Farah", "Felix", "Fiona", "Flora", "Frances", "Frank", "Freya", "Gabe", "Gabriel", "Gemma", "George", "Gia", "Gideon", "Grace", "Greta", "Gwen", "Hana", "Hannah", "Harper", "Harriet", "Harvey", "Hazel", "Heidi", "Helen", "Henry", "Hugo", "Ian", "Ida", "Idris", "Imani", "Ingrid", "Irene", "Iris", "Isaac", "Isabel", "Isla", "Ivan", "Ivy", "Jack", "Jacob", "Jade", "James", "Jamie", "Jane", "Jasmine", "Jason", "Jasper", "Jenna", "Jesse", "Joanna", "Joel", "Jonah", "Jordan", "Joseph", "Josie", "Juan", "Judith", "Julia", "Julian", "Jun", "June", "Kai", "Karen", "Karl", "Kate", "Katya", "Keith", "Kelly", "Kenji", "Kevin", "Kira", "Kyle", "Laila", "Lara", "Laura", "Lauren", "Leah", "Leo", "Leon", "Lena", "Lewis", "Liam", "Lila", "Lily", "Lior", "Lisa", "Logan", "Lorenzo", "Louis", "Luca", "Lucas", "Lucy", "Luis", "Luna", "Lydia", "Maeve", "Maggie", "Malik", "Marcus", "Margaret", "Maria", "Marina", "Mario", "Mark", "Martin", "Mason", "Mateo", "Matthew", "Maya", "Megan", "Melissa", "Mia", "Micah", "Michael", "Miguel", "Mika", "Miles", "Milo", "Mira", "Miriam", "Mohammed", "Molly", "Monica", "Morgan", "Nadia", "Naomi", "Natalie", "Nathan", "Nell", "Nico", "Nicole", "Nina", "Noah", "Noor", "Nora", "Oliver", "Olivia", "Omar", "Oscar", "Otis", "Owen", "Paige", "Patrick", "Paul", "Paz", "Pedro", "Penelope", "Peter", "Philip", "Phoebe", "Piper", "Priya", "Quinn", "Rachel", "Rafael", "Ralph", "Ray", "Rebecca", "Remy", "Renee", "Rhea", "Riley", "Robert", "Robin", "Rosa", "Rose", "Rowan", "Ruby", "Rufus", "Ruth", "Ryan", "Sadie", "Sam", "Samira", "Samuel", "Sana", "Sara", "Sasha", "Scott", "Sean", "Selin", "Seth", "Sienna", "Silas", "Simon", "Sofia", "Sophie", "Stella", "Stephen", "Susan", "Tara", "Tessa", "Theo", "Thomas", "Tobias", "Tomas", "Tony", "Tyler", "Uma", "Valentina", "Vera", "Victor", "Vincent", "Violet", "Vivian", "Wade", "Walter", "Wendy", "Wesley", "Will", "William", "Willow", "Wren", "Xavier", "Yara", "Yasmin", "Yusuf", "Zach", "Zara", "Zoe", "Zoey"];
   const last = ["Abbott", "Adler", "Ahmed", "Alvarez", "Amari", "Anand", "Andersen", "Archer", "Armstrong", "Arnold", "Ashford", "Atkins", "Bailey", "Bakker", "Baldwin", "Banks", "Barker", "Barnes", "Barrett", "Bauer", "Baxter", "Beck", "Bell", "Bennett", "Berg", "Bishop", "Blackwood", "Blake", "Boone", "Bowen", "Boyd", "Bradley", "Brandt", "Brennan", "Briggs", "Brooks", "Bryant", "Burke", "Burns", "Byrne", "Calder", "Cameron", "Campbell", "Carlson", "Carr", "Carter", "Castro", "Chambers", "Chan", "Chandler", "Chapman", "Chen", "Clarke", "Cohen", "Cole", "Coleman", "Collins", "Conway", "Cooper", "Costa", "Cox", "Craig", "Cross", "Cruz", "Cunningham", "Dahl", "Dalton", "Daniels", "Davies", "Dawson", "Dean", "Delgado", "Diaz", "Dixon", "Doyle", "Duffy", "Duncan", "Duran", "Eaton", "Elliott", "Ellis", "Emerson", "Espinoza", "Evans", "Farrell", "Farrow", "Ferguson", "Fernandez", "Ferreira", "Fischer", "Fisher", "Fitzgerald", "Fleming", "Fletcher", "Flores", "Foley", "Ford", "Foster", "Fox", "Francis", "Franklin", "Frost", "Gale", "Gallagher", "Garcia", "Gardner", "Garrett", "Gibson", "Gilbert", "Gomez", "Gonzalez", "Gordon", "Graham", "Grant", "Gray", "Greene", "Griffin", "Gupta", "Haas", "Hale", "Hall", "Hamilton", "Hansen", "Hardy", "Harper", "Harris", "Hart", "Hawkins", "Hayes", "Henderson", "Hernandez", "Higgins", "Hill", "Hoffman", "Holland", "Holloway", "Holmes", "Hopkins", "Howard", "Hudson", "Hughes", "Hunt", "Hunter", "Ibarra", "Ingram", "Ito", "Jackson", "Jansen", "Jenkins", "Jennings", "Jensen", "Johansson", "Jordan", "Joyce", "Kade", "Kane", "Kaur", "Keller", "Kelly", "Kennedy", "Khan", "Kim", "Klein", "Knight", "Kowalski", "Kramer", "Lambert", "Lane", "Lang", "Larsen", "Lawson", "Lee", "Leonard", "Lima", "Lindqvist", "Little", "Lloyd", "Long", "Lopez", "Lowe", "Lund", "Lynch", "Mack", "Maddox", "Malone", "Marsh", "Marshall", "Martin", "Mason", "Matthews", "Maxwell", "May", "McCarthy", "McDonald", "Mehta", "Mendoza", "Meyer", "Miller", "Mills", "Mitchell", "Molina", "Monroe", "Moore", "Mora", "Moreau", "Morgan", "Morris", "Moss", "Murphy", "Murray", "Nair", "Nakamura", "Nash", "Nelson", "Newman", "Nguyen", "Nichols", "Nolan", "Novak", "O'Brien", "O'Connor", "Okafor", "Oliver", "Olsen", "Ortiz", "Osborne", "Owens", "Page", "Palmer", "Park", "Parker", "Patel", "Patterson", "Payne", "Pearson", "Perez", "Perry", "Petrov", "Phillips", "Pierce", "Porter", "Powell", "Price", "Quinn", "Quist", "Ramirez", "Ramos", "Ray", "Reed", "Reyes", "Reynolds", "Rhodes", "Richards", "Riley", "Rivera", "Roberts", "Robinson", "Rogers", "Romero", "Rose", "Ross", "Roth", "Rowe", "Russell", "Ryan", "Sanders", "Santos", "Sato", "Schmidt", "Schneider", "Scott", "Sharma", "Shaw", "Shepherd", "Silva", "Simmons", "Simpson", "Singh", "Sloan", "Smith", "Snyder", "Solis", "Spencer", "Stanley", "Steele", "Stevens", "Stewart", "Stone", "Sullivan", "Sutton", "Tan", "Tanaka", "Taylor", "Thompson", "Thornton", "Torres", "Tucker", "Turner", "Vance", "Varga", "Vargas", "Vaughn", "Vega", "Vogel", "Wagner", "Walker", "Wallace", "Walsh", "Ward", "Warner", "Watson", "Weaver", "Webb", "Weber", "Wells", "West", "Wheeler", "Whitaker", "White", "Wilkins", "Williams", "Wilson", "Wolfe", "Wong", "Wood", "Wright", "Yamada", "Yang", "Yates", "Young", "Zhou", "Zimmerman"];
@@ -1309,7 +1434,9 @@
   function focusQuestion(i) { const dt = $("security").querySelectorAll("dt")[i]; if (dt) dt.focus(); }
   const sectionKeys = {
     account: ["username","displayName","emailLocalPart","password","pin","phone"],
-    profile: ["street","city","occupation","company","language","favoriteColor","hobby"],
+    core: ["fullName","birthdate","gender"],
+    address: ["street","city"],
+    profile: ["occupation","company","language","favoriteColor","hobby"],
     security: ["securityAll"],
   };
   const ORDER = ["fullName","gender","birthdate","username","emailLocalPart","password","pin","phone","city","street","occupation","company","language","favoriteColor","hobby","securityAll"];
@@ -1333,9 +1460,20 @@
   function applyTheme() {
     if (themeMode === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme", themeMode);
     $("themebtn").textContent = "Theme: " + { auto: "Auto", light: "Dayshift", dark: "Nightshift" }[themeMode];
-    const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue("--twb-bg-0").trim();
+    const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue("--rfs-bg").trim();
   }
-  $("themebtn").addEventListener("click", () => { themeMode = { auto: "light", light: "dark", dark: "auto" }[themeMode]; applyTheme(); saveSettings(); });
+  $("themebtn").addEventListener("click", ev => {
+    themeMode = { auto: "light", light: "dark", dark: "auto" }[themeMode];
+    const swap = () => { applyTheme(); saveSettings(); };
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return swap();
+    // BRAND.md motion: the new theme sweeps in from the control, in a circle, at --rfs-dur-slow
+    const r = ev.currentTarget.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    document.startViewTransition(swap).ready.then(() => {
+      document.documentElement.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+        { duration: 600, easing: "cubic-bezier(.2, .7, .2, 1)", pseudoElement: "::view-transition-new(root)" });
+    }).catch(() => {});
+  });
   applyTheme();
   let dice = null, diceFailed = false;
   const DICE = { lorelei: 1, notionists: 1, openPeeps: 1 };
@@ -1408,8 +1546,8 @@
   // ---------- photo ----------
   function syncImgTools() {
     const real = style === "real" && !!photo.querySelector("img");
-    $("imgtools").style.display = real ? "none" : "flex";
-    $("imghint").style.display = real ? "block" : "none";
+    $("imgtools").hidden = real; $("imgsave").hidden = real;
+    $("imghint").hidden = !real;
     if (real) $("imghint").textContent = "Right-click the photo to save or copy it.";
   }
   function svgNode() {
@@ -1433,7 +1571,7 @@
         photo.prepend(node); syncImgTools(); return;
       }
       $("imghint").textContent = "Illustrated styles need an internet connection; showing Initials instead.";
-      $("imghint").style.display = "block";
+      $("imghint").hidden = false;
     }
     const name = styles[astyle.value] ? astyle.value : "initials";
     photo.querySelectorAll("img, svg").forEach(n => n.remove());
@@ -1478,26 +1616,27 @@
     catch (_) { e.target.textContent = "Save failed"; }
   });
   $("copyimg").addEventListener("click", async e => {
-    try { await navigator.clipboard.write([new ClipboardItem({ "image/png": await avatarBlob() })]); flash(e.target, "Copied"); }
+    try { await navigator.clipboard.write([new ClipboardItem({ "image/png": await avatarBlob() })]); flash(e.target, "ok · copied"); }
     catch (_) { e.target.textContent = "Copy not supported here"; }
   });
 
   // ---------- rows ----------
+  // The fill list: every field in the order sign-up forms ask for it. One row is marked next; Enter copies it and
+  // moves on. A row counts as copied while its value is still the one that was copied.
+  const ICON_X = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"/></svg>';
+  const RULES = { username: "rules-handle", emailLocalPart: "rules-handle", password: "rules-password" };
+  const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let walk = [], cursorAt = 0, copied = new Map();
   function editable(el) {
     try { el.contentEditable = "plaintext-only"; } catch (_) { el.contentEditable = "true"; }
     el.spellcheck = false; el.setAttribute("role", "textbox");
   }
+  function rowId(opts, label) { return opts.sec !== undefined ? "sec" + opts.sec : opts.cus !== undefined ? "cus" + opts.cus : (opts.field || opts.key) + ":" + label; }
   function row(dl, label, value, opts = {}) {
-    const rb = document.createElement("button");
-    rb.className = "reroll"; rb.type = "button"; rb.innerHTML = ICON;
-    rb.setAttribute("aria-label", "New " + label.toLowerCase());
-    rb.addEventListener("click", () => {
-      if (opts.sec !== undefined) securityOne(current, opts.sec); else if (opts.cus !== undefined) current.custom[opts.cus].value = answer(); else gen[opts.key](current);
-      rb.classList.add("spin"); setTimeout(() => rb.classList.remove("spin"), 400);
-      renderFields();
-    });
-    const dt = document.createElement("dt"); dt.textContent = label;
     const listRow = opts.sec !== undefined ? current.security[opts.sec] : opts.cus !== undefined ? current.custom[opts.cus] : null;
+    const wrap = document.createElement("div"); wrap.className = "r";
+    const n = document.createElement("span"); n.className = "n"; n.setAttribute("aria-hidden", "true");
+    const dt = document.createElement("dt"); dt.textContent = label;
     if (listRow) {
       editable(dt); dt.title = "Click to edit";
       dt.addEventListener("keydown", ev => { if (ev.key === "Enter") { ev.preventDefault(); dt.blur(); } });
@@ -1520,16 +1659,40 @@
       else current[opts.key] = text;
       renderFields();
     });
+    const act = document.createElement("span"); act.className = "act";
+    if (RULES[opts.key]) {
+      const a = document.createElement("button"); a.type = "button"; a.className = "torule"; a.textContent = "Rules";
+      a.setAttribute("aria-label", label + " rules");
+      a.addEventListener("click", () => showRules(RULES[opts.key]));
+      act.append(a);
+    }
+    const rb = document.createElement("button");
+    rb.className = "ic"; rb.type = "button"; rb.innerHTML = ICON;
+    rb.setAttribute("aria-label", "New " + (label || "value").toLowerCase()); rb.title = "New value (R)";
+    rb.addEventListener("click", ev => rerollRow(walk.indexOf(entry), ev.detail === 0));
+    const kb = document.createElement("kbd"); kb.className = "kb"; kb.textContent = "Enter"; kb.setAttribute("aria-hidden", "true");
     const btn = document.createElement("button");
-    btn.className = "copy"; btn.type = "button"; btn.textContent = "Copy";
-    btn.addEventListener("click", () => copy(btn, listRow ? (listRow.answer ?? listRow.value) : valueOf(opts, label)));
-    dl.append(rb, dt, dd, btn);
+    btn.className = "btn sm cp"; btn.type = "button"; btn.textContent = "Copy";
+    btn.addEventListener("click", async ev => {
+      const byKey = ev.detail === 0;
+      if (!byKey) btn.blur();
+      await copyRow(walk.indexOf(entry), true);
+      if (byKey && walk[cursorAt]) walk[cursorAt].btn.focus({ preventScroll: true });   // Enter, Enter, Enter walks the list
+    });
+    act.append(rb, kb, btn);
     if (listRow) {
       const x = document.createElement("button");
-      x.className = "remove"; x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remove this row");
-      x.addEventListener("click", () => { (opts.sec !== undefined ? current.security : current.custom).splice(opts.sec ?? opts.cus, 1); renderFields(); });
-      dl.append(x);
+      x.className = "ic"; x.type = "button"; x.innerHTML = ICON_X; x.setAttribute("aria-label", "Remove this row"); x.title = "Remove";
+      x.addEventListener("click", () => { (opts.sec !== undefined ? current.security : current.custom).splice(opts.sec ?? opts.cus, 1); copied.clear(); renderFields(); });
+      act.append(x);
     }
+    wrap.append(n, dt, dd, act);
+    wrap.addEventListener("click", ev => { if (!ev.target.closest("button, [contenteditable]")) moveCursor(walk.indexOf(entry)); });
+    wrap.addEventListener("focusin", () => { const i = walk.indexOf(entry); if (i !== cursorAt) moveCursor(i, false); });
+    dl.append(wrap);
+    const entry = { el: wrap, n, dd, btn, rb, id: rowId(opts, label), name: (label || (opts.sec !== undefined ? "answer" : "value")).toLowerCase(),
+      text: () => listRow ? (listRow.answer ?? listRow.value) : valueOf(opts, label) };
+    walk.push(entry);
   }
   function valueOf(opts, label) {
     const s = sections(current);
@@ -1545,18 +1708,105 @@
       custom: (id.custom || []).map((c, i) => [c.label, c.value, { cus: i }]),
     };
   }
+  // The page's order (what a sign-up form asks first). The exports keep the order in sections().
+  function groups(id) {
+    const s = sections(id), acc = Object.fromEntries(s.account.map(r => [r[0], r]));
+    return [
+      ["account", ["Email handle", "Username", "Display name", "Password", "PIN", "Phone"].map(l => acc[l])],
+      ["core", s.core],
+      ["address", s.profile.slice(0, 5)],
+      ["profile", s.profile.slice(5)],
+      ["custom", s.custom],
+      ["security", s.security],
+    ];
+  }
+  const isCopied = e => copied.has(e.id) && copied.get(e.id) === e.text();
+  function paintRow(e) {
+    const done = isCopied(e);
+    e.el.toggleAttribute("data-copied", done);
+    e.btn.classList.remove("fail"); e.btn.classList.toggle("done", done);
+    e.btn.textContent = done ? "ok · copied" : "Copy";
+    e.btn.setAttribute("aria-label", (done ? "Copied " : "Copy ") + e.name);
+  }
+  function paintMeter() {
+    const segs = $("segs"), total = walk.length;
+    if (segs.children.length !== total) segs.innerHTML = "<i></i>".repeat(total);
+    let n = 0;
+    walk.forEach((e, k) => { const on = isCopied(e); if (on) n++; segs.children[k].classList.toggle("on", on); });
+    $("metertext").innerHTML = total && n === total ? `<span class="ok">ok</span> · all <b>${total}</b> copied` : `<b>${n}</b> of ${total} copied`;
+    const site = $("site").value.trim().replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+    $("meterfor").textContent = site ? "for " + site : "";
+  }
+  function placeCursor(animate) {
+    const cur = $("cursor");
+    cursorAt = Math.max(0, Math.min(cursorAt, walk.length - 1));
+    walk.forEach((x, k) => x.el.classList.toggle("next", k === cursorAt));
+    const e = walk[cursorAt];
+    if (!e) { cur.style.opacity = "0"; return; }
+    cur.classList.toggle("live", !!animate);
+    cur.style.transform = `translateY(${e.el.offsetTop}px)`;
+    cur.style.height = e.el.offsetHeight + "px";
+    cur.style.opacity = "1";
+  }
+  function moveCursor(i, scroll = true) {
+    if (!walk.length || i < 0 || i >= walk.length) return;
+    cursorAt = i; placeCursor(true);
+    if (scroll) walk[i].el.scrollIntoView({ block: "nearest", behavior: reduceMotion() ? "auto" : "smooth" });
+  }
+  function say(msg) { const a = $("announce"); a.textContent = ""; setTimeout(() => { a.textContent = msg; }, 30); }
+  async function copyRow(i, advance) {
+    const e = walk[i]; if (!e) return;
+    const text = e.text();
+    try {
+      await navigator.clipboard.writeText(text);
+      copied.set(e.id, text); paintRow(e); paintMeter();
+      const next = advance && i + 1 < walk.length ? walk[i + 1] : null;
+      say(`Copied ${e.name}.` + (next ? ` Next: ${next.name}.` : ""));
+      if (next) moveCursor(i + 1);
+    } catch (_) {
+      e.btn.textContent = "fail · select it"; e.btn.classList.add("fail");
+      say(`Couldn't copy ${e.name}. Select the value and copy it by hand.`);
+      setTimeout(() => paintRow(e), 2400);
+    }
+  }
+  function rerollRow(i, refocus) {
+    const e = walk[i]; if (!e) return;
+    const opts = rowOpts(i); if (!opts) return;
+    if (opts.sec !== undefined) securityOne(current, opts.sec); else if (opts.cus !== undefined) current.custom[opts.cus].value = answer(); else gen[opts.key](current);
+    renderFields();
+    const again = walk[i]; if (!again) return;
+    if (refocus) again.rb.focus({ preventScroll: true });
+  }
+  function rowOpts(i) { const all = groups(current).flatMap(([, rows]) => rows); return all[i] && all[i][2]; }
+  function editRow(i) {
+    const e = walk[i]; if (!e) return;
+    e.dd.focus();
+    const sel = getSelection(), r = document.createRange();
+    r.selectNodeContents(e.dd); r.collapse(false); sel.removeAllRanges(); sel.addRange(r);
+  }
+  function showRules(id) {
+    const p = $(id);
+    p.scrollIntoView({ block: "start", behavior: reduceMotion() ? "auto" : "smooth" });
+    p.classList.add("lit"); setTimeout(() => p.classList.remove("lit"), 1200);
+    const f = p.querySelector("input, select"); if (f) f.focus({ preventScroll: true });
+  }
   function renderFields() {
     $("name").textContent = current.fullName;
     $("tagline").textContent = `${current.occupation} in ${current.city}`;
-    $("sechint").style.display = current.security.length ? "none" : "";
-    const s = sections(current);
-    for (const key of ["core","account","profile","security","custom"]) {
+    $("sechint").hidden = current.security.length > 0;
+    $("customhint").hidden = (current.custom || []).length > 0;
+    walk = [];
+    for (const [key, rows] of groups(current)) {
       const dl = $(key); dl.innerHTML = "";
-      for (const [label, value, opts] of s[key]) row(dl, label, value, opts);
+      for (const [label, value, opts] of rows) row(dl, label, value, opts);
     }
+    walk.forEach((e, k) => { e.n.textContent = String(k + 1).padStart(2, "0"); paintRow(e); });
+    paintMeter(); placeCursor(false);
     if (astyle.value === "initials" && style !== "real") renderPhoto(false);
     autosave();
   }
+  addEventListener("resize", () => placeCursor(false));
+  if (document.fonts) document.fonts.ready.then(() => placeCursor(false));
   function showSeed() { $("seedview").textContent = current ? `${current.seed}-${seed}` : ""; }
   function snapshot() { return { current, seed, site: $("site").value, notes: $("notes").value, at: Date.now() }; }
   function renderRecent() {
@@ -1568,7 +1818,8 @@
       const who = document.createElement("span"); who.className = "who"; who.textContent = snap.current.fullName;
       const sm = document.createElement("small"); sm.textContent = snap.current.username + (snap.site ? " · " + snap.site : ""); who.append(sm);
       const when = document.createElement("span"); when.className = "when"; const ts = snap.current.createdAt || snap.at; when.textContent = ts ? "created " + new Date(ts).toLocaleString() : "";
-      const btn = document.createElement("button"); btn.className = "copy"; btn.type = "button"; btn.textContent = "Restore";
+      const btn = document.createElement("button"); btn.className = "btn sm"; btn.type = "button"; btn.textContent = "Restore";
+      btn.setAttribute("aria-label", "Restore " + snap.current.fullName);
       btn.addEventListener("click", () => {
         const [picked] = history.splice(idx, 1);
         if (current) { history.push(snapshot()); if (history.length > 10) history.shift(); }
@@ -1591,6 +1842,7 @@
     current = snap.current; seed = snap.seed || hex(8);
     current.security = current.security || []; current.custom = current.custom || [];
     $("site").value = snap.site || ""; $("notes").value = snap.notes || "";
+    copied = new Map(); cursorAt = 0;
     renderFields(); renderPhoto(false); showSeed();
   }
   function undo() {
@@ -1604,17 +1856,17 @@
     pushHistory();
     current = identity(idSeed || hex(8)); current.createdAt = Date.now();
     $("site").value = ""; $("notes").value = "";
+    copied = new Map(); cursorAt = 0;
     renderFields();
     if (photoSeed) { seed = photoSeed; renderPhoto(false); } else renderPhoto();
     showSeed();
   }
-  $("site").addEventListener("input", autosave); $("notes").addEventListener("input", autosave);
-  $("undo").addEventListener("click", undo);
+  $("site").addEventListener("input", () => { autosave(); paintMeter(); }); $("notes").addEventListener("input", autosave);
+  $("undo").addEventListener("click", ev => { undo(); if (ev.detail > 0) ev.currentTarget.blur(); });
   document.querySelectorAll("[data-section]").forEach(b => {
-    b.innerHTML = ICON;
+    b.insertAdjacentHTML("afterbegin", ICON);
     b.addEventListener("click", () => {
       for (const k of sectionKeys[b.dataset.section]) gen[k](current);
-      b.classList.add("spin"); setTimeout(() => b.classList.remove("spin"), 400);
       renderFields();
     });
   });
@@ -1649,15 +1901,15 @@
   }
   const fileBase = () => (current.username || "identity").replace(/[^a-z0-9_-]/gi, "");
   async function copy(btn, text) {
-    try { await navigator.clipboard.writeText(text); flash(btn, "Copied"); }
-    catch (_) { btn.textContent = "Copy failed — select manually"; }
+    try { await navigator.clipboard.writeText(text); flash(btn, "ok · copied"); }
+    catch (_) { btn.textContent = "Copy failed; select it by hand"; btn.classList.add("fail"); }
   }
   function flash(btn, msg) {
     const prev = btn.textContent; btn.textContent = msg; btn.classList.add("done");
     setTimeout(() => { btn.textContent = prev; btn.classList.remove("done"); }, 1200);
   }
 
-  $("new").addEventListener("click", () => render());
+  $("new").addEventListener("click", ev => { render(); if (ev.detail > 0) ev.currentTarget.blur(); });
   $("addsec").addEventListener("click", addSecurity);
   $("addcustom").addEventListener("click", addCustom);
   $("newphoto").addEventListener("click", () => renderPhoto());
@@ -1674,10 +1926,16 @@
   });
   document.addEventListener("keydown", ev => {
     const t = ev.target;
-    if (ev.metaKey || ev.ctrlKey || ev.altKey || t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
-    if (ev.key === "n" || ev.key === "N") { ev.preventDefault(); render(); }
-    if (ev.key === "p" || ev.key === "P") { ev.preventDefault(); renderPhoto(); }
-    if (ev.key === "u" || ev.key === "U") { ev.preventDefault(); undo(); }
+    if (ev.metaKey || ev.ctrlKey || ev.altKey || t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || $("confirm").open) return;
+    const k = ev.key.toLowerCase();
+    if (ev.key === "Enter") { if (ev.repeat || /^(BUTTON|A|SUMMARY)$/.test(t.tagName)) return; ev.preventDefault(); copyRow(cursorAt, true); return; }
+    if (k === "n") { ev.preventDefault(); render(); }
+    if (k === "p") { ev.preventDefault(); renderPhoto(); }
+    if (k === "u") { ev.preventDefault(); undo(); }
+    if (k === "j") { ev.preventDefault(); moveCursor(cursorAt + 1); }
+    if (k === "k") { ev.preventDefault(); moveCursor(cursorAt - 1); }
+    if (k === "r") { ev.preventDefault(); rerollRow(cursorAt, false); }
+    if (k === "e") { ev.preventDefault(); editRow(cursorAt); }
   });
 
   $("ver").textContent = "v" + VERSION;
