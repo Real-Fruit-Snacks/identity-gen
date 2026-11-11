@@ -5,9 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# Runners are pinned to ubuntu-24.04: setup-python has no build of the Python in .python-version (3.12.10)
+# for Ubuntu 26.04, which ubuntu-latest now gives.
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,7 +22,7 @@ jobs:
   art:
     # The README deck is the page's own output for six seeds. Fail if docs/assets/deck-*.svg no longer match
     # what docs/art/make-deck.py draws from index.html: the script changed, or a seed now makes someone else.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,7 +35,7 @@ jobs:
 
   download:
     # The release's index.html: the page with its fonts and icon built in, opened from disk with no network.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
