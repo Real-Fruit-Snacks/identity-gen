@@ -1382,7 +1382,9 @@
     pin:       id => { id.pin = String(1000 + rnd(9000)); },
     phone:     id => { id.phone = `(555) 01${rnd(10)}-${pad(rnd(100))}${pad(rnd(100))}`; },
     street:    id => { id.street = `${100 + rnd(9800)} ${pick(streets)} ${pick(streetTypes)}`; },
-    city:      id => { const c = pick(cities); id.city = c[0]; id.state = c[1]; id.zip = c[2] + pad(rnd(100)); },
+    // The bio may name the city. While an identity is being made (no hobby yet) it's left alone: the hobby writes the
+    // bio later, and drawing it here would change what every seed gives.
+    city:      id => { const c = pick(cities); id.city = c[0]; id.state = c[1]; id.zip = c[2] + pad(rnd(100)); if (id.hobby !== undefined && id._bioFmt) id.bio = bio(id, id._bioFmt); },
     zip:       id => { const c = cities.find(x => x[0] === id.city) || pick(cities); id.zip = c[2] + pad(rnd(100)); },
     country:   id => { id.country = "United States"; },
     occupation: id => { id.occupation = pick(jobs); derive(id); },
