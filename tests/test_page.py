@@ -247,6 +247,24 @@ with sync_playwright() as p:
           all(len(re.split(r"(?<!\\)\|", l)) == 4 for l in rows) and any("Code \\| PIN" in l for l in rows))
     pg.context.close()
 
+    pg = fresh()
+    pg.click("#pwModeChars")
+    classes = {"#pwUpper": "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "#pwLower": "abcdefghijklmnopqrstuvwxyz", "#pwDigits": "0123456789", "#pwSymbols": "!?#$%&*-_+=@"}
+    for box in classes:
+        pg.click(box)
+    ticked = "".join(chars for box, chars in classes.items() if pg.is_checked(box))
+    pw = val(pg, "Password")
+    check("the last character type can't be unticked, and the password uses only ticked types", ticked != "" and all(c in ticked for c in pw))
+    pg.reload()
+    pg.wait_for_timeout(300)
+    check("the character type kept ticked is saved", any(pg.is_checked(box) for box in classes))
+    pg.evaluate("""() => { const s = JSON.parse(localStorage.getItem('pwSettings'));
+        Object.assign(s, { upper: false, lower: false, digits: false, symbols: false }); localStorage.setItem('pwSettings', JSON.stringify(s)); }""")
+    pg.reload()
+    pg.wait_for_timeout(300)
+    check("settings saved with no character type show Lowercase ticked", pg.is_checked("#pwLower"))
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
