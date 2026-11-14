@@ -1418,11 +1418,14 @@
     id.bio = bio(id, id._bioFmt || (id._bioFmt = pick(bioTemplates)));
   }
   // Remember names, usernames and email handles already handed out on this device so new identities don't repeat them.
+  // Other tabs add to it too, so it's read again before each change.
   let used = { name: [], username: [], email: [] };
-  try { used = { ...used, ...JSON.parse(localStorage.getItem("usedValues") || "{}") }; } catch (_) {}
+  function loadUsed() { try { used = { name: [], username: [], email: [], ...JSON.parse(localStorage.getItem("usedValues") || "{}") }; } catch (_) {} }
+  loadUsed();
   function unique(kind, make, key = x => x) {
     let v = make();
     if (rand !== cryptoRand) return v; // restoring from a seed: reproduce exactly, don't touch memory
+    loadUsed();
     for (let i = 0; i < 25 && used[kind].includes(key(v)); i++) v = make();
     used[kind].push(key(v)); if (used[kind].length > 3000) used[kind].shift();
     try { localStorage.setItem("usedValues", JSON.stringify(used)); } catch (_) {}
@@ -1812,8 +1815,8 @@
   function renderRecent() {
     const ul = $("recent"); ul.innerHTML = "";
     if (!history.length) { ul.innerHTML = '<li class="empty">Nothing yet. Each "New identity" moves the previous one here.</li>'; return; }
-    const order = history.map((snap, idx) => ({ snap, idx })).sort((a, b) => (b.snap.current.createdAt || b.snap.at || 0) - (a.snap.current.createdAt || a.snap.at || 0));
-    order.forEach(({ snap, idx }) => {
+    const order = [...history].sort((a, b) => (b.current.createdAt || b.at || 0) - (a.current.createdAt || a.at || 0));
+    order.forEach(snap => {
       const li = document.createElement("li");
       const who = document.createElement("span"); who.className = "who"; who.textContent = snap.current.fullName;
       const sm = document.createElement("small"); sm.textContent = snap.current.username + (snap.site ? " · " + snap.site : ""); who.append(sm);
@@ -1821,22 +1824,33 @@
       const btn = document.createElement("button"); btn.className = "btn sm"; btn.type = "button"; btn.textContent = "Restore";
       btn.setAttribute("aria-label", "Restore " + snap.current.fullName);
       btn.addEventListener("click", () => {
-        const [picked] = history.splice(idx, 1);
-        if (current) { history.push(snapshot()); if (history.length > 10) history.shift(); }
-        try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
-        $("undo").disabled = !history.length; restore(picked); renderRecent();
+        loadHistory();
+        const at = history.findIndex(s => sameIdentity(s.current, snap.current));
+        const picked = at < 0 ? snap : history.splice(at, 1)[0];
+        if (current) keepCurrent();
+        saveHistory(); restore(picked);
       });
       li.append(who, when, btn); ul.append(li);
     });
   }
   function autosave() { if (!current) return; try { localStorage.setItem("currentIdentity", JSON.stringify(snapshot())); } catch (_) {} }
+  // The saved history is shared with other tabs: read it again before each change, and follow their changes.
   let history = [];
-  try { history = JSON.parse(localStorage.getItem("identityHistory") || "[]"); } catch (_) {}
+  function loadHistory() { try { history = JSON.parse(localStorage.getItem("identityHistory") || "[]"); } catch (_) {} }
+  function saveHistory() {
+    try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
+    $("undo").disabled = !history.length; renderRecent();
+  }
+  loadHistory();
+  addEventListener("storage", e => { if (e.key === "identityHistory" || e.key === null) { loadHistory(); $("undo").disabled = !history.length; renderRecent(); } });
+  const sameIdentity = (a, b) => a.seed === b.seed && a.createdAt === b.createdAt;
+  function keepCurrent() {   // another tab may already have put this identity in the history: keep one copy, this one
+    history = history.filter(s => !sameIdentity(s.current, current));
+    history.push(snapshot()); if (history.length > 10) history.shift();
+  }
   function pushHistory() {
     if (!current) return;
-    history.push(snapshot()); if (history.length > 10) history.shift();
-    try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
-    $("undo").disabled = false; renderRecent();
+    loadHistory(); keepCurrent(); saveHistory();
   }
   function restore(snap) {
     current = snap.current; seed = snap.seed || hex(8);
@@ -1846,11 +1860,10 @@
     renderFields(); renderPhoto(false); showSeed();
   }
   function undo() {
-    if (!history.length) return;
+    loadHistory();
+    if (!history.length) { $("undo").disabled = true; renderRecent(); return; }
     const snap = history.pop();
-    try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
-    $("undo").disabled = !history.length;
-    restore(snap); renderRecent();
+    saveHistory(); restore(snap);
   }
   function render(idSeed, photoSeed) {
     pushHistory();
