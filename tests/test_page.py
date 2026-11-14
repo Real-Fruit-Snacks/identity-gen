@@ -185,6 +185,16 @@ with sync_playwright() as p:
     check("Restore brings back a Recent identity", pg.text_content("#name") in made[:-1])
     pg.context.close()
 
+    pg = fresh()
+    made = [(pg.text_content("#name"), val(pg, "Username"), val(pg, "Email handle"))]
+    for _ in range(5):
+        pg.click("#new")
+        made.append((pg.text_content("#name"), val(pg, "Username"), val(pg, "Email handle")))
+    used = stored(pg, "usedValues", "{}")
+    check("new identities go in the used-names memory",
+          all(n in used.get("name", []) and u in used.get("username", []) and e in used.get("email", []) for n, u, e in made))
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
