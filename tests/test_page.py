@@ -195,6 +195,46 @@ with sync_playwright() as p:
           all(n in used.get("name", []) and u in used.get("username", []) and e in used.get("email", []) for n, u, e in made))
     pg.context.close()
 
+    # The service worker needs http: serve the repo, answer the page with a 503 once, then go away.
+    import threading, time
+    from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+    failing = {"page": False}
+    class Site(SimpleHTTPRequestHandler):
+        def __init__(self, *a, **k):
+            super().__init__(*a, directory=ROOT, **k)
+        def log_message(self, *a):
+            pass
+        def do_GET(self):
+            if failing["page"] and self.path.split("?")[0] in ("/", "/index.html"):
+                self.send_response(503)
+                self.send_header("Content-Type", "text/html")
+                self.end_headers()
+                self.wfile.write(b"<h1>Service Unavailable</h1>")
+                return
+            super().do_GET()
+    site = ThreadingHTTPServer(("127.0.0.1", 0), Site)
+    threading.Thread(target=site.serve_forever, daemon=True).start()
+    pg = browser.new_context().new_page()
+    pg.on("pageerror", lambda e: errors.append(str(e)))
+    pg.goto(f"http://127.0.0.1:{site.server_address[1]}/index.html")
+    for _ in range(100):   # the page reloads itself once the worker takes over
+        try:
+            if pg.evaluate("navigator.serviceWorker.controller !== null"):
+                break
+        except Exception:
+            pass
+        time.sleep(0.1)
+    pg.wait_for_timeout(500)
+    failing["page"] = True
+    pg.reload()
+    pg.wait_for_timeout(500)
+    site.shutdown()
+    site.server_close()
+    pg.reload()
+    pg.wait_for_timeout(300)
+    check("offline after a server error, the service worker still has the page", pg.locator("#name").count() == 1)
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
