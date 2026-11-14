@@ -1427,9 +1427,22 @@
     if (rand !== cryptoRand) return v; // restoring from a seed: reproduce exactly, don't touch memory
     loadUsed();
     for (let i = 0; i < 25 && used[kind].includes(key(v)); i++) v = make();
-    used[kind].push(key(v)); if (used[kind].length > 3000) used[kind].shift();
-    try { localStorage.setItem("usedValues", JSON.stringify(used)); } catch (_) {}
+    remember([[kind, key(v)]]);
     return v;
+  }
+  function remember(pairs) {
+    for (const [kind, v] of pairs) { used[kind].push(v); if (used[kind].length > 3000) used[kind].shift(); }
+    try { localStorage.setItem("usedValues", JSON.stringify(used)); } catch (_) {}
+  }
+  // A new identity comes from a seed, so the memory is applied by trying other seeds, never by redrawing a field:
+  // the seed still gives back exactly this identity.
+  const usedKeys = id => [["name", `${id.firstName} ${id.lastName}`], ["username", id.username], ["email", id.emailLocalPart]];
+  function freshIdentity() {
+    loadUsed();
+    let id = identity(hex(8));
+    for (let i = 0; i < 25 && usedKeys(id).some(([kind, v]) => used[kind].includes(v)); i++) id = identity(hex(8));
+    remember(usedKeys(id));
+    return id;
   }
   function securityOne(id, i) { id.security[i].answer = answer(); }
   function addCustom() { current.custom.push({ label: "", value: answer() }); renderFields(); const dt = $("custom").querySelectorAll("dt"); dt[dt.length - 1].focus(); }
@@ -1867,7 +1880,7 @@
   }
   function render(idSeed, photoSeed) {
     pushHistory();
-    current = identity(idSeed || hex(8)); current.createdAt = Date.now();
+    current = idSeed ? identity(idSeed) : freshIdentity(); current.createdAt = Date.now();
     $("site").value = ""; $("notes").value = "";
     copied = new Map(); cursorAt = 0;
     if (photoSeed) seed = photoSeed;   // before renderFields, which saves the identity
