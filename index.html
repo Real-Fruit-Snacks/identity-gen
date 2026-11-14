@@ -1857,8 +1857,9 @@
     current = identity(idSeed || hex(8)); current.createdAt = Date.now();
     $("site").value = ""; $("notes").value = "";
     copied = new Map(); cursorAt = 0;
+    if (photoSeed) seed = photoSeed;   // before renderFields, which saves the identity
     renderFields();
-    if (photoSeed) { seed = photoSeed; renderPhoto(false); } else renderPhoto();
+    if (photoSeed) renderPhoto(false); else renderPhoto();
     showSeed();
   }
   $("site").addEventListener("input", () => { autosave(); paintMeter(); }); $("notes").addEventListener("input", autosave);

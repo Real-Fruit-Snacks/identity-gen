@@ -153,6 +153,16 @@ with sync_playwright() as p:
     check("a seed from the JSON export loads", pg.text_content("#seedview") == exported["seed"])
     pg.context.close()
 
+    pg = fresh()
+    pg.fill("#seedin", "0123456789abcdef-fedcba9876543210")
+    pg.click("#loadseed")
+    avatar = pg.inner_html("#photo svg")
+    pg.reload()
+    pg.wait_for_timeout(300)
+    check("a loaded seed survives reload", pg.text_content("#seedview") == "0123456789abcdef-fedcba9876543210")
+    check("a loaded seed's avatar survives reload", pg.inner_html("#photo svg") == avatar)
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
