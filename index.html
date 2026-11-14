@@ -1911,10 +1911,11 @@
     lines.push(`Seed: ${m.seed}`);
     return lines.join("\n").trim();
   }
+  const cell = v => String(v).replace(/\|/g, "\\|");   // a | in a label, question or value would end its table cell
   function asMarkdown() {
     const s = sections(current), m = meta(), lines = [`# ${current.fullName}`, ""];
     if (m.site) lines.push(`**Site:** ${m.site}`, "");
-    const block = (title, rows) => { lines.push(`## ${title}`, "", "| Field | Value |", "|---|---|"); for (const [l, v, o] of rows) lines.push(`| ${l} | ${String(v).replace(/\|/g, "\\|")}${o && o.suffix ? o.suffix : ""} |`); lines.push(""); };
+    const block = (title, rows) => { lines.push(`## ${title}`, "", "| Field | Value |", "|---|---|"); for (const [l, v, o] of rows) lines.push(`| ${cell(l)} | ${cell(v)}${o && o.suffix ? o.suffix : ""} |`); lines.push(""); };
     block("Basics", s.core); block("Account", s.account); block("Profile", [...s.profile, ...s.custom.map(([l, v, o]) => [l || "(field)", v, o])]);
     if (s.security.length) block("Security questions", s.security.map(([q, a, o]) => [q || "(question)", a, o]));
     if (m.notes) lines.push("## Notes", "", m.notes, "");
