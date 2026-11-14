@@ -280,6 +280,12 @@ with sync_playwright() as p:
     check("the seed still gives the bio as first made", old_city in val(pg, "Bio"))
     pg.context.close()
 
+    pg = fresh()
+    pw = val(pg, "Password")
+    pg.click('[aria-label="New password"]')   # a real mouse click, on a row that isn't marked as next
+    check("one click rerolls a row that isn't marked as next", val(pg, "Password") != pw)
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
