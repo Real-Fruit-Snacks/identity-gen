@@ -265,6 +265,21 @@ with sync_playwright() as p:
     check("settings saved with no character type show Lowercase ticked", pg.is_checked("#pwLower"))
     pg.context.close()
 
+    pg = fresh()
+    for _ in range(100):   # two bios in ten name the city
+        if val(pg, "City") in val(pg, "Bio"):
+            break
+        pg.click("#new")
+    old_city, seed = val(pg, "City"), pg.text_content("#seedview")
+    while val(pg, "City") == old_city:
+        pg.locator('[aria-label="New city"]').dispatch_event("click")
+    check("rerolling City updates the bio", val(pg, "City") in val(pg, "Bio") and old_city not in val(pg, "Bio"))
+    pg.click("#new")
+    pg.fill("#seedin", seed)
+    pg.click("#loadseed")
+    check("the seed still gives the bio as first made", old_city in val(pg, "Bio"))
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
