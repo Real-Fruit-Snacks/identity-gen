@@ -107,6 +107,36 @@ with sync_playwright() as p:
     check("version matches between page, service worker and changelog", v_page == v_sw == v_log)
     check("footer shows the version", page.text_content("#ver") == "v" + v_page)
 
+    # Each check below starts from an empty browser profile.
+    def fresh(c=None):
+        pg = (c or browser.new_context(accept_downloads=True, viewport={"width": 900, "height": 1200})).new_page()
+        pg.on("pageerror", lambda e: errors.append(str(e)))
+        pg.goto(URL)
+        pg.wait_for_timeout(300)
+        return pg
+
+    def val(pg, label):   # the value shown on the row with this label
+        return pg.evaluate("""l => { const r = [...document.querySelectorAll('.r')].find(r => r.querySelector('dt').textContent === l);
+            return r ? [...r.querySelector('dd').childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join('') : null; }""", label)
+
+    def edit(pg, label, text):
+        pg.locator(".r", has=pg.locator(f'dt:text-is("{label}")')).locator("dd").click()
+        pg.keyboard.press("ControlOrMeta+A")
+        if text:
+            pg.keyboard.type(text)
+        else:
+            pg.keyboard.press("Delete")
+        pg.keyboard.press("Enter")
+
+    pg = fresh()
+    pg.fill("#notes", "keep these notes")
+    pw = val(pg, "Password")
+    edit(pg, "Full name", "")
+    pg.reload()
+    pg.wait_for_timeout(300)
+    check("identity with an empty name survives reload", val(pg, "Password") == pw and pg.input_value("#notes") == "keep these notes")
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 

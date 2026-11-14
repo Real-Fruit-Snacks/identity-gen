@@ -1960,7 +1960,7 @@
   $("undo").disabled = !history.length; renderRecent();
   let saved = null;
   try { saved = JSON.parse(localStorage.getItem("currentIdentity") || "null"); } catch (_) {}
-  if (saved && saved.current && saved.current.firstName) restore(saved); else render();
+  if (saved && saved.current && typeof saved.current.firstName === "string") restore(saved); else render();   // a name edited to empty is still an identity
 })();
 </script>
 </body>
