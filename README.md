@@ -61,13 +61,13 @@ The first half of a seed makes the fields and the second half the avatar, so the
 | Avatars | Initials, Pixel (48×48 people with fourteen character kits), Duck, House, six abstract styles, three DiceBear styles, or a photo. Save as a 512px PNG or copy |
 | Seeds | Every identity shows a seed that brings it and its avatar back, given the same username, password and avatar settings |
 | Export | Plain text, Markdown or JSON to the clipboard, or `.txt` / `.md` files, with the site, notes and seed included |
-| Memory | A Recent panel restores any of the last ten. Rerolling a name, username or email handle skips ones an earlier reroll on this device gave out |
+| Memory | A Recent panel restores any of the last ten. New identities and rerolled names, usernames and email handles skip ones this device has already given out |
 
 The email field is a handle only, the part before the `@`, so it pairs with your own alias service or domain.
 
 ## Tested on
 
-- Chromium (Playwright) on Ubuntu, on every push to `main` and every pull request: 100 renders each of the Pixel, Duck and House styles, seeds, undo, export, reload, theme and version checks (`tests/test_page.py`), and the six seeds in the deck above, regenerated and compared
+- Chromium (Playwright) on Ubuntu, on every push to `main` and every pull request: 100 renders each of the Pixel, Duck and House styles, seeds, undo, export, reload, two tabs, the service worker offline, theme and version checks (`tests/test_page.py`), and the six seeds in the deck above, regenerated and compared
 - The release's `index.html`, opened from disk with the network blocked, in Chromium and Firefox (Playwright), on every push to `main` and before each release: the fonts and icon load from the file, and it makes identities and avatars (`tests/test_download.py`)
 - *Not* tested: Firefox beyond that check, Safari, mobile browsers. It uses nothing unusual, but I haven't checked.
 
