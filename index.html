@@ -1708,6 +1708,9 @@
       x.addEventListener("click", () => { (opts.sec !== undefined ? current.security : current.custom).splice(opts.sec ?? opts.cus, 1); copied.clear(); renderFields(); });
       act.append(x);
     }
+    // A mouse press on a row's button doesn't take focus: focus would mark the row as next, which shows its Enter hint
+    // and slides the buttons left under the pointer, so the click was lost. (An open edit still blurs, to keep it.)
+    act.addEventListener("mousedown", ev => { if (ev.target.closest("button") && !document.activeElement?.isContentEditable) ev.preventDefault(); });
     wrap.append(n, dt, dd, act);
     wrap.addEventListener("click", ev => { if (!ev.target.closest("button, [contenteditable]")) moveCursor(walk.indexOf(entry)); });
     wrap.addEventListener("focusin", () => { const i = walk.indexOf(entry); if (i !== cursorAt) moveCursor(i, false); });
