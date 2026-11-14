@@ -163,6 +163,28 @@ with sync_playwright() as p:
     check("a loaded seed's avatar survives reload", pg.inner_html("#photo svg") == avatar)
     pg.context.close()
 
+    stored = lambda pg, key, empty: json.loads(pg.evaluate(f"localStorage.getItem('{key}') || '{empty}'"))
+    pg = fresh()
+    tab = fresh(pg.context)
+    made = [pg.text_content("#name")]
+    for _ in range(3):
+        pg.click("#new")
+        made.append(pg.text_content("#name"))
+    tab.click("#new")
+    kept = {s["current"]["fullName"] for s in stored(pg, "identityHistory", "[]")}
+    check("a second tab keeps the first tab's Recent identities", set(made[:-1]) <= kept)
+    pg.wait_for_timeout(100)
+    check("Recent identities in the other tab follow along", pg.locator("#recent li").count() == len(stored(pg, "identityHistory", "[]")))
+    names = []
+    for _ in range(3):
+        pg.locator('[aria-label="New full name"]').dispatch_event("click")
+        names.append(pg.text_content("#name"))
+    tab.locator('[aria-label="New full name"]').dispatch_event("click")
+    check("a second tab keeps the first tab's used names", set(names) <= set(stored(pg, "usedValues", "{}").get("name", [])))
+    pg.locator("#recent button", has_text="Restore").first.click()
+    check("Restore brings back a Recent identity", pg.text_content("#name") in made[:-1])
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
