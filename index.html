@@ -1518,6 +1518,9 @@
       if (pw.mode) { pwEls.modePhrase.checked = pw.mode === "phrase"; pwEls.modeChars.checked = pw.mode !== "phrase"; pwEls.words.value = pw.words; pwEls.sep.value = pw.sep; pwEls.cap.checked = pw.cap; pwEls.num.checked = pw.num; } }
     kitEl.value = localStorage.getItem("kitRate") ?? 45;
   } catch (_) {}
+  // Random characters need at least one character type; settings saved with none ticked get Lowercase, as before.
+  const pwSets = [pwEls.upper, pwEls.lower, pwEls.digits, pwEls.symbols];
+  if (!pwSets.some(b => b.checked)) pwEls.lower.checked = true;
   $("pwlenv").textContent = pwEls.len.value; $("unlenv").textContent = unEls.len.value;
   function syncPwMode() { const ph = pwEls.modePhrase.checked; $("phraseOpts").hidden = !ph; $("charOpts").hidden = ph; $("pwwordsv").textContent = pwEls.words.value; }
   syncPwMode(); $("kitratev").textContent = kitEl.value + "%";
@@ -1551,6 +1554,7 @@
   });
   kitEl.addEventListener("input", () => { $("kitratev").textContent = kitEl.value + "%"; saveSettings(); if ((astyle.value === "pixel" || astyle.value === "duck") && style !== "real") renderPhoto(false); });
   Object.values(pwEls).forEach(el => el.addEventListener("input", () => {
+    if (pwSets.includes(el) && !pwSets.some(b => b.checked)) { el.checked = true; say("Keep at least one character type."); return; }
     $("pwlenv").textContent = pwEls.len.value; syncPwMode(); saveSettings();
     if (current) { gen.password(current); renderFields(); }
   }));
