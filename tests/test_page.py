@@ -235,6 +235,18 @@ with sync_playwright() as p:
     check("offline after a server error, the service worker still has the page", pg.locator("#name").count() == 1)
     pg.context.close()
 
+    pg = fresh()
+    pg.click("#addcustom")
+    pg.keyboard.type("Code | PIN")
+    pg.keyboard.press("Enter")
+    pg.click("#addsec")
+    pg.keyboard.type("Pet | first name?")
+    pg.keyboard.press("Enter")
+    rows = [l for l in clip(pg, "#copymd").splitlines() if l.startswith("|")]
+    check("a | in a label or question stays inside its Markdown table cell",
+          all(len(re.split(r"(?<!\\)\|", l)) == 4 for l in rows) and any("Code \\| PIN" in l for l in rows))
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 
