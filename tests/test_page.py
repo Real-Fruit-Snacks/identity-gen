@@ -137,6 +137,22 @@ with sync_playwright() as p:
     check("identity with an empty name survives reload", val(pg, "Password") == pw and pg.input_value("#notes") == "keep these notes")
     pg.context.close()
 
+    def clip(pg, button):   # what an export button puts on the clipboard
+        pg.evaluate("navigator.clipboard.writeText = async t => { window.__clip = t; }")
+        pg.click(button)
+        pg.wait_for_function("window.__clip !== undefined")
+        return pg.evaluate("window.__clip")
+
+    pg = fresh()
+    exported = json.loads(clip(pg, "#copyjson"))
+    check("JSON export carries the full seed", exported["seed"] == pg.text_content("#seedview"))
+    check("JSON export keeps site, notes and seed first", list(exported)[:3] == ["site", "notes", "seed"])
+    pg.click("#new")
+    pg.fill("#seedin", exported["seed"])
+    pg.click("#loadseed")
+    check("a seed from the JSON export loads", pg.text_content("#seedview") == exported["seed"])
+    pg.context.close()
+
     check("no page errors overall", not errors)
     browser.close()
 

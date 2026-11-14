@@ -1894,7 +1894,8 @@
     lines.push(`_Seed: ${m.seed}_`);
     return lines.join("\n");
   }
-  function asJSON() { const c = { ...meta(), ...current }; delete c._displayFmt; delete c._bioFmt; return JSON.stringify(c, null, 2); }
+  // meta() goes first to keep the key order, and its seed (identity-photo) replaces the identity half from current.
+  function asJSON() { const m = meta(), c = { ...m, ...current, seed: m.seed }; delete c._displayFmt; delete c._bioFmt; return JSON.stringify(c, null, 2); }
   function download(blob, name) {
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
