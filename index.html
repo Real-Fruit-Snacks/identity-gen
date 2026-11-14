@@ -1385,7 +1385,7 @@
     // The bio may name the city. While an identity is being made (no hobby yet) it's left alone: the hobby writes the
     // bio later, and drawing it here would change what every seed gives.
     city:      id => { const c = pick(cities); id.city = c[0]; id.state = c[1]; id.zip = c[2] + pad(rnd(100)); if (id.hobby !== undefined && id._bioFmt) id.bio = bio(id, id._bioFmt); },
-    zip:       id => { const c = cities.find(x => x[0] === id.city) || pick(cities); id.zip = c[2] + pad(rnd(100)); },
+    zip:       id => { const c = cities.find(x => x[0] === id.city && x[1] === id.state) || cities.find(x => x[0] === id.city) || pick(cities); id.zip = c[2] + pad(rnd(100)); },   // the list has two Portlands, OR and ME
     country:   id => { id.country = "United States"; },
     occupation: id => { id.occupation = pick(jobs); derive(id); },
     company:   id => { id.company = pick(coWords1) + " " + pick(coWords2) + pick(["", "", "", " Co.", " Inc.", " LLC", " & Sons", " Ltd."]); },
