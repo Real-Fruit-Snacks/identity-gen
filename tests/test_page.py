@@ -242,6 +242,7 @@ with sync_playwright() as p:
     pg.click("#addsec")
     pg.keyboard.type("Pet | first name?")
     pg.keyboard.press("Enter")
+    pg.evaluate("""() => { const dd = [...document.querySelectorAll('#custom dd')].pop(); dd.focus(); dd.textContent = 'two\\nlines'; dd.blur(); }""")
     rows = [l for l in clip(pg, "#copymd").splitlines() if l.startswith("|")]
     check("a | in a label or question stays inside its Markdown table cell",
           all(len(re.split(r"(?<!\\)\|", l)) == 4 for l in rows) and any("Code \\| PIN" in l for l in rows))
@@ -278,12 +279,33 @@ with sync_playwright() as p:
     pg.fill("#seedin", seed)
     pg.click("#loadseed")
     check("the seed still gives the bio as first made", old_city in val(pg, "Bio"))
+    for _ in range(100):
+        if val(pg, "City") not in val(pg, "Bio"):
+            break
+        pg.click("#new")
+    edit(pg, "Bio", "My own words.")
+    pg.locator('[aria-label="New city"]').dispatch_event("click")
+    check("rerolling City leaves a bio that doesn't name the city alone", val(pg, "Bio") == "My own words.")
+    for _ in range(200):
+        if val(pg, "City") in val(pg, "Bio"):
+            break
+        pg.locator('[aria-label="New bio"]').dispatch_event("click")
+    old_city = val(pg, "City")
+    while val(pg, "City") == old_city:
+        pg.locator('[aria-label="New city"]').dispatch_event("click")
+    check("rerolling City after rerolling Bio updates the new bio", val(pg, "City") in val(pg, "Bio"))
     pg.context.close()
 
     pg = fresh()
     pw = val(pg, "Password")
     pg.click('[aria-label="New password"]')   # a real mouse click, on a row that isn't marked as next
     check("one click rerolls a row that isn't marked as next", val(pg, "Password") != pw)
+    pg.evaluate("navigator.clipboard.writeText = async t => { window.__clip = t; }")
+    pg.fill("#notes", "notes")
+    pg.locator(".r.next .cp").click()
+    pg.keyboard.press("Enter")
+    pg.wait_for_timeout(100)
+    check("after typing notes, clicking Copy then Enter copies the next row", pg.locator(".r[data-copied]").count() == 2 and pg.input_value("#notes") == "notes")
     edit(pg, "Location", "Portland, ME")
     pg.locator('[aria-label="New zip"]').dispatch_event("click")
     check("ZIP reroll uses the state's prefix for a city name two states share", val(pg, "ZIP").startswith("041"))

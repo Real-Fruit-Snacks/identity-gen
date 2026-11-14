@@ -1382,9 +1382,9 @@
     pin:       id => { id.pin = String(1000 + rnd(9000)); },
     phone:     id => { id.phone = `(555) 01${rnd(10)}-${pad(rnd(100))}${pad(rnd(100))}`; },
     street:    id => { id.street = `${100 + rnd(9800)} ${pick(streets)} ${pick(streetTypes)}`; },
-    // The bio may name the city. While an identity is being made (no hobby yet) it's left alone: the hobby writes the
-    // bio later, and drawing it here would change what every seed gives.
-    city:      id => { const c = pick(cities); id.city = c[0]; id.state = c[1]; id.zip = c[2] + pad(rnd(100)); if (id.hobby !== undefined && id._bioFmt) id.bio = bio(id, id._bioFmt); },
+    // A bio that names the city is written again. While an identity is being made (no hobby yet) it's left alone: the
+    // hobby writes the bio later, and drawing it here would change what every seed gives.
+    city:      id => { const c = pick(cities); id.city = c[0]; id.state = c[1]; id.zip = c[2] + pad(rnd(100)); if (id.hobby !== undefined && id._bioFmt && id._bioFmt.includes("{city}")) id.bio = bio(id, id._bioFmt); },
     zip:       id => { const c = cities.find(x => x[0] === id.city && x[1] === id.state) || cities.find(x => x[0] === id.city) || pick(cities); id.zip = c[2] + pad(rnd(100)); },   // the list has two Portlands, OR and ME
     country:   id => { id.country = "United States"; },
     occupation: id => { id.occupation = pick(jobs); derive(id); },
@@ -1392,7 +1392,7 @@
     language:  id => { id.language = pick(languages); },
     favoriteColor: id => { id.favoriteColor = pick(colors); },
     hobby:     id => { id.hobby = pick(hobbies); derive(id); },
-    bio:       id => { id.bio = bio(id, pick(bioTemplates)); },
+    bio:       id => { id.bio = bio(id, id._bioFmt = pick(bioTemplates)); },   // kept, so later rerolls rewrite this bio, not the first
     securityAll: id => { id.security = (id.security || []).map(q => ({ question: q.question, answer: answer() })); },
   };
   function handle(fmt) {
@@ -1708,9 +1708,15 @@
       x.addEventListener("click", () => { (opts.sec !== undefined ? current.security : current.custom).splice(opts.sec ?? opts.cus, 1); copied.clear(); renderFields(); });
       act.append(x);
     }
-    // A mouse press on a row's button doesn't take focus: focus would mark the row as next, which shows its Enter hint
-    // and slides the buttons left under the pointer, so the click was lost. (An open edit still blurs, to keep it.)
-    act.addEventListener("mousedown", ev => { if (ev.target.closest("button") && !document.activeElement?.isContentEditable) ev.preventDefault(); });
+    // A mouse press on a row's button doesn't focus it: focus would mark the row as next, which shows its Enter hint
+    // and slides the buttons left under the pointer, so the click was lost. It still takes focus out of Notes or Site,
+    // so Enter and the keys work after it, and an open edit still blurs the usual way, so it's saved.
+    act.addEventListener("mousedown", ev => {
+      const f = document.activeElement;
+      if (!ev.target.closest("button") || (f && f.isContentEditable)) return;
+      ev.preventDefault();
+      if (f && f !== document.body) f.blur();
+    });
     wrap.append(n, dt, dd, act);
     wrap.addEventListener("click", ev => { if (!ev.target.closest("button, [contenteditable]")) moveCursor(walk.indexOf(entry)); });
     wrap.addEventListener("focusin", () => { const i = walk.indexOf(entry); if (i !== cursorAt) moveCursor(i, false); });
@@ -1859,12 +1865,10 @@
   // The saved history is shared with other tabs: read it again before each change, and follow their changes.
   let history = [];
   function loadHistory() { try { history = JSON.parse(localStorage.getItem("identityHistory") || "[]"); } catch (_) {} }
-  function saveHistory() {
-    try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {}
-    $("undo").disabled = !history.length; renderRecent();
-  }
+  function showHistory() { $("undo").disabled = !history.length; renderRecent(); }
+  function saveHistory() { try { localStorage.setItem("identityHistory", JSON.stringify(history)); } catch (_) {} showHistory(); }
   loadHistory();
-  addEventListener("storage", e => { if (e.key === "identityHistory" || e.key === null) { loadHistory(); $("undo").disabled = !history.length; renderRecent(); } });
+  addEventListener("storage", e => { if (e.key === "identityHistory" || e.key === null) { loadHistory(); showHistory(); } });
   const sameIdentity = (a, b) => a.seed === b.seed && a.createdAt === b.createdAt;
   function keepCurrent() {   // another tab may already have put this identity in the history: keep one copy, this one
     history = history.filter(s => !sameIdentity(s.current, current));
@@ -1883,7 +1887,7 @@
   }
   function undo() {
     loadHistory();
-    if (!history.length) { $("undo").disabled = true; renderRecent(); return; }
+    if (!history.length) { showHistory(); return; }
     const snap = history.pop();
     saveHistory(); restore(snap);
   }
@@ -1920,7 +1924,7 @@
     lines.push(`Seed: ${m.seed}`);
     return lines.join("\n").trim();
   }
-  const cell = v => String(v).replace(/\|/g, "\\|");   // a | in a label, question or value would end its table cell
+  const cell = v => String(v).replace(/\|/g, "\\|").replace(/\s*\n\s*/g, " ");   // a | or a line break would end its table cell or row
   function asMarkdown() {
     const s = sections(current), m = meta(), lines = [`# ${current.fullName}`, ""];
     if (m.site) lines.push(`**Site:** ${m.site}`, "");
