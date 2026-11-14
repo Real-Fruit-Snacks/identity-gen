@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+- Fixed clearing Full name and refreshing the page replacing the whole identity, password, site and notes included, with a new one that never reached Recent identities.
+- Fixed the JSON export's `seed` holding only the identity half, which Load rejected. It's the full seed now, in the same place.
+- Fixed a refresh after Load bringing back the previous avatar seed and a different avatar.
+- Fixed two open tabs erasing each other's Recent identities and used-names memory. Each reads the saved copy before changing it, and Recent identities and Undo follow changes made in another tab.
+- New identities now go in the used-names memory and skip names, usernames and email handles this device has already given out; before, only a reroll of one of those fields did (12 repeated names in 1,500 new identities, now none). A seed still gives back the same identity.
+- Fixed the service worker caching error responses, so one 503 or 404 for the page replaced the offline copy with the error page. Only successful responses are cached, and for an error the cached page is shown when there is one.
+- Fixed a `|` in a custom field name or security question breaking its row of the Markdown table.
+- Random-character passwords always keep one character type ticked: unticking the last one ticks it again and says why. Before, with none ticked, the password quietly came out all lowercase.
+- Rerolling City, State, Location or Address now rewrites a bio that names the city.
+- Fixed the reroll button on a row that isn't marked as next needing two clicks in Chromium and Firefox (the first only moved the mark).
+- Fixed a ZIP reroll giving a Portland, ME identity Oregon's 972 prefix.
+- No change to what a seed produces: every seed gives the same identity and avatar as in 1.13.0. The exports change only where noted above (the JSON `seed`, and `|` in Markdown labels).
+- Browser checks cover each of these.
+
 ## 1.13.0
 - New page layout built around filling in a sign-up form. The fields are listed in the order forms usually ask for them (account, basics, address, profile, extra fields, security questions), one row is marked as next, and <kbd>Enter</kbd> copies it and moves to the next one. Copied rows say "ok · copied" until their value changes, and the bar at the top counts them ("6 of 21 copied", with the site if you entered one).
 - New keys: <kbd>J</kbd> and <kbd>K</kbd> move the marked row, <kbd>R</kbd> gives it a new value, <kbd>E</kbd> edits it. Tabbing to a row's Copy button and pressing Enter copies it and moves focus to the next row's button.
