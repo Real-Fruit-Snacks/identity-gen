@@ -14,12 +14,15 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("message", (event) => { if (event.data === "SKIP_WAITING") self.skipWaiting(); });
 
 // Same-origin requests: serve from the network when available and refresh the cache; fall back to the cache offline.
+// Only successful responses are cached; for an error (a 404 or 503) the cached copy is served when there is one.
 // Cross-origin requests (illustrated avatars, photo sources) are left alone.
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin || event.request.method !== "GET") return;
   event.respondWith(
-    fetch(event.request).then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(event.request, copy)); return res; })
-      .catch(() => caches.match(event.request).then((hit) => hit || caches.match("./index.html")))
+    fetch(event.request).then((res) => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(event.request, copy)); return res; }
+      return res.status >= 400 ? caches.match(event.request).then((hit) => hit || res) : res;
+    }).catch(() => caches.match(event.request).then((hit) => hit || caches.match("./index.html")))
   );
 });
