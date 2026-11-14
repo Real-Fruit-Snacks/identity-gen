@@ -284,6 +284,9 @@ with sync_playwright() as p:
     pw = val(pg, "Password")
     pg.click('[aria-label="New password"]')   # a real mouse click, on a row that isn't marked as next
     check("one click rerolls a row that isn't marked as next", val(pg, "Password") != pw)
+    edit(pg, "Location", "Portland, ME")
+    pg.locator('[aria-label="New zip"]').dispatch_event("click")
+    check("ZIP reroll uses the state's prefix for a city name two states share", val(pg, "ZIP").startswith("041"))
     pg.context.close()
 
     check("no page errors overall", not errors)
