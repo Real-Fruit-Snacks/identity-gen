@@ -1,7 +1,9 @@
 const VERSION = "1.13.0";
-const CACHE = "identity-gen-" + VERSION;
+const CACHE = "identity-gen-v2.1-" + VERSION;
 const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png",
-  "./fonts/IBMPlexSans-Regular.woff2", "./fonts/IBMPlexSans-SemiBold.woff2", "./fonts/IBMPlexSans-Bold.woff2", "./fonts/IBMPlexMono-Regular.woff2", "./fonts/IBMPlexMono-Medium.woff2", "./fonts/IBMPlexMono-SemiBold.woff2"];
+  "./fonts/big-shoulders-stencil-latin-ext.woff2", "./fonts/big-shoulders-stencil-latin.woff2",
+  "./fonts/albert-sans-latin-ext.woff2", "./fonts/albert-sans-latin.woff2",
+  "./fonts/azeret-mono-latin-ext.woff2", "./fonts/azeret-mono-latin.woff2"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));   // wait: the page offers the update and asks us to take over

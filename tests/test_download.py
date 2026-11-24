@@ -6,8 +6,8 @@ Build it first with python tools/build-standalone.py, then:
     python tests/test_download.py PATH --browsers chromium
 
 Each browser gets a dead proxy, offline mode and a request log, and the check fails if the page asks for
-anything that isn't file:, data: or blob:. It then checks the six IBM Plex faces actually loaded (not
-just that nothing errored), the icon decodes, the page makes and rerolls identities and avatars, the
+anything that isn't file:, data: or blob:. It then checks the six Cyclorama Dawn font faces actually loaded
+(not just that nothing errored), the icon decodes, the page makes and rerolls identities and avatars, the
 service worker stays unregistered, and nothing errors or shows the update notice.
 """
 import argparse
@@ -19,7 +19,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCAL = ("file:", "data:", "blob:", "about:")
-FACES = {("IBM Plex Sans", w) for w in ("400", "600", "700")} | {("IBM Plex Mono", w) for w in ("400", "500", "600")}
+FAMILIES = {"Big Shoulders Stencil", "Albert Sans", "Azeret Mono"}
 
 ap = argparse.ArgumentParser(description="Check the standalone index.html from file:// with no network.")
 ap.add_argument("path", nargs="?", default=os.path.join(ROOT, "dist", "index.html"))
@@ -56,15 +56,19 @@ with sync_playwright() as p:
 
         faces = page.evaluate("""async () => {
             await document.fonts.ready;
-            const faces = [...document.fonts].filter(f => f.family.replace(/["']/g, "").startsWith("IBM Plex"));
+            const want = new Set(["Big Shoulders Stencil", "Albert Sans", "Azeret Mono"]);
+            const faces = [...document.fonts].filter(f => want.has(f.family.replace(/["']/g, "")));
             await Promise.allSettled(faces.map(f => f.load()));
-            return faces.map(f => [f.family.replace(/["']/g, ""), String(f.weight), f.status]);
+            return faces.map(f => [f.family.replace(/["']/g, ""), f.status]);
         }""")
-        loaded = {(fam, w) for fam, w, status in faces if status == "loaded"}
-        check(tag + "all six IBM Plex faces load from the file", loaded == FACES)
-        check(tag + "body and labels render in IBM Plex",
-              page.evaluate("""() => document.fonts.check('400 15px "IBM Plex Sans"') && document.fonts.check('500 10.5px "IBM Plex Mono"')
-                  && getComputedStyle(document.body).fontFamily.startsWith('"IBM Plex Sans"')"""))
+        loaded = [fam for fam, status in faces if status == "loaded"]
+        check(tag + "all six Cyclorama Dawn faces load from the file",
+              len(loaded) == 6 and set(loaded) == FAMILIES and all(loaded.count(f) == 2 for f in FAMILIES))
+        check(tag + "display, body and mono render in Cyclorama Dawn fonts",
+              page.evaluate("""() => document.fonts.check('700 20px "Big Shoulders Stencil"')
+                  && document.fonts.check('400 15px "Albert Sans"')
+                  && document.fonts.check('500 10.5px "Azeret Mono"')
+                  && getComputedStyle(document.body).fontFamily.startsWith('"Albert Sans"')"""))
         check(tag + "icon is built in and decodes", page.evaluate("""() => new Promise(done => {
             const link = document.querySelector('link[rel="apple-touch-icon"]');
             if (!link) return done(false);

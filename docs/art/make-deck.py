@@ -28,6 +28,7 @@ from collections import OrderedDict
 
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
+from fontTools.varLib.instancer import instantiateVariableFont
 from playwright.sync_api import sync_playwright
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -50,12 +51,16 @@ CARDS = [
 STYLE_NAMES = {"pixel": "PIXEL", "duck": "DUCK", "house": "HOUSE", "bauhaus": "BAUHAUS", "sunset": "SUNSET",
                "marble": "MARBLE", "terrain": "TERRAIN", "rings": "RINGS", "bloom": "BLOOM", "initials": "INITIALS"}
 
-# RFS Nightshift and Dayshift
+# RFS Cyclorama Dawn v2.1.0 — LX 263 Dark & LX 512 Light
 THEMES = {
-    "dark": dict(plate="#0C0D10", card="#13151A", raised="#1A1D24", line="#262A33", strong="#636872", ink="#E8E6E1",
-                 mute="#8A8F99", ember="#FF6A3D", on_ember="#0C0D10", amber="#FFC247", dim=(0.42, 0.68), shadow=0.55, glow=0.16),
-    "light": dict(plate="#F6F5F2", card="#FFFFFF", raised="#ECEAE4", line="#D6D3CB", strong="#89867F", ink="#1A1B1E",
-                  mute="#666A73", ember="#C03B0A", on_ember="#FFFFFF", amber="#925F00", dim=(0.40, 0.66), shadow=0.16, glow=0.10),
+    "dark": dict(plate="#050507", card="#0C0C10", raised="#14141A", line="#242731", strong="#62646D", ink="#F4F5F8",
+                 mute="#B3B5C0", steel="#1F547A", steel_ink="#74B8E8", beacon="#F06E2B", beacon_fill="#BD4811",
+                 beacon_ink="#FF9254", on_cta="#FFFFFF", amber="#FFC247", dim=(0.44, 0.70), shadow=0.55,
+                 wash_s=0.14, wash_b=0.10),
+    "light": dict(plate="#F5F7F9", card="#FFFFFF", raised="#E3E8EE", line="#D2D7E0", strong="#6E7682", ink="#0D1016",
+                  mute="#474D59", steel="#18496B", steel_ink="#164669", beacon="#AD3D0A", beacon_fill="#AD3D0A",
+                  beacon_ink="#AD3D0A", on_cta="#FFFFFF", amber="#885800", dim=(0.40, 0.66), shadow=0.14,
+                  wash_s=0.07, wash_b=0.06),
 }
 
 W, H = 1000, 600
@@ -66,9 +71,11 @@ SLOTS = {0: (500, 1.0), 1: (718, 0.84), -1: (282, 0.84), 2: (874, 0.70), -2: (12
 STEP, MOVE = 2.8, 0.7         # seconds a card holds the front, and how long a step takes
 CYCLE = STEP * len(CARDS)
 
-NEXT_M, NEXT_X = "atkinson-hyperlegible-next-latin-500-normal.woff2", "atkinson-hyperlegible-next-latin-800-normal.woff2"
-MONO, MONO_M, MONO_S = ("atkinson-hyperlegible-mono-latin-400-normal.woff2", "atkinson-hyperlegible-mono-latin-500-normal.woff2",
-                        "atkinson-hyperlegible-mono-latin-600-normal.woff2")
+DISPLAY = ("big-shoulders-stencil-latin.woff2", 700)
+SANS_M = ("albert-sans-latin.woff2", 500)
+MONO = ("azeret-mono-latin.woff2", 400)
+MONO_M = ("azeret-mono-latin.woff2", 500)
+MONO_S = ("azeret-mono-latin.woff2", 600)
 
 
 # ---------- the page ----------
@@ -116,10 +123,12 @@ _fonts = {}
 _glyphs = OrderedDict()   # (font, glyph name) -> (id, path in font units); drawn once in <defs>, reused by <use>
 
 
-def font(name):
-    if name not in _fonts:
-        _fonts[name] = TTFont(os.path.join(FONTS, name))
-    return _fonts[name]
+def font(spec):
+    if spec not in _fonts:
+        fname, wght = spec
+        raw = TTFont(os.path.join(FONTS, fname))
+        _fonts[spec] = instantiateVariableFont(raw, {"wght": wght}, inplace=True) if "fvar" in raw else raw
+    return _fonts[spec]
 
 
 def advance(s, size, fname, ls=0.0):
@@ -200,8 +209,8 @@ def card(i, c, t):
     o.append(f'<rect x="{x0 + 3}" y="{y0 + 10}" width="{CW - 6}" height="{CH - 6}" rx="16" fill="#000" opacity="{t["shadow"]}" filter="url(#soft)"/>')
     o.append(f'<rect x="{x0 + 0.5}" y="{y0 + 0.5}" width="{CW - 1}" height="{CH - 1}" rx="16" fill="{t["card"]}" stroke="{t["line"]}"/>')
     # header
-    o.append(text("STAND-IN", left, y0 + 21, 10.5, MONO_S, t["mute"], ls=0.16))
-    o.append(text(STYLE_NAMES[c["style"]], x1 - pad, y0 + 21, 10.5, MONO_S, t["mute"], ls=0.16, anchor="end"))
+    o.append(text("STAND-IN", left, y0 + 21, 10, MONO_S, t["steel_ink"], ls=0.14))
+    o.append(text(STYLE_NAMES[c["style"]], x1 - pad, y0 + 21, 10, MONO_S, t["mute"], ls=0.14, anchor="end"))
     # avatar
     ay, size = y0 + 30, inner_w
     o.append(f'<g clip-path="url(#avclip)"><rect x="{left}" y="{ay}" width="{size}" height="{size}" fill="{t["raised"]}"/>'
@@ -209,21 +218,22 @@ def card(i, c, t):
     o.append(f'<rect x="{left + 0.5}" y="{ay + 0.5}" width="{size - 1}" height="{size - 1}" rx="10" fill="none" stroke="#000" stroke-opacity=".12"/>')
     y = ay + size
     # name and tagline
-    o.append(text(f["Name"], left, y + 36, fit(f["Name"], 28, NEXT_X, inner_w, -0.01), NEXT_X, t["ink"], ls=-0.01))
-    o.append(text(f["Tagline"], left, y + 59, fit(f["Tagline"], 16, NEXT_M, inner_w), NEXT_M, t["amber"]))
+    disp_name = f["Name"].upper()
+    o.append(text(disp_name, left, y + 38, fit(disp_name, 34, DISPLAY, inner_w, 0.02), DISPLAY, t["ink"], ls=0.02))
+    o.append(text(f["Tagline"], left, y + 60, fit(f["Tagline"], 15, SANS_M, inner_w), SANS_M, t["amber"]))
     o.append(f'<rect x="{left}" y="{y + 74}" width="{inner_w}" height="1" fill="{t["line"]}"/>')
 
     def field(label, value, x, y, width):
-        return (text(label, x, y, 9.5, MONO_S, t["mute"], ls=0.14) +
-                text(value, x, y + 18, fit(value, 14, MONO, width), MONO, t["ink"]))
+        return (text(label, x, y, 9, MONO_S, t["mute"], ls=0.12) +
+                text(value, x, y + 18, fit(value, 13, MONO, width), MONO, t["ink"]))
     born = f["Birthdate"].split(" (")[0]
     o.append(field("USERNAME", f["Username"], left, y + 92, inner_w))
     o.append(field("PASSWORD", f["Password"], left, y + 132, inner_w))
-    o.append(field("BIRTHDATE", born, left, y + 172, 120))
-    o.append(field("PHONE", f["Phone"], left + 134, y + 172, inner_w - 134))
+    o.append(field("BIRTHDATE", born, left, y + 172, 118))
+    o.append(field("PHONE", f["Phone"], left + 130, y + 172, inner_w - 130))
     # seed
     o.append(f'<rect x="{left}" y="{y + 206}" width="{inner_w}" height="1" fill="{t["line"]}"/>')
-    o.append(text(c["seed"], 0, y + 230, fit(c["seed"], 11.5, MONO_M, inner_w), MONO_M, t["ember"], anchor="middle"))
+    o.append(text(c["seed"], 0, y + 230, fit(c["seed"], 10.5, MONO_M, inner_w), MONO_M, t["beacon_ink"], anchor="middle"))
     o.append("</g>")
     return "".join(o)
 
@@ -249,9 +259,9 @@ def build(theme, cards):
     _glyphs.clear()
     n = len(CARDS)
     bodies = [card(i, c, t) for i, c in enumerate(cards)]
-    corner_l = text("IDENTITY-GEN", 32, H - 26, 11, MONO_S, t["mute"], ls=0.18)
-    corner_r = text("NEW IDENTITY", W - 32 - 34 - 12, H - 26, 11, MONO_S, t["mute"], ls=0.18, anchor="end")
-    keycap = text("N", W - 32 - 17, H - 25, 15, MONO_S, t["on_ember"], anchor="middle")
+    corner_l = text("IDENTITY-GEN", 32, H - 26, 10.5, MONO_S, t["mute"], ls=0.16)
+    corner_r = text("NEW IDENTITY", W - 32 - 34 - 12, H - 26, 10.5, MONO_S, t["mute"], ls=0.16, anchor="end")
+    keycap = text("N", W - 32 - 17, H - 25, 14.5, MONO_S, t["on_cta"], anchor="middle")
 
     def state(slot):
         x, s = SLOTS[slot]
@@ -297,8 +307,11 @@ def build(theme, cards):
     o = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" role="img">']
     o.append(f"<style>{''.join(base)}@media (prefers-reduced-motion:no-preference){{{''.join(css)}{rules}}}</style>")
     defs = ['<filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>',
-            f'<radialGradient id="glow"><stop offset="0" stop-color="{t["ember"]}" stop-opacity="{t["glow"]}"/>'
-            f'<stop offset="1" stop-color="{t["ember"]}" stop-opacity="0"/></radialGradient>']
+            f'<clipPath id="plateclip"><rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="22"/></clipPath>',
+            f'<linearGradient id="horizon" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="{t["steel_ink"]}"/><stop offset="48%" stop-color="{t["steel"]}"/><stop offset="100%" stop-color="{t["beacon"]}"/></linearGradient>',
+            f'<linearGradient id="ctagrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="{t["steel"]}"/><stop offset="100%" stop-color="{t["beacon_fill"]}"/></linearGradient>',
+            f'<radialGradient id="wash-s"><stop offset="0" stop-color="{t["steel"]}" stop-opacity="{t["wash_s"]}"/><stop offset="1" stop-color="{t["steel"]}" stop-opacity="0"/></radialGradient>',
+            f'<radialGradient id="wash-b"><stop offset="0" stop-color="{t["beacon"]}" stop-opacity="{t["wash_b"]}"/><stop offset="1" stop-color="{t["beacon"]}" stop-opacity="0"/></radialGradient>']
     inner_w = CW - 32
     defs.append(f'<clipPath id="avclip"><rect x="{-CW / 2 + 16}" y="{-CH / 2 + 30}" width="{inner_w}" height="{inner_w}" rx="10"/></clipPath>')
     for i, c in enumerate(cards):
@@ -306,11 +319,13 @@ def build(theme, cards):
     defs += bodies
     o.append(f"<defs>{glyph_defs()}{''.join(defs)}</defs>")
     o.append(f'<rect x="0.5" y="0.5" width="{W - 1}" height="{H - 1}" rx="22" fill="{t["plate"]}" stroke="{t["line"]}"/>')
-    o.append(f'<ellipse cx="500" cy="{H - 40}" rx="460" ry="300" fill="url(#glow)"/>')
+    o.append(f'<g clip-path="url(#plateclip)"><ellipse cx="180" cy="40" rx="460" ry="300" fill="url(#wash-s)"/>'
+             f'<ellipse cx="860" cy="{H - 40}" rx="460" ry="300" fill="url(#wash-b)"/>'
+             f'<rect x="0" y="0" width="{W}" height="3" fill="url(#horizon)"/></g>')
     o.append(corner_l + corner_r)
     kx, ky = W - 32 - 34, H - 26 - 23
     o.append(f'<g class="key"><rect x="{kx}" y="{ky + 3}" width="34" height="32" rx="7" fill="{t["strong"]}" opacity=".5"/>'
-             f'<rect x="{kx}" y="{ky}" width="34" height="32" rx="7" fill="{t["ember"]}"/>{keycap}</g>')
+             f'<rect x="{kx}" y="{ky}" width="34" height="32" rx="7" fill="url(#ctagrad)"/>{keycap}</g>')
     for L in (2, 1, 0):
         for i in range(n):
             o.append(f'<g class="p{i}"><g class="l{i}{L}"><use href="#card{i}"/>'

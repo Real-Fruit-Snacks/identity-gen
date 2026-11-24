@@ -80,7 +80,7 @@ The email field is a handle only, the part before the `@`, so it pairs with your
 
 ## Settings
 
-All settings are on the page: username and handle rules, password rules, how often Pixel avatars wear a character kit, the photo source, and the theme (Auto, Dayshift or Nightshift). They are saved in the browser. "Reset everything" under Stored on this device clears them along with the current identity, undo history and used-name memory.
+All settings are on the page: username and handle rules, password rules, how often Pixel avatars wear a character kit, the photo source, and the theme (`LX 263 DARK` default, or `LX 512 LIGHT` opt-in). They are saved in the browser. "Reset everything" under Stored on this device clears them along with the current identity, undo history and used-name memory.
 
 ## Changing the page
 
@@ -96,4 +96,4 @@ python docs/art/make-deck.py
 
 ## License
 
-[MIT](LICENSE). The bundled IBM Plex fonts are under the SIL Open Font License (`fonts/OFL.txt`), as are the Atkinson Hyperlegible fonts in `docs/art/fonts`, which only the README art uses. DiceBear's Lorelei, Notionists and Open Peeps styles are CC0. [Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
+[MIT](LICENSE). The bundled Big Shoulders Stencil, Albert Sans, and Azeret Mono fonts are under the SIL Open Font License (`fonts/OFL.txt`, also mirrored in `docs/art/fonts/OFL.txt` for the README deck). DiceBear's Lorelei, Notionists and Open Peeps styles are CC0. [Changelog](CHANGELOG.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)

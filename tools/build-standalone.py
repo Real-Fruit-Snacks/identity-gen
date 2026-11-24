@@ -4,7 +4,7 @@ The repo's index.html loads fonts/*.woff2 and icons/icon-192.png by relative pat
 its own falls back to system fonts and has no icon. This writes the same page with those files inlined as
 data: URLs, and drops the manifest link, which only matters for installing from the website (a file opened
 from disk can't be installed, and there is no manifest.json next to it). Nothing else changes; the repo's
-index.html stays as it is. The IBM Plex licence goes in with the fonts, as a comment above them.
+index.html stays as it is. The Cyclorama Dawn font licence goes in with the fonts, as a comment above them.
 
     python tools/build-standalone.py            # writes dist/index.html
     python tools/build-standalone.py --out DIR  # writes DIR/index.html
@@ -49,7 +49,7 @@ def build(src):
     if "*/" in ofl:
         sys.exit("fonts/OFL.txt can't go in a CSS comment")
     first = out.index("  @font-face")
-    out = (out[:first] + "  /* The six @font-face rules below carry the IBM Plex fonts from fonts/ as data: URLs.\n\n"
+    out = (out[:first] + "  /* The six @font-face rules below carry the Cyclorama Dawn fonts (Big Shoulders Stencil, Albert Sans, Azeret Mono) from fonts/ as data: URLs.\n\n"
            + ofl + "\n  */\n" + out[first:])
 
     left = re.findall(r'(?:src|href)="(?!data:|https?:|#|mailto:)[^"]+"|url\("(?!data:|#)[^"]+"\)', out)

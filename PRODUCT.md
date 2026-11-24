@@ -39,7 +39,7 @@ One key press makes a complete stand-in identity: name, birthdate, gender, locat
 
 ## Brand Commitments
 
-The RFS brand guide is binding: https://github.com/Real-Fruit-Snacks/rfs-brand/blob/main/BRAND.md (confirmed for this redesign). It sets the Nightshift (dark, default) and Dayshift (light) tokens, Ember as the one primary per screen, Amber, Mint and Raspberry roles, IBM Plex Sans and Mono with its type scale, the 4px space steps, focus, state and motion rules, no gradients, and the voice: plain, specific, dry, honest; sentence case; no emoji or exclamation marks; first person singular. The theme names Auto, Dayshift and Nightshift are part of the product.
+The RFS Cyclorama Dawn v2.1.0 brand guide is binding (`Real-Fruit-Snacks/rfs-brand`). It sets Matte Dark (`#050507`, `LX 263`) as the explicit default and Alabaster Day (`#F5F7F9`, `LX 512`) as an opt-in toggle, Glacial Steel (`#1F547A` / `#74B8E8` / `#164669`) and Maritime Beacon Orange (`#F06E2B` / `#BD4811` / `#FF9254` / `#AD3D0A`) with Cartesian `in oklab` gradients, Amber, Mint, and Signal Crimson (`#FF5C6C` / `#C92438` dark, `#B91C2E` light) status roles, self-hosted Big Shoulders Stencil, Albert Sans, and Azeret Mono variable fonts, the 4px spacing steps, below-header `.rfs-shell` scrolling, destructive confirmation dialogs with `autofocus` on Cancel, focus and motion rules, and the voice: plain, specific, dry, honest; sentence case; no emoji or exclamation marks; first person singular.
 
 ## Evidence on Hand
 
@@ -57,4 +57,4 @@ The RFS brand guide is binding: https://github.com/Real-Fruit-Snacks/rfs-brand/b
 
 ## Accessibility & Inclusion
 
-WCAG AA contrast for every text colour in both themes, a visible Ember focus ring on every focusable element, and status carried by a word as well as a colour (BRAND.md §1). Full keyboard use, with the N/P/U shortcuts. Motion only under `prefers-reduced-motion: no-preference`.
+WCAG AA contrast for every text colour in both themes, a visible Beacon focus ring (`#FF9254` dark / `#AD3D0A` light) on every focusable element, and status carried by a word as well as a colour. Full keyboard use, with the N/P/U shortcuts. Motion only under `prefers-reduced-motion: no-preference`.
