@@ -69,14 +69,24 @@ with sync_playwright() as p:
                   && document.fonts.check('400 15px "Albert Sans"')
                   && document.fonts.check('500 10.5px "Azeret Mono"')
                   && getComputedStyle(document.body).fontFamily.startsWith('"Albert Sans"')"""))
-        check(tag + "icon is built in and decodes", page.evaluate("""() => new Promise(done => {
-            const link = document.querySelector('link[rel="apple-touch-icon"]');
-            if (!link) return done(false);
-            const img = new Image();
-            img.onload = () => done(img.naturalWidth === 192);
-            img.onerror = () => done(false);
-            img.src = link.href;
-        })"""))
+        check(tag + "icon is built in and decodes", page.evaluate("""() => Promise.all([
+            new Promise(done => {
+                const link = document.querySelector('link[rel="apple-touch-icon"]');
+                if (!link) return done(false);
+                const img = new Image();
+                img.onload = () => done(img.naturalWidth === 180);
+                img.onerror = () => done(false);
+                img.src = link.href;
+            }),
+            new Promise(done => {
+                const link = document.querySelector('link[rel="icon"][type="image/svg+xml"]');
+                if (!link) return done(false);
+                const img = new Image();
+                img.onload = () => done(img.naturalWidth === 64);
+                img.onerror = () => done(false);
+                img.src = link.href;
+            }),
+        ]).then(([a, b]) => a && b)"""))
 
         first = (page.text_content("#name") or "").strip()
         check(tag + "identity renders", bool(first))

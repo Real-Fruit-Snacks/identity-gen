@@ -1,6 +1,6 @@
 const VERSION = "1.13.0";
-const CACHE = "identity-gen-v2.1-" + VERSION;
-const ASSETS = ["./", "./index.html", "./manifest.json", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png",
+const CACHE = "identity-gen-v2.1.1-" + VERSION;
+const ASSETS = ["./", "./index.html", "./manifest.json", "./icon.svg", "./favicon.ico", "./icons/apple-touch-icon.png", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png",
   "./fonts/big-shoulders-stencil-latin-ext.woff2", "./fonts/big-shoulders-stencil-latin.woff2",
   "./fonts/albert-sans-latin-ext.woff2", "./fonts/albert-sans-latin.woff2",
   "./fonts/azeret-mono-latin-ext.woff2", "./fonts/azeret-mono-latin.woff2"];

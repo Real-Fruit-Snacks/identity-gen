@@ -33,11 +33,22 @@ def build(src):
     if fonts != 6:
         sys.exit("expected 6 font URLs in index.html, found %d" % fonts)
 
-    icon = '<link rel="apple-touch-icon" href="icons/icon-192.png">'
+    svg_icon = '<link rel="icon" href="icon.svg" type="image/svg+xml">'
+    if out.count(svg_icon) != 1:
+        sys.exit("expected one icon.svg link in index.html")
+    out = out.replace(svg_icon, '<link rel="icon" href="%s" type="image/svg+xml">'
+                      % data_url(os.path.join(ROOT, "icon.svg"), "image/svg+xml"))
+
+    ico_icon = '<link rel="icon" href="favicon.ico" sizes="32x32">\n'
+    if out.count(ico_icon) != 1:
+        sys.exit("expected one favicon.ico link in index.html")
+    out = out.replace(ico_icon, "")
+
+    icon = '<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">'
     if out.count(icon) != 1:
         sys.exit("expected one apple-touch-icon link in index.html")
     out = out.replace(icon, '<link rel="apple-touch-icon" href="%s">'
-                      % data_url(os.path.join(ROOT, "icons", "icon-192.png"), "image/png"))
+                      % data_url(os.path.join(ROOT, "icons", "apple-touch-icon.png"), "image/png"))
 
     manifest = '<link rel="manifest" href="manifest.json">\n'
     if out.count(manifest) != 1:
