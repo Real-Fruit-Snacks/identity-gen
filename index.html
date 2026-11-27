@@ -14,6 +14,16 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#050507">
+<script>
+try {
+  var t = localStorage.getItem("rfs-theme") || localStorage.getItem("color-scheme") || localStorage.getItem("theme");
+  if (t === "light") {
+    document.documentElement.setAttribute("data-theme", "light");
+    var cs = document.querySelector('meta[name="color-scheme"]'); if (cs) cs.content = "light";
+    var tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = "#F5F7F9";
+  }
+} catch (_) {}
+</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.ico" sizes="32x32">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -29,6 +39,7 @@
   @font-face { font-family: "Azeret Mono"; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/azeret-mono-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
   :root, :root[data-theme="dark"] {
     color-scheme: dark;
+    --rfs-in-oklab: ;
     --rfs-steel: #1F547A; --rfs-steel-fill: #18496B; --rfs-beacon: #F06E2B; --rfs-beacon-fill: #BD4811;
     --rfs-bg: #050507; --rfs-surface: #0C0C10; --rfs-raised: #14141A; --rfs-line: rgba(255, 255, 255, 0.14); --rfs-line-strong: #62646D;
     --rfs-text: #F4F5F8; --rfs-mute: #B3B5C0;
@@ -63,11 +74,12 @@
     --rfs-cta-bg-press: linear-gradient(110deg, #133A56 0%, #943207 100%);
     --rfs-horizon-rule: linear-gradient(90deg, #18496B 0%, #1F547A 48%, #AD3D0A 100%);
     --rfs-scroll-thumb: #6E7682; --rfs-scroll-thumb-hover: #474D59;
-    --rfs-wash-steel: rgba(31, 84, 122, 0.10); --rfs-wash-beacon: rgba(240, 110, 43, 0.10);
+    --rfs-wash-steel: rgba(31, 84, 122, 0.34); --rfs-wash-beacon: rgba(240, 110, 43, 0.32);
     --hover: rgba(13, 16, 22, 0.05); --selection: rgba(173, 61, 10, 0.20); --scrim: rgba(13, 16, 22, 0.48);
     --lux-dot: #1F547A;
   }
   @supports (background: linear-gradient(in oklab, #1F547A, #BD4811)) {
+    :root { --rfs-in-oklab: in oklab; }
     :root, :root[data-theme="dark"] {
       --rfs-cta-bg: linear-gradient(110deg in oklab, #1F547A 0%, #BD4811 100%);
       --rfs-cta-bg-hover: linear-gradient(110deg in oklab, #276895 0%, #D45417 100%);
@@ -95,18 +107,19 @@
   html { height: 100%; overflow: hidden; background: var(--rfs-bg); color: var(--rfs-text); font: 16px/1.6 var(--rfs-font-sans); -webkit-text-size-adjust: 100%; }
   body.rfs-shell { margin: 0; position: relative; isolation: isolate; display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; background: var(--rfs-bg); color: var(--rfs-text); caret-color: var(--rfs-beacon-ink); }
   body.rfs-shell::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: linear-gradient(100deg in oklab, var(--rfs-wash-steel) 0%, transparent 48%, var(--rfs-wash-beacon) 100%);
+    background: linear-gradient(100deg var(--rfs-in-oklab), var(--rfs-wash-steel) 0%, transparent 48%, var(--rfs-wash-beacon) 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 45%, rgba(0, 0, 0, 0.52) 82%, #000 100%);
     mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 45%, rgba(0, 0, 0, 0.52) 82%, #000 100%); }
   .rfs-scroll-region { min-height: 0; overflow-y: auto; overflow-x: clip; overscroll-behavior-y: contain; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: var(--rfs-scroll-thumb) var(--rfs-bg); }
   @supports not (scrollbar-color: auto) {
+    .rfs-scroll-region { scrollbar-width: auto; }
     .rfs-scroll-region::-webkit-scrollbar { width: 10px; height: 10px; }
     .rfs-scroll-region::-webkit-scrollbar-track { background: var(--rfs-bg); }
     .rfs-scroll-region::-webkit-scrollbar-thumb { background: var(--rfs-scroll-thumb); border: 2px solid var(--rfs-bg); border-radius: 3px; }
     .rfs-scroll-region::-webkit-scrollbar-thumb:hover { background: var(--rfs-scroll-thumb-hover); }
   }
   @media (prefers-contrast: more) {
-    :root, :root[data-theme="dark"] { --rfs-scroll-thumb: #B3B5C0; }
+    :root, :root[data-theme="dark"] { --rfs-scroll-thumb: var(--rfs-text); }
     :root[data-theme="light"] { --rfs-scroll-thumb: #0D1016; }
   }
   ::selection { background: var(--selection); color: var(--rfs-text); }
@@ -308,10 +321,11 @@
   footer p { margin: 0; max-width: 90ch; }
   .ver { font: 500 11px/1.6 var(--rfs-font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rfs-steel-ink); }
 
-  .update { position: fixed; left: 50%; bottom: var(--s4); z-index: 60; display: none; align-items: center; gap: var(--s3); max-width: calc(100% - 2 * var(--s4)); padding: var(--s3) var(--s3) var(--s3) var(--s4); transform: translateX(-50%); border: 1px solid var(--rfs-line-strong); border-top: 2px solid var(--rfs-beacon); border-radius: var(--r-l); background: var(--rfs-raised); font-size: 14px; }
+  .update { position: fixed; left: 50%; bottom: var(--s4); z-index: 60; display: none; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--s2) var(--s3); width: max-content; max-width: calc(100% - 2 * var(--s4)); padding: var(--s3) var(--s4); transform: translateX(-50%); border: 1px solid var(--rfs-line-strong); border-top: 2px solid var(--rfs-beacon); border-radius: var(--r-l); background: var(--rfs-raised); font-size: 14px; }
   .update.show { display: flex; }
+  .update > span { flex: 1 1 auto; }
 
-  .rfs-toast { position: fixed; inset: auto var(--s4) var(--s4) auto; margin: 0; z-index: 100; padding: 10px 14px; border: 1px solid var(--rfs-line-strong); border-radius: var(--r-m); background: var(--rfs-surface); color: var(--rfs-text); font: 500 13px/1.3 var(--rfs-font-mono); opacity: 0; transform: translateY(6px); transition: opacity var(--rfs-dur-fast) var(--rfs-ease), transform var(--rfs-dur-fast) var(--rfs-ease), display var(--rfs-dur-fast) allow-discrete, overlay var(--rfs-dur-fast) allow-discrete; }
+  .rfs-toast { position: fixed; inset: auto var(--s4) var(--s4) auto; margin: 0; z-index: 100; padding: 10px 14px; border: 1px solid var(--rfs-line-strong); border-radius: var(--r-m); background: var(--rfs-surface); color: var(--rfs-text); font: 500 13px/1.3 var(--rfs-font-mono); opacity: 0; transform: translateY(6px); transition-property: opacity, transform, display, overlay; transition-duration: var(--rfs-dur-fast); transition-timing-function: var(--rfs-ease); transition-behavior: allow-discrete; }
   .rfs-toast:popover-open { display: inline-flex; align-items: center; gap: 8px; opacity: 1; transform: translateY(0); }
   @starting-style { .rfs-toast:popover-open { opacity: 0; transform: translateY(6px); } }
   .rfs-toast.is-ok { border-color: color-mix(in oklab, var(--rfs-signal) 55%, var(--rfs-line)); background: color-mix(in oklab, var(--rfs-signal) 14%, var(--rfs-surface)); }
@@ -319,12 +333,22 @@
   .rfs-toast.is-fail { border-color: color-mix(in oklab, var(--rfs-fault) 55%, var(--rfs-line)); background: color-mix(in oklab, var(--rfs-fault-fill) 16%, var(--rfs-surface)); }
   .rfs-toast.is-fail .k { color: var(--rfs-fault); font-weight: 600; }
 
-  dialog.rfs-dialog { width: calc(100% - 2 * var(--s4)); max-width: 28rem; padding: var(--s5); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-l); background: var(--rfs-surface); color: var(--rfs-text); z-index: 80; opacity: 0; transform: translateY(8px); transition: opacity var(--rfs-dur-base) var(--rfs-ease), transform var(--rfs-dur-base) var(--rfs-ease), display var(--rfs-dur-base) allow-discrete, overlay var(--rfs-dur-base) allow-discrete; }
-  dialog.rfs-dialog[open] { opacity: 1; transform: translateY(0); }
-  @starting-style { dialog.rfs-dialog[open] { opacity: 0; transform: translateY(8px); } }
+  dialog.rfs-dialog { width: calc(100% - 2 * var(--s4)); max-width: 28rem; padding: var(--s5); border: 1px solid var(--rfs-line-strong); border-radius: var(--r-l); background: var(--rfs-surface); color: var(--rfs-text); z-index: 80; opacity: 0; transition-property: opacity, transform, display, overlay; transition-duration: var(--rfs-dur-base); transition-timing-function: var(--rfs-ease); transition-behavior: allow-discrete; }
+  dialog.rfs-dialog[open] { opacity: 1; }
+  @starting-style { dialog.rfs-dialog[open] { opacity: 0; } }
+  @media (prefers-reduced-motion: no-preference) {
+    dialog.rfs-dialog { transform: translateY(8px); }
+    dialog.rfs-dialog[open] { transform: translateY(0); }
+    @starting-style { dialog.rfs-dialog[open] { transform: translateY(8px); } }
+  }
   dialog.rfs-dialog:modal { overscroll-behavior: contain; }
   dialog.rfs-dialog.is-destructive { border-top: 2px solid var(--rfs-fault-fill); }
-  dialog.rfs-dialog::backdrop { background: var(--scrim); overflow: hidden; overscroll-behavior: contain; }
+  dialog.rfs-dialog::backdrop { background: transparent; overflow: hidden; overscroll-behavior: contain; transition-property: background-color, display, overlay; transition-duration: var(--rfs-dur-base); transition-timing-function: var(--rfs-ease); transition-behavior: allow-discrete; }
+  dialog.rfs-dialog[open]::backdrop { background: var(--scrim); }
+  @starting-style { dialog.rfs-dialog[open]::backdrop { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) {
+    dialog.rfs-dialog, dialog.rfs-dialog::backdrop, .rfs-toast { transition-duration: 100ms; }
+  }
   dialog.rfs-dialog h2 { margin: 0 0 var(--s3); font: 700 28px/1 var(--rfs-font-display); letter-spacing: 0.03em; text-transform: uppercase; }
   dialog.rfs-dialog p { margin: 0; font-size: 15px; color: var(--rfs-mute); }
   dialog.rfs-dialog .row { justify-content: flex-end; margin-top: var(--s5); }
@@ -375,11 +399,17 @@
     .pane { padding: var(--s4); }
     .recent li { grid-template-columns: minmax(0, 1fr) auto; }
     .recent .when { grid-column: 1; grid-row: 2; }
+    .update { width: calc(100% - 2 * var(--s4)); }
+    .update > span { flex: 1 0 100%; }
+  }
+  @media (pointer: coarse) {
+    .btn, .btn.sm, .acts .btn, .seg button, .field, .sel select, .pane .sel select { min-height: 44px; height: auto; }
+    .ic { min-width: 44px; min-height: 44px; }
   }
   @media (hover: none) { .r .ic, .r .torule { opacity: 1; } }
   @media (prefers-reduced-transparency: reduce) {
     body.rfs-shell::before { display: none; }
-    dialog.rfs-dialog::backdrop { background: rgba(5, 5, 7, 0.92); }
+    dialog.rfs-dialog[open]::backdrop { background: rgba(5, 5, 7, 0.92); }
   }
   @media (forced-colors: active) {
     body.rfs-shell::before { display: none; }
@@ -479,7 +509,7 @@
     </div>
     <div class="site">
       <label for="site">Signing up at</label>
-      <input class="field" id="site" type="text" placeholder="https://example.com (optional; goes at the top of the export)" spellcheck="false" autocomplete="off">
+      <input class="field" id="site" type="text" placeholder="https://example.com (optional)" spellcheck="false" autocomplete="off">
     </div>
     <div class="rows" id="rows">
       <div class="cursor" id="cursor" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5 10.5 8 6 12.5"/></svg></div>
@@ -597,9 +627,9 @@
   <button class="btn sm" id="laterbtn" type="button">Later</button>
 </div>
 
-<dialog id="confirm" class="rfs-dialog is-destructive">
+<dialog id="confirm" class="rfs-dialog is-destructive" aria-labelledby="confirm-title">
   <form method="dialog">
-    <h2>Reset everything?</h2>
+    <h2 id="confirm-title">Reset everything?</h2>
     <p>This clears your settings, the current identity, the Undo history and the used-names memory from this browser. It can't be undone.</p>
     <div class="row">
       <button class="btn" value="cancel" type="submit" autofocus>Cancel</button>
@@ -1593,35 +1623,47 @@
   const TPDNE = "https://thispersondoesnotexist.com/random-person.jpeg";
   let current = null, style = "local", seed = "";
   let themeMode = "dark";
-  try {
-    const savedTheme = localStorage.getItem("rfs-theme") || localStorage.getItem("theme");
-    themeMode = savedTheme === "light" ? "light" : "dark";
-  } catch (_) {}
-  function applyTheme() {
-    if (themeMode === "light") document.documentElement.setAttribute("data-theme", "light");
-    else document.documentElement.removeAttribute("data-theme");
-    const btn = $("themebtn");
+  function applyTheme(next, persist = false) {
+    if (next === "light" || next === "dark") {
+      themeMode = next;
+    } else {
+      try {
+        const savedTheme = localStorage.getItem("rfs-theme") || localStorage.getItem("color-scheme") || localStorage.getItem("theme");
+        themeMode = savedTheme === "light" ? "light" : "dark";
+      } catch (_) { themeMode = "dark"; }
+    }
     const isLight = themeMode === "light";
+    if (isLight) document.documentElement.setAttribute("data-theme", "light");
+    else document.documentElement.removeAttribute("data-theme");
+    if (persist) {
+      try {
+        localStorage.setItem("rfs-theme", themeMode);
+        localStorage.setItem("color-scheme", themeMode);
+        localStorage.setItem("theme", themeMode);
+      } catch (_) {}
+    }
+    const btn = $("themebtn");
     btn.innerHTML = `<span class="lux-dot" aria-hidden="true"></span><span class="lux-code">${isLight ? "LX 512" : "LX 263"}</span><span class="lux-mode">${isLight ? " LIGHT" : " DARK"}</span>`;
     btn.setAttribute("aria-pressed", String(isLight));
     const cs = document.querySelector('meta[name="color-scheme"]'); if (cs) cs.content = isLight ? "light" : "dark";
     const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue("--rfs-bg").trim();
   }
   $("themebtn").addEventListener("click", ev => {
-    themeMode = themeMode === "light" ? "dark" : "light";
-    const swap = () => { applyTheme(); saveSettings(); };
+    const next = themeMode === "light" ? "dark" : "light";
+    const swap = () => { applyTheme(next, true); saveSettings(); };
     if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return swap();
     const r = ev.currentTarget.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
     const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-    document.startViewTransition(swap).ready.then(() => {
+    const vt = document.startViewTransition(swap);
+    const animated = vt.ready.then(() => {
       document.documentElement.animate({ clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
         { duration: 520, easing: "cubic-bezier(0.16, 1, 0.3, 1)", pseudoElement: "::view-transition-new(root)" });
-    }).catch(() => {});
+    });
+    Promise.allSettled([animated, vt.updateCallbackDone, vt.finished]);
   });
   addEventListener("storage", e => {
-    if (e.key === "rfs-theme" || e.key === "theme") {
-      themeMode = e.newValue === "light" ? "light" : "dark";
-      applyTheme();
+    if (e.key === "rfs-theme" || e.key === "color-scheme" || e.key === "theme" || e.key === null) {
+      applyTheme(e.key === null ? undefined : (e.newValue === "light" ? "light" : "dark"), false);
     }
   });
   applyTheme();
@@ -1668,6 +1710,7 @@
       localStorage.setItem("unSettings", JSON.stringify(unSettings()));
       localStorage.setItem("kitRate", kitEl.value);
       localStorage.setItem("rfs-theme", themeMode);
+      localStorage.setItem("color-scheme", themeMode);
       localStorage.setItem("theme", themeMode);
     } catch (_) {}
   }
@@ -1680,8 +1723,11 @@
   }));
   $("reset").addEventListener("click", () => {
     const dlg = $("confirm");
+    dlg.returnValue = "";
     dlg.addEventListener("close", () => {
-      if (dlg.returnValue !== "ok") return;
+      const choice = dlg.returnValue;
+      dlg.returnValue = "";
+      if (choice !== "ok") return;
       try { localStorage.clear(); } catch (_) {}
       location.reload();
     }, { once: true });

@@ -10,16 +10,20 @@ on:
     - cron: '41 6 4 * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   lychee:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: lycheeverse/lychee-action@v2
         with:
           args: >-
             --no-progress --max-retries 4 --retry-wait-time 10 --timeout 30
-            --accept 200,206,429
+            --accept 200,206,429 --exclude-all-private
             './**/*.md'
           fail: true
         env:
