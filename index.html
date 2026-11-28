@@ -104,8 +104,8 @@ try {
   }
 
   * { box-sizing: border-box; }
-  html { height: 100%; overflow: hidden; background: var(--rfs-bg); color: var(--rfs-text); font: 16px/1.6 var(--rfs-font-sans); -webkit-text-size-adjust: 100%; }
-  body.rfs-shell { margin: 0; position: relative; isolation: isolate; display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; background: var(--rfs-bg); color: var(--rfs-text); caret-color: var(--rfs-beacon-ink); }
+  html { height: 100%; overflow: hidden; overflow: clip; background: var(--rfs-bg); color: var(--rfs-text); font: 16px/1.6 var(--rfs-font-sans); -webkit-text-size-adjust: 100%; }
+  body.rfs-shell { margin: 0; position: fixed; inset: 0; isolation: isolate; display: grid; grid-template-rows: auto minmax(0, 1fr); width: 100%; height: 100vh; height: 100dvh; overflow: hidden; overflow: clip; background: var(--rfs-bg); color: var(--rfs-text); caret-color: var(--rfs-beacon-ink); }
   body.rfs-shell::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
     background: linear-gradient(100deg var(--rfs-in-oklab), var(--rfs-wash-steel) 0%, transparent 48%, var(--rfs-wash-beacon) 100%);
     -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.08) 45%, rgba(0, 0, 0, 0.52) 82%, #000 100%);
@@ -420,7 +420,7 @@ try {
     .label, .tagline, .note, .meter, footer { color: GrayText; }
   }
   @media print {
-    html, body.rfs-shell, .rfs-scroll-region { height: auto !important; overflow: visible !important; background: #FFFFFF !important; color: #0D1016 !important; }
+    html, body.rfs-shell, .rfs-scroll-region { position: static !important; height: auto !important; overflow: visible !important; background: #FFFFFF !important; color: #0D1016 !important; }
     body.rfs-shell::before, .acts, .avtools, .restore, .update, .rfs-toast, .cp, .ic, .torule, .kb, .keys, .save { display: none !important; }
     .walk { grid-template-columns: 1fr; padding: 0; gap: 16px; }
     .person { position: static; grid-template-columns: 120px 1fr; grid-template-areas: "photo ident" "photo seed"; }

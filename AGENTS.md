@@ -1,18 +1,24 @@
-# AGENTS.md — Repository Guardrails (identity-gen)
+# AGENTS.md — Repository Guardrails (Real-Fruit-Snacks)
 
-This repository is part of **Real-Fruit-Snacks** (**RFS**) and follows the **Cyclorama Dawn `v2.1.0` — Steel & Beacon Orange + Signal Crimson Fault** brand system (`Real-Fruit-Snacks/rfs-brand`).
+This repository is part of **Real-Fruit-Snacks** (**RFS**) and follows the **Cyclorama Dawn — Steel & Beacon Orange** brand system (`Real-Fruit-Snacks/rfs-brand` v2.3.2).
+
+## Brand Skill & Machine-Readable References
+- **Installable Agent Skill:** `npx skills add Real-Fruit-Snacks/rfs-brand` (`skills/rfs-brand/SKILL.md` with 6 progressive-disclosure `references/`, `assets/starter-page.html`, and standalone `scripts/verify-brand.py`).
+- **Live Index & Rules:** https://real-fruit-snacks.github.io/rfs-brand/llms.txt · `rfs-brand/brand/BRAND-RULES.md` · https://real-fruit-snacks.github.io/rfs-brand/
 
 ## Core Commitments
-1. **Single-file offline web app:** Keep `index.html` self-contained with inline CSS/JS, no build step, and zero runtime third-party dependencies. Network features (DiceBear Illustrated styles, Photo URLs) remain opt-in and labeled in the UI.
-2. **Deterministic seeds:** Never change identity or avatar PRNG output for an existing seed unless explicitly called out in `CHANGELOG.md` and reflected in regenerated `docs/assets/deck-{dark,light}.svg`.
-3. **Version parity:** Keep `const VERSION` in `index.html`, `const VERSION` in `sw.js`, and the top version heading in `CHANGELOG.md` identical.
-4. **Plain, specific, honest voice:** No emoji, no hype copy, no exclamation marks in headings or descriptions.
+1. **Local-first by default:** Operate directly on the user's machine with zero accounts, zero telemetry, and zero third-party CDN calls.
+2. **Plain, specific, honest voice:** No emoji, no hype copy, no exclamation marks in headings or descriptions.
+3. **Verifiable outputs:** Every command and UI state displays plain inputs, outputs, and explicit status words (`[ok]`, `[!]`, `[x]`, `[i]`).
 
-## Brand & UI Rules (`rfs-brand` v2.1.0)
-- **Theme & Motion:** Matte Dark (`#050507`, `LX 263 DARK`) is the explicit default (`<meta name="color-scheme" content="dark">`); Alabaster Day (`#F5F7F9`, `LX 512 LIGHT`) is an opt-in toggle synchronized via `rfs-theme` (`localStorage`) with a radial View Transition under `prefers-reduced-motion: no-preference`.
-- **Palette:** Glacial Steel (`#1F547A` / `#74B8E8` / `#164669`), Maritime Beacon Orange (`#F06E2B` / `#BD4811` / `#FF9254` / `#AD3D0A`), Signal Crimson Fault (`#FF5C6C` / `#C92438` / `#E02E44` dark, `#B91C2E` / `#991525` light, `#FFFFFF` on-fault), Amber (`#FFC247` / `#885800`), Mint (`#3DDC97` / `#127247`). Always interpolate gradients in Cartesian `in oklab` (never `in oklch`).
-- **Typography:** Six self-hosted variable `.woff2` files in `fonts/` (`Big Shoulders Stencil`, `Albert Sans`, `Azeret Mono`, latin + latin-ext) plus `fonts/OFL.txt` so `tools/build-standalone.py` inlines all 6 `@font-face` rules into the release `index.html`.
-- **Scrollbars:** Use `.rfs-shell` (`body`) + pinned `<header class="bar">` + `<div class="rfs-scroll-region" id="page-scroll">` so the scrollbar never extends into the top header row. Never animate `scrollbar-color`.
-- **Destructive Dialogs:** Never use `window.alert()`, `window.confirm()`, or `window.prompt()`. Use `<dialog id="confirm" class="rfs-dialog is-destructive">` with `autofocus` on **Cancel** and solid Signal Crimson styling on **Reset**.
-- **README & Docs (`BRAND.md` §14):** Keep `README.md` ultra-minimal (40–60 lines); put seed examples, feature tables, settings, known issues, and development steps in `docs/USAGE.md` (never GitHub Wiki).
-- **Verification:** Run `python tools/build-standalone.py`, `python docs/art/make-deck.py`, `python tests/test_page.py`, and `python tests/test_download.py dist/index.html` before pushing.
+## Brand & UI Rules (Summary of `rfs-brand/brand/BRAND-RULES.md`)
+- **Theme & Motion:** Dark mode (`#050507`, `LX 263`) is the explicit default on every page (`<meta name="color-scheme" content="dark">`); Light (`#F5F7F9`, `LX 512`) is an opt-in toggle. Keep browser animations, `--rfs-ease-detent` mechanical detents, and View Transitions enabled by default.
+- **Palette:** Glacial Steel `#1F547A` + Maritime Beacon Orange `#F06E2B`. Always interpolate gradients in Cartesian `in oklab` (never polar `in oklch`).
+- **Typography:** Self-hosted `Big Shoulders Stencil` (display), `Albert Sans` (UI/prose), `Azeret Mono` (code/CLI).
+- **Web UIs, Controls, Loaders & Icons:** Load `rfs.css` then `rfs-components.css` (+ `rfs-motion.js` for jumping radios, console faders, armed latches, LED ladders, and clickable icons); use the 60-icon Precision Silkscreen sprite `rfs-icons.svg` (`24×24`, `1.75px` `square`/`miter`, opt-in `.rfs-icon-live` + bespoke `part-*` verbs) and the 4 native `<progress>` loaders.
+- **Code Blocks:** Always display a language header + syntax coloring (`.rfs-code-card` + `.rfs-tok-*`) and wrap by default (`pre-wrap`, `overflow-wrap: anywhere`; `.rfs-code-scroll` opt-in).
+- **Badges & Chips:** `D · Terminal Token` (`4px` recessed `code-bg`, `1px` border, bracketed `.k` prefix) — zero `99px` capsule pills or status dots.
+- **Scrollbars:** Never extend a vertical scrollbar to the top edge alongside a top header — use `.rfs-shell` (`position: fixed; inset: 0; overflow: clip`) + `.rfs-shell-header` + `.rfs-scroll-region` with `overflow: clip` on `html`.
+- **Modals & Toasts:** Strictly forbid `window.alert()`, `window.confirm()`, and `window.prompt()`. Use branded native `<dialog class="rfs-dialog">` modals, and always prompt destructive actions (delete/clear/reset/overwrite) with `<dialog class="rfs-dialog is-destructive">`, `autofocus` on **Cancel**, and `.rfs-btn-fault` confirm. Tint toasts by semantic status (`.rfs-toast.is-{ok,warn,fail,info}`).
+- **CLIs:** Respect `NO_COLOR` and non-TTY stdout, keep bracketed ASCII prefixes (`[ok]`, `[!]`, `[x]`, `[i]`), and exit `0` (ok), `1` (runtime), `2` (usage).
+- **README, Docs & Verification:** Keep `README.md` ultra-minimal (40–60 lines: title, `≤ 60`-char no-period one-liner, `<picture>` dark/light cover, quick install/run, 3–5 bullets, `docs/` links, license); put deep docs in `docs/*.md` (never GitHub Wiki). Run `python scripts/verify-brand.py --repo .` (exit `0`) before pushing.
